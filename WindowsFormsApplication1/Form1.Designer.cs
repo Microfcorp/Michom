@@ -36,6 +36,7 @@
             this.michomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.неБеспокоитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.отладкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.отчистьтьКонсольToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.звонокToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,9 +59,9 @@
             // richTextBox1
             // 
             this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.richTextBox1.Location = new System.Drawing.Point(12, 48);
+            this.richTextBox1.Location = new System.Drawing.Point(12, 40);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(823, 464);
+            this.richTextBox1.Size = new System.Drawing.Size(823, 472);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "";
             this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
@@ -97,9 +98,18 @@
             // 
             // отладкаToolStripMenuItem
             // 
+            this.отладкаToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.отчистьтьКонсольToolStripMenuItem});
             this.отладкаToolStripMenuItem.Name = "отладкаToolStripMenuItem";
             this.отладкаToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.отладкаToolStripMenuItem.Text = "Отладка";
+            // 
+            // отчистьтьКонсольToolStripMenuItem
+            // 
+            this.отчистьтьКонсольToolStripMenuItem.Name = "отчистьтьКонсольToolStripMenuItem";
+            this.отчистьтьКонсольToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.отчистьтьКонсольToolStripMenuItem.Text = "Отчистить консоль";
+            this.отчистьтьКонсольToolStripMenuItem.Click += new System.EventHandler(this.отчистьтьКонсольToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -126,6 +136,7 @@
             this.дзыыньToolStripMenuItem.Name = "дзыыньToolStripMenuItem";
             this.дзыыньToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.дзыыньToolStripMenuItem.Text = "Дзыынь";
+            this.дзыыньToolStripMenuItem.Click += new System.EventHandler(this.дзыыньToolStripMenuItem_Click);
             // 
             // webBrowser1
             // 
@@ -140,7 +151,6 @@
             // 
             // timer1
             // 
-            this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // notifyIcon1
@@ -240,6 +250,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripMenuItem дзыыньToolStripMenuItem;
         private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ToolStripMenuItem отчистьтьКонсольToolStripMenuItem;
     }
 }
 

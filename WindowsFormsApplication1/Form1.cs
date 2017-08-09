@@ -17,13 +17,34 @@ namespace WindowsFormsApplication1
         bool sleep = false;
         string lag;
 
-        string call = "192.168.1.0";
+        string[] ips = new string[] { "192.168.1.0", "192.168.2.0" };
 
         public Form1()
         {
             InitializeComponent();
             backgroundWorker1.RunWorkerAsync();
-            comboBox1.Items.Add(call);
+            comboBox1.Items.AddRange(ips);
+        }
+
+        public String vibior(string plata)
+        {
+            string ip = "";
+            switch (plata)
+            {
+                case "call":
+                    ip = "192.168.1.0";   
+                break;
+                /*
+                case "call":
+
+                break;
+
+                case "call":
+
+                break;
+                */
+            }
+            return ip;
         }
 
         public void Setlog(string data, string url, bool priem)
@@ -43,34 +64,35 @@ namespace WindowsFormsApplication1
             richTextBox1.Text += Environment.NewLine;
         }
 
-        public void CmdCont(string data, string url)
+        public void SetData(string data, string url)
         {
-            webBrowser1.Navigate(new Uri("http://" + url + "/" + data));
-            Setlog(data, url, false);
+            timer1.Stop();
+            if (url != "" && data != "") {
+                webBrowser1.Navigate(new Uri("http://" + url + "/" + data));
+                Setlog(data, url, false);
+            }
+            else { MessageBox.Show("Ошибка", "Не все параметры введены"); }
+            
         }
 
         public void Refresh(string url)
         {
             webBrowser1.Navigate(new Uri("http://" + url + "/refresh"));
-            Setlog("Обновление", url, false);
-            if (webBrowser1.DocumentText == "Call") {
+            //Setlog("Обновление", url, false);
+            if (webBrowser1.DocumentText.Contains("call")) {
                 if (sleep) {
                     Setlog("Звонок в дверь", url, true);
-                    notifyIcon1.ShowBalloonTip(2000, "Звонок в дверь", "Кто-то звонит в дверь", ToolTipIcon.None);
+                    notifyIcon1.ShowBalloonTip(2000, "Звонок в дверь", "Кто-то звонит в дверь", ToolTipIcon.Info);
                 }
             }
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            //Label lab = new Label();
-            //Form1 frm = new Form1();
-            //lab.Text = "400000000000000000000000000000000000000000000000000000000000000000000000";
-            //this.label1.Text = "84;";
-            //while (true)
-            //{
-            //    Console.WriteLine("testtttttttttttttttttttttttttttttttttttttt");
-            //}
+            while (true)
+            {
+                
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -82,13 +104,18 @@ namespace WindowsFormsApplication1
 
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            Setlog(webBrowser1.DocumentText, " ", true);
+            Setlog(webBrowser1.DocumentText, webBrowser1.Url.ToString(), true);
+            timer1.Start();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
-           // Refresh("");
+            foreach (string ip in ips)
+            {
+                Refresh(ip);
+            }
+            if (richTextBox1.TextLength >= 100000) richTextBox1.Text = "";
             timer1.Start();
         }
 
@@ -182,9 +209,10 @@ namespace WindowsFormsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             string comand = textBox1.Text;
             string adress = comboBox1.Text;
-            CmdCont(comand, adress);
+            SetData(comand, adress);
         }
 
         private void richTextBox1_TextChanged(object sender, EventArgs e)
@@ -235,5 +263,18 @@ namespace WindowsFormsApplication1
                 sw.Close();
             }
          }
+
+        private void отчистьтьКонсольToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            richTextBox1.Text = null;
+            Setlog("Консоль отчищена","ОК",false);
+        }
+
+        private void дзыыньToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            timer1.Stop();
+            SetData("calling",vibior("call"));
+            timer1.Start();
+        }
     }
 }
