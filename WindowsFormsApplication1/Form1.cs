@@ -14,11 +14,12 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
+        //Settings
+        string[] ips = new string[] { "192.168.1.0", "192.168.2.0" }; //iPs
+        //Settings
+
         bool sleep = false;
         string lag;
-
-        string[] ips = new string[] { "192.168.1.0", "192.168.2.0" };
-
         public Form1()
         {
             InitializeComponent();
@@ -31,18 +32,20 @@ namespace WindowsFormsApplication1
             string ip = "";
             switch (plata)
             {
-                case "call":
-                    ip = "192.168.1.0";   
+                //Settings
+                case "call": //The name of the device
+                  ip = "192.168.1.0"; //IP device  
                 break;
                 /*
                 case "call":
-
+                ip = "192.168.1.0";
                 break;
-
+                ip = "192.168.1.0";
                 case "call":
-
+                ip = "192.168.1.0";
                 break;
                 */
+                //Settings
             }
             return ip;
         }
