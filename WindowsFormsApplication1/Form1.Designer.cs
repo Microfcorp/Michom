@@ -34,19 +34,19 @@
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.michomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.неБеспокоитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.отладкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.звонокToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.дзыыньToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.неБеспокоитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.дзыыньToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -72,7 +72,7 @@
             this.звонокToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.menuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             this.menuStrip1.Size = new System.Drawing.Size(847, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
@@ -87,6 +87,13 @@
             this.michomToolStripMenuItem.Name = "michomToolStripMenuItem";
             this.michomToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
             this.michomToolStripMenuItem.Text = "Michom";
+            // 
+            // неБеспокоитьToolStripMenuItem
+            // 
+            this.неБеспокоитьToolStripMenuItem.Name = "неБеспокоитьToolStripMenuItem";
+            this.неБеспокоитьToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.неБеспокоитьToolStripMenuItem.Text = "Не беспокоить";
+            this.неБеспокоитьToolStripMenuItem.Click += new System.EventHandler(this.неБеспокоитьToolStripMenuItem_Click);
             // 
             // отладкаToolStripMenuItem
             // 
@@ -114,6 +121,12 @@
             this.звонокToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
             this.звонокToolStripMenuItem.Text = "Звонок";
             // 
+            // дзыыньToolStripMenuItem
+            // 
+            this.дзыыньToolStripMenuItem.Name = "дзыыньToolStripMenuItem";
+            this.дзыыньToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.дзыыньToolStripMenuItem.Text = "Дзыынь";
+            // 
             // webBrowser1
             // 
             this.webBrowser1.Location = new System.Drawing.Point(463, 48);
@@ -136,13 +149,6 @@
             this.notifyIcon1.Text = "Michom console";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.Click += new System.EventHandler(this.notifyIcon1_MouseClick);
-            // 
-            // неБеспокоитьToolStripMenuItem
-            // 
-            this.неБеспокоитьToolStripMenuItem.Name = "неБеспокоитьToolStripMenuItem";
-            this.неБеспокоитьToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.неБеспокоитьToolStripMenuItem.Text = "Не беспокоить";
-            this.неБеспокоитьToolStripMenuItem.Click += new System.EventHandler(this.неБеспокоитьToolStripMenuItem_Click);
             // 
             // label2
             // 
@@ -181,12 +187,6 @@
             this.button1.Text = "Отправить";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // дзыыньToolStripMenuItem
-            // 
-            this.дзыыньToolStripMenuItem.Name = "дзыыньToolStripMenuItem";
-            this.дзыыньToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.дзыыньToolStripMenuItem.Text = "Дзыынь";
             // 
             // comboBox1
             // 
