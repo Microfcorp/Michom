@@ -12,7 +12,9 @@ const char* password = "10707707";
 ESP8266WebServer server(80);
 
 String svet = "выкл";
+String zvonok = "0";
 
+const int zvonokpin = 14;
 
 void setup() {
   ArduinoOTA.onStart([]() {
@@ -37,6 +39,9 @@ void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, password);
   Serial.println("");
+
+  pinMode(zvonokpin, INPUT);
+  attachInterrupt(14, zzin, RISING);
 
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
@@ -70,7 +75,7 @@ void setup() {
   //refresh -> url
   //Light.sv. <- url
   server.on("/refresh", [](){
-    server.send(200, "text/html", GetData("Light" + svet + "/n"));
+    server.send(200, "text/html", GetData(svet + "/n" + zvonok));
   });
 
   server.onNotFound([](){
@@ -84,6 +89,10 @@ void setup() {
 void loop() {
   server.handleClient();
   ArduinoOTA.handle();
+}
+
+void zzin(){
+  zvonok = "call";
 }
 
 
