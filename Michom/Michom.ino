@@ -72,6 +72,11 @@ void setup() {
   server.on("/getligh", [](){
     server.send(200, "text/html", GetData("Light" + svet));
   });
+  //calling -> url
+  //OK <- url
+  server.on("/calling", [](){
+    server.send(200, "text/html", ret("calling"));
+  });
   //refresh -> url
   //Light.sv. <- url
   server.on("/refresh", [](){
