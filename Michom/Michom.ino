@@ -75,6 +75,7 @@ void setup() {
   //calling -> url
   //OK <- url
   server.on("/calling", [](){
+    zzin();
     server.send(200, "text/html", ret("calling"));
   });
   //refresh -> url
