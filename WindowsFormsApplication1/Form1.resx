@@ -206,7 +206,92 @@
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
 </value>
   </data>
+  <metadata name="backgroundWorker2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>498, 13</value>
+  </metadata>
+  <metadata name="serialPort1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>662, 13</value>
+  </metadata>
+  <metadata name="backgroundWorker3.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 52</value>
+  </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>48</value>
   </metadata>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAICAAAAEAIACoEAAAFgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAAMMOAADDDgAAAAAAAAAA
+        AACWiYn//0dT/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ//9H
+        U/+WiYn/lomJ/5aJif//R1P/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/1T/
+        RP9U/0T/VP9E/1T/RP9U/0T/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn//0dT/5aJif+WiYn/lomJ//9HU/+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/VP9E/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif//R1P/lomJ/5aJif+WiYn//0dT/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif9U/0T/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ//9HU/+WiYn/lomJ/5aJif//R1P/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/1T/RP9U/0T/VP9E/1T/RP9U/0T/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn//0dT/5aJif+WiYn//0dT//9HU/+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/VP9E/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif//R1P//0dT//9HU/+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif9U/0T/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/1T/RP9U/0T/VP9E/1T/
+        RP9U/0T/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif9U/0T/lomJ/5aJif+WiYn/VP9E/5aJif+WiYn/lomJ/1T/
+        RP9U/0T/VP9E/1T/RP9U/0T/VP9E/5aJif9U/0T/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/VP9E/1T/RP+WiYn/lomJ/1T/RP+WiYn/lomJ/5aJif9U/0T/lomJ/5aJ
+        if+WiYn/VP9E///8cP///HD///xw///8cP9U/0T/lomJ/1T/RP9U/0T/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/1T/RP9U/0T/lomJ/5aJif+WiYn/VP9E/5aJif+WiYn/lomJ/1T/
+        RP+WiYn/lomJ/5aJif9U/0T///xw/9wc///cHP////xw/1T/RP+WiYn/lomJ/1T/RP9U/0T/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/VP9E/5aJif+WiYn/lomJ/5aJif9U/0T/lomJ/5aJ
+        if+WiYn/VP9E/5aJif+WiYn/lomJ/1T/RP///HD/3Bz//9wc/////HD/VP9E/5aJif+WiYn/lomJ/1T/
+        RP9U/0T/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif9U/0T/lomJ/5aJif+WiYn/lomJ/1T/
+        RP9U/0T/VP9E/1T/RP9U/0T/lomJ/5aJif+WiYn/VP9E///8cP/cHP//3Bz////8cP9U/0T/lomJ/5aJ
+        if+WiYn/lomJ/1T/RP9U/0T/lomJ/5aJif9U/0T/lomJ/5aJif+WiYn/VP9E/1T/RP+WiYn/lomJ/5aJ
+        if+WiYn/VP9E/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif9U/0T///xw/9wc///cHP////xw/1T/
+        RP+WiYn/lomJ/5aJif+WiYn/lomJ/1T/RP+WiYn/lomJ/1T/RP9U/0T/lomJ/5aJif9U/0T/lomJ/5aJ
+        if+WiYn/lomJ/5aJif9U/0T/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/1T/RP///HD/3Bz//9wc
+        /////HD/VP9E/5aJif+WiYn/lomJ/5aJif+WiYn/VP9E/1T/RP9U/0T/VP9E/1T/RP9U/0T/VP9E/1T/
+        RP+WiYn/lomJ/5aJif+WiYn/lomJ/1T/RP+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/VP9E///8
+        cP/cHP//3Bz////8cP9U/0T/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/VP9E/1T/RP+WiYn/lomJ/1T/
+        RP9U/0T/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/VP9E/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if9U/0T///xw///8cP///HD///xw/1T/RP+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/VP9E/5aJ
+        if+WiYn/lomJ/1T/RP+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif9U/0T/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/1T/RP9U/0T/VP9E/1T/RP9U/0T/VP9E/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/3Rq
+        o/+Bdpn/hnuV/4Z7lf+He5T/jYGP/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5KFi/9eVbT/fHGd/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/KSbe/yAe5f8eG+b/Hhvm/x4b5/8ZF+v/FhTs/yIf4/8nI9//JyPf/yYj4P8qJt3/fXKb/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/LCjb/yUh4f8cGuj/GBbs/yAe5f8mIuD/Kyfc/ysn
+        3P8rJ9z/Kyfc/z45zf+WiYn/lomJ/5aJif+WiYn/lomJ/5WIif+QhI3/hHmW/4B1mf+AdZn/gHWZ/1hR
+        uf8uKtr/lIeK/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5GEjP8ZF+v/in6R/5SHif+Lf5H/hXmV/390
+        mv96b57/em+e/3pvnv94baD/dmuh/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/zIu1/9cVLX/lomJ/5aJif9AO8z/Gxnp/4+Djv+WiYn/cmil/ywo2/+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/bmWo/xwZ6P+ViIn/gnaY/xYU7f8+OM3/VE28/5aJif9SS77/SkPE/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+Uh4r/FhTt/31ym/81MNT/WFG5/3Jopf8kIeL/lIeJ/zAs
+        2P90aqP/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/1n2//9Z9v//Wfb//5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif80L9X/QjzK/zMu1v+RhYz/k4aL/yQh
+        4v9XT7r/IB7l/5OGiv+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/Wfb//1n2//9Z9v//lomJ/5aJ
+        if9Z9v//lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/05Hwf8HBvn/dmuh/5aJ
+        if+WiYn/eW+f/yAd5f8sKNz/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif9Z9v//lomJ/5aJ
+        if+WiYn/lomJ/1n2//+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/eG2g/0A6
+        zP+ViIn/lomJ/5aJif+WiYn/S0TD/0dBx/+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/1n2
+        //+WiYn/lomJ/5aJif+WiYn/Wfb//5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJif+WiYn/lomJ/5aJ
+        if+WiYn/Wfb//5aJif+WiYn/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+</value>
+  </data>
 </root>
