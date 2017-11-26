@@ -19,7 +19,7 @@ namespace WindowsFormsApplication1
     public partial class Form1 : Form
     {
         //Settings
-        string[] ips = new string[] {  }; //iPs
+        string[] ips = new string[] { }; //iPs
         //Settings
 
         bool sleep = false;
@@ -41,8 +41,8 @@ namespace WindowsFormsApplication1
         {
             InitializeComponent();
             backgroundWorker1.RunWorkerAsync();
-            backgroundWorker2.RunWorkerAsync();           
-            comboBox1.Items.AddRange(ips);        
+            backgroundWorker2.RunWorkerAsync();
+            comboBox1.Items.AddRange(ips);
         }
 
         private void StartServer(string prefix)
@@ -109,7 +109,7 @@ namespace WindowsFormsApplication1
                     //преобразуем %CC%E0%EA%F1 -> Макс
                     text = System.Web.HttpUtility.UrlDecode(text, Encoding.UTF8);
                     //выводим имя
-           //         MessageBox.Show(text);                   
+                    //         MessageBox.Show(text);                   
                     JObject obj = JObject.Parse(text);
                     /*foreach (var item in obj["data"]["temper"])
                     {
@@ -128,11 +128,11 @@ namespace WindowsFormsApplication1
                             label5.Text = obj["data"]["temper"].ToString() + "C";
                             label6.Text = obj["data"]["humm"].ToString() + "%";
                         }));
-                        
+
                     }
                     if (type == "Sobit")
                     {
-                        tip = obj["data"].ToString();                       
+                        tip = obj["data"].ToString();
                         Invoke(new Action(() =>
                         {
                             Setlog(tip, ip, true);
@@ -146,7 +146,7 @@ namespace WindowsFormsApplication1
                     //останавливаем сервер
                 }
             }
-         }
+        }
 
         public String vibior(string plata)
         {
@@ -155,18 +155,18 @@ namespace WindowsFormsApplication1
             {
                 //Settings
                 case "call": //The name of the device
-                  ip = "192.168.1.0"; //IP device  
-                break;
-                /*
-                case "call":
-                ip = "192.168.1.0";
-                break;
-                ip = "192.168.1.0";
-                case "call":
-                ip = "192.168.1.0";
-                break;
-                */
-                //Settings
+                    ip = "192.168.1.0"; //IP device  
+                    break;
+                    /*
+                    case "call":
+                    ip = "192.168.1.0";
+                    break;
+                    ip = "192.168.1.0";
+                    case "call":
+                    ip = "192.168.1.0";
+                    break;
+                    */
+                    //Settings
             }
             return ip;
         }
@@ -196,13 +196,13 @@ namespace WindowsFormsApplication1
                 Setlog(data, url, false);
             }
             else { MessageBox.Show("Ошибка", "Не все параметры введены"); }
-            
+
         }
 
         public void Refresh(string url)
         {
             webBrowser1.Navigate(new Uri("http://" + url + "/refresh"));
-            System.Threading.Thread.Sleep(1000);            
+            System.Threading.Thread.Sleep(1000);
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -253,15 +253,15 @@ namespace WindowsFormsApplication1
                 foreach (string d in comboBox1.Items)
                 {
                     it += "\"" + d + "\",";
-                    удалитьToolStripMenuItem.DropDownItems.Add(d,image:null);
+                    удалитьToolStripMenuItem.DropDownItems.Add(d, image: null);
 
-                }                
+                }
                 ips = new string[] { it };
                 foreach (string a in ips) { Console.WriteLine(a); }
             }
 
-            Setlog("Starting","OK",false);
-            
+            Setlog("Starting", "OK", false);
+
             //notifyIcon1.ShowBalloonTip(1000, "Привет", "Привет, ты запустил Michom", ToolTipIcon.None);
             timer1.Start();
         }
@@ -276,20 +276,20 @@ namespace WindowsFormsApplication1
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
-            
+
         }
 
         private void notifyIcon1_MouseClick(object sender, EventArgs e)
         {
             ShowBalloonTip();
-            
+
         }
         private void ShowBalloonTip()
         {
             Container bpcomponents = new Container();
             ContextMenu contextMenu1 = new ContextMenu();
 
-            MenuItem runMenu = new MenuItem();       
+            MenuItem runMenu = new MenuItem();
             runMenu.Index = 1;
             runMenu.Text = "Michom";
             runMenu.Click += new EventHandler(runMenu_Click);
@@ -299,7 +299,7 @@ namespace WindowsFormsApplication1
             breakMenu.Text = "Показать погоду";
             breakMenu.Click += new EventHandler(setpog_Click);
 
-            MenuItem sleep = new MenuItem();                                 
+            MenuItem sleep = new MenuItem();
             sleep.Index = 3;
             sleep.Text = "Не беспокоить";
             sleep.Click += new EventHandler(sleep_Click);
@@ -376,7 +376,7 @@ namespace WindowsFormsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+
             string comand = comboBox2.Text;
             string adress = comboBox1.Text;
             SetData(comand, adress);
@@ -387,8 +387,8 @@ namespace WindowsFormsApplication1
             if (richTextBox1.TextLength >= 100000) richTextBox1.Text = "";
             string line;
             if (File.Exists(Directory.GetCurrentDirectory() + "\\log.log"))
-            {            
-            StreamReader sr = new StreamReader(Directory.GetCurrentDirectory() + "\\log.log");
+            {
+                StreamReader sr = new StreamReader(Directory.GetCurrentDirectory() + "\\log.log");
                 line = sr.ReadLine();
 
                 //Continue to read until you reach end of file
@@ -409,7 +409,7 @@ namespace WindowsFormsApplication1
                 {
                     sw.WriteLine(s);
                 }
-                
+
 
                 // sw.WriteLine("From the StreamWriter class");
                 //Close the file
@@ -430,24 +430,24 @@ namespace WindowsFormsApplication1
                 //Close the file
                 sw.Close();
             }
-         }
+        }
 
         private void отчистьтьКонсольToolStripMenuItem_Click(object sender, EventArgs e)
         {
             richTextBox1.Text = null;
-            Setlog("Консоль отчищена","ОК",false);
+            Setlog("Консоль отчищена", "ОК", false);
         }
 
         private void дзыыньToolStripMenuItem_Click(object sender, EventArgs e)
         {
             timer1.Stop();
-            SetData("calling",vibior("call"));
+            SetData("calling", vibior("call"));
             timer1.Start();
         }
 
         private void значнияПогодыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            panel1.Visible = !panel1.Visible;           
+            panel1.Visible = !panel1.Visible;
         }
 
         private void добавитьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -464,8 +464,8 @@ namespace WindowsFormsApplication1
             {
                 it += d;
             }
-            ita = itt + toolStripTextBox2.Text;            
-            ips = new string[] {ita};
+            ita = itt + toolStripTextBox2.Text;
+            ips = new string[] { ita };
             foreach (string a in ips)
             {
                 Console.WriteLine(a);
@@ -491,7 +491,7 @@ namespace WindowsFormsApplication1
                 sr.Close();
 
                 StreamWriter sw = new StreamWriter(Directory.GetCurrentDirectory() + "\\board.cfg");
-                lagg = lagg.Replace(" ", string.Empty);
+                lagg = lagg.Replace("", string.Empty);
                 lagg += Environment.NewLine + toolStripTextBox2.Text;
 
                 string[] words = lagg.Split(new char[] { '\n' });
@@ -530,11 +530,12 @@ namespace WindowsFormsApplication1
 
         private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
         {
+            System.Threading.Thread.Sleep(5000);
             while (true)
             {
                 foreach (string ipr in comboBox1.Items)
                 {
-                    if (dock)
+                    if (!dock)
                     {
                         Invoke(new Action(() =>
                         {
@@ -551,14 +552,7 @@ namespace WindowsFormsApplication1
 
         private void автопоискToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Console.WriteLine(ip_network.FirstUsable); // oпределяем первый IP адрес в подсети.
-            Console.WriteLine(ip_network.LastUsable);
-            IPAddressCollection ipss = IPNetwork.ListIPAddress(ip_network);
-            foreach (var ip in ipss)
-            {
-                backgroundWorker2.CancelAsync();
-                
-            }
+            backgroundWorker4.RunWorkerAsync();
         }
 
         private void соединениеToolStripMenuItem_Click(object sender, EventArgs e)
@@ -574,10 +568,10 @@ namespace WindowsFormsApplication1
             if (toolStripTextBox1.Text != "") serialPort1.PortName = toolStripTextBox1.Text;
             if (toolStripTextBox3.Text != "") serialPort1.BaudRate = Convert.ToInt32(toolStripTextBox3.Text);
             serialPort1.Open();
-                Invoke(new Action(() =>
-                {
-                    Setlog(serialPort1.ReadLine(), serialPort1.PortName, true);
-                }));
+            Invoke(new Action(() =>
+            {
+                Setlog(serialPort1.ReadLine(), serialPort1.PortName, true);
+            }));
             serialPort1.Close();
         }
         private void Closing(object sender, FormClosingEventArgs e)
@@ -586,5 +580,23 @@ namespace WindowsFormsApplication1
             this.ShowInTaskbar = false;
             e.Cancel = true;
         }
+
+
+
+        private void backgroundWorker4_DoWork(object sender, DoWorkEventArgs e)
+        {
+            WebBrowser wb1 = new WebBrowser();
+            Console.WriteLine(ip_network.FirstUsable); // oпределяем первый IP адрес в подсети.
+            Console.WriteLine(ip_network.LastUsable);
+            IPAddressCollection ipss = IPNetwork.ListIPAddress(ip_network);
+            foreach (var ip in ipss)
+            {
+                backgroundWorker2.CancelAsync();
+                wb1.Navigate(new Uri(ip.ToString()));
+            }
+
+        }
+        
     }
 }
+    
