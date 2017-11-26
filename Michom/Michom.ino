@@ -5,18 +5,26 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
+#include "DHT.h"
 
-const char* ssid = "10-KORPUSMG";
-const char* password = "10707707";
+
+#define DHTPIN 14     // what digital pin we're connected to
+#define DHTTYPE DHT11   // DHT 11
+
+const char* ssid = "WIKTOR";
+const char* password = "alesha2005";
+
+const char* id = "sborinfo";
+
+const char* host = "192.168.1.36:8080/say/";
+const char* host1 = "192.168.1.36";
 
 ESP8266WebServer server(80);
-
-String svet = "выкл";
-String zvonok = "0";
-
-const int zvonokpin = 14;
+DHT dht(DHTPIN, DHTTYPE, 15);
 
 void setup() {
+
+  ArduinoOTA.setHostname(id);
   ArduinoOTA.onStart([]() {
     Serial.println("Start");
   });
@@ -40,9 +48,6 @@ void setup() {
   WiFi.begin(ssid, password);
   Serial.println("");
 
-  pinMode(zvonokpin, INPUT);
-  attachInterrupt(14, zzin, RISING);
-
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -59,46 +64,94 @@ void setup() {
   }
 
    server.on("/", [](){
-    server.send(200, "text/html", "Helloy World");
-  });
-  //setligh -> url
-  //...light <- url
-  server.on("/setligh", [](){  
-    if(svet == "вкл"){server.send(200, "text/html", ret("Off light")); svet = "выкл";}
-    else {server.send(200, "text/html", ret("On light")); svet = "вкл";}
-  });
-  //getligh -> url
-  //Light... <- url
-  server.on("/getligh", [](){
-    server.send(200, "text/html", GetData("Light" + svet));
-  });
-  //calling -> url
-  //OK <- url
-  server.on("/calling", [](){
-    zzin();
-    server.send(200, "text/html", ret("calling"));
+    server.send(404, "text/html", "Not found");
   });
   //refresh -> url
   //Light.sv. <- url
-  server.on("/refresh", [](){
-    server.send(200, "text/html", GetData(svet + "/n" + zvonok));
+  server.on("/refresh", [](){ 
+    server.send(200, "text/html", "OK");
+    conn();
+  });
+
+  server.on("/restart", [](){ 
+    server.send(200, "text/html", "OK");
+    ESP.reset();
+  });
+
+  server.on("/getid", [](){ 
+    server.send(200, "text/html", (String)id);
   });
 
   server.onNotFound([](){
-    server.send(200, "text/html", GetData("Not found"));
+    server.send(200, "text/html", "Not found");
   });
 
   server.begin();
   Serial.println("HTTP server started");
+  conn();
 }
+
+
+
+
+void conn(){
+  Serial.print("connecting to ");
+  Serial.println(host);
+  
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+  const int httpPort = 8080;
+  if (!client.connect(host1, httpPort)) {
+    Serial.println("connection failed");
+    return;
+  }
+  
+  // We now create a URI for the request
+  /*String url = "/say/";
+  url += streamId;
+  url += "?private_key=";
+  url += privateKey;
+  url += "&value=";
+  url += value;*/
+  
+  Serial.print("Requesting URL: ");
+  Serial.println(host);
+
+  String lengt = (String)parsejson("DHT", "").length(); 
+  
+  // This will send the request to the server
+  client.print(String("POST ") + "http://192.168.1.36:8080/say/" + " HTTP/1.1\r\n" +
+               "Host: " + "192.168.1.36:8080" + "\r\n" + 
+               "Content-Length: " + lengt + "\r\n" +
+               "Connection: close\r\n\r\n" +
+               parsejson("DHT", ""));
+  unsigned long timeout = millis();
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
+    }
+  }
+  
+  // Read all the lines of the reply from server and print them to Serial
+  while(client.available()){
+    String line = client.readStringUntil('\r');
+    Serial.print(line);
+  }
+  
+  Serial.println();
+  Serial.println("closing connection");
+  //client = null;
+  lengt = "";
+}
+
+
+
 
 void loop() {
   server.handleClient();
   ArduinoOTA.handle();
-}
-
-void zzin(){
-  zvonok = "call";
 }
 
 
