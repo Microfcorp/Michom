@@ -12,17 +12,8 @@ while($row = $results->fetch_assoc()) {
 	$vlazn = $row['humm'];
 	$davlenie = $row['dawlen'];
 	$date = $row['date'];
-	//echo date("Y-m-d H:i:s", $date);
 	}
-}
-/*
-$curdate = date("i", $date);
-
-$time = date("i");
- 
-echo date("i", $time - $curdate) . "\n";*/
-	
-	//$sleddate = date_parse($date)['minute'] - $curdate;	
+}	
 	?>
 <!Doctype html>
 <html>
@@ -108,13 +99,13 @@ while($row = $results->fetch_assoc()) {
 	<tbody>
 	<tr>
 	<td>
-	<img style="-webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);" src="http://192.168.1.42/michome/grafick.php?type=temp">
+	<img style="-webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);" src="grafick.php?type=temp">
 	</td>
     <td>	
-	<img style="-webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);" src="http://192.168.1.42/michome/grafick.php?type=humm">
+	<img style="-webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);" src="grafick.php?type=humm">
 	</td>
 	<td>	
-	<img style="-webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);" src="http://192.168.1.42/michome/grafick.php?type=dawlen">
+	<img style="-webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);" src="grafick.php?type=dawlen">
 	</td>
 	</tr>
 	</tbody>
