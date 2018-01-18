@@ -11,13 +11,19 @@
 #define DHTPIN 14     // what digital pin we're connected to
 #define DHTTYPE DHT11   // DHT 11
 
-const char* ssid = "WIKTOR";
-const char* password = "alesha2005";
+/////////настройки//////////////
+const char* ssid = "10-KORPUSMG";
+const char* password = "10707707";
 
-const char* id = "sborinfo";
+const char* id = "sborinfo_tv";
+const char* type = "msinfoo";
+/////////настройки//////////////
 
-const char* host = "192.168.1.36:8080/say/";
-const char* host1 = "192.168.1.36";
+const char* host = "192.168.1.42/michome/getpost.php";
+const char* host1 = "192.168.1.42";
+
+long previousMillis = 0;   // здесь будет храниться время последнего изменения состояния светодиода 
+long interval = 600000; 
 
 ESP8266WebServer server(80);
 DHT dht(DHTPIN, DHTTYPE, 15);
@@ -82,6 +88,10 @@ void setup() {
     server.send(200, "text/html", (String)id);
   });
 
+  server.on("/gettype", [](){ 
+    server.send(200, "text/html", (String)type);
+  });
+
   server.onNotFound([](){
     server.send(200, "text/html", "Not found");
   });
@@ -100,7 +110,7 @@ void conn(){
   
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
-  const int httpPort = 8080;
+  const int httpPort = 80;
   if (!client.connect(host1, httpPort)) {
     Serial.println("connection failed");
     return;
@@ -114,17 +124,20 @@ void conn(){
   url += "&value=";
   url += value;*/
   
-  Serial.print("Requesting URL: ");
-  Serial.println(host);
+  String dataaaa = parsejson("msinfoo", "");
 
-  String lengt = (String)parsejson("DHT", "").length(); 
+  Serial.print("Data: ");
+  Serial.println(dataaaa);
+
+  String lengt = (String)dataaaa.length(); 
   
   // This will send the request to the server
-  client.print(String("POST ") + "http://192.168.1.36:8080/say/" + " HTTP/1.1\r\n" +
-               "Host: " + "192.168.1.36:8080" + "\r\n" + 
+  client.print(String("POST ") + "http://192.168.1.42/michome/getpost.php" + " HTTP/1.1\r\n" +
+               "Host: " + "192.168.1.42" + "\r\n" + 
                "Content-Length: " + lengt + "\r\n" +
+               "Content-Type: application/x-www-form-urlencoded \r\n" +
                "Connection: close\r\n\r\n" +
-               parsejson("DHT", ""));
+               "6=" + dataaaa);
   unsigned long timeout = millis();
   while (client.available() == 0) {
     if (millis() - timeout > 5000) {
@@ -152,7 +165,12 @@ void conn(){
 void loop() {
   server.handleClient();
   ArduinoOTA.handle();
-}
 
+  if (millis() - previousMillis > interval) {
+    previousMillis = millis();   // запоминаем текущее время
+    // если светодиод был выключен – включаем и наоборот :)
+    conn();
+  }
+}
 
 

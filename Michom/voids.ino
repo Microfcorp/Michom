@@ -4,16 +4,12 @@ String parsejson(String type, String data){
   temp += "\"ip\": \"" + WiFi.localIP().toString() + "\",";
   temp += "\"type\":";
   temp += "\"" + type + "\",";
-  if(type == "DHT"){    
+  if(type == "msinfoo"){    
   temp += "\"data\": {";
+  temp += "\"davlen\": \"NOT CONNECTED\",";
   temp += "\"temper\": \"" + String(dht.readTemperature()) + "\",";
-  temp += "\"humm\": \"" + String(dht.readHumidity()) + "\"";
-  temp += "}";
+  temp += "\"humm\": \"" + String(dht.readHumidity()) + "\" } } \r\n";
   }
-  temp += "}"; 
   return temp; 
 }
-
-
-
 
