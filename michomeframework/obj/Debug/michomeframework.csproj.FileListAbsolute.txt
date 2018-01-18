@@ -1,0 +1,7 @@
+C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\bin\Debug\michomeframework.dll
+C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\bin\Debug\michomeframework.pdb
+C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\obj\Debug\michomeframework.csprojResolveAssemblyReference.cache
+C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\obj\Debug\michomeframework.dll
+C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\obj\Debug\michomeframework.pdb
+C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\bin\Debug\Newtonsoft.Json.dll
+C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\bin\Debug\Newtonsoft.Json.xml
