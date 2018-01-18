@@ -574,7 +574,7 @@ namespace WindowsFormsApplication1
             }));
             serialPort1.Close();
         }
-        private void Closing(object sender, FormClosingEventArgs e)
+        private new void Closing(object sender, FormClosingEventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
             this.ShowInTaskbar = false;
