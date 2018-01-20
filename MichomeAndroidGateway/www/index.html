@@ -1,0 +1,234 @@
+<!Doctype html>
+<html>
+<head>
+    <title>Управление Michome</title>
+	    	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.5.0-alpha.1/jquery.mobile-1.5.0-alpha.1.min.css" />
+<script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.5.0-alpha.1/jquery.mobile-1.5.0-alpha.1.min.js"></script>
+<!--     <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+ -->
+
+ <script type="text/javascript">
+
+	//var caz = document.getElementById("cazestvo").value;
+	function createXMLHttp() {
+        if (typeof XMLHttpRequest != "undefined") { // для браузеров аля Mozilla
+            return new XMLHttpRequest();
+        } else if (window.ActiveXObject) { // для Internet Explorer (all versions)
+            var aVersions = [
+                "MSXML2.XMLHttp.5.0",
+                "MSXML2.XMLHttp.4.0",
+                "MSXML2.XMLHttp.3.0",
+                "MSXML2.XMLHttp",
+                "Microsoft.XMLHttp"
+            ];
+            for (var i = 0; i < aVersions.length; i++) {
+                try {
+                    var oXmlHttp = new ActiveXObject(aVersions[i]);
+                    return oXmlHttp;
+                } catch (oError) {}
+            }
+            throw new Error("Невозможно создать объект XMLHttp.");
+        }
+    }
+
+// фукнция Автоматической упаковки формы любой сложности
+function getRequestBody(oForm) {
+    var aParams = new Array();
+    for (var i = 0; i < oForm.elements.length; i++) {
+        var sParam = encodeURIComponent(oForm.elements[i].name);
+        sParam += "=";
+        sParam += encodeURIComponent(oForm.elements[i].value);
+        aParams.push(sParam);
+    }
+    return aParams.join("&");
+}
+// функция Ajax POST
+function postAjax(url, oForm, callback) {
+    // создаем Объект
+    var oXmlHttp = createXMLHttp();
+    // получение данных с формы
+    var sBody = oForm;
+    // подготовка, объявление заголовков
+    oXmlHttp.open("POST", url, true);
+    oXmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	//oXmlHttp.addHeader("Access-Control-Allow-Origin", "*");
+    // описание функции, которая будет вызвана, когда придет ответ от сервера
+    oXmlHttp.onreadystatechange = function() {
+        if (oXmlHttp.readyState == 4) {
+            if (oXmlHttp.status == 200) {
+                callback(oXmlHttp.responseText);
+            } else {
+                callback('error' + oXmlHttp.statusText);
+            }
+        }
+    };
+    // отправка запроса, sBody - строка данных с формы
+    oXmlHttp.send(sBody);
+}
+
+function SendPost() {
+    postAjax('http://91.202.27.167/michome/api/getdata.php?cmd=posledob', "", showResult);
+    postAjax('http://91.202.27.167/michome/api/getdevice.php', "", addop);
+	
+	postAjax('http://91.202.27.167/michome/api/getdata.php?cmd=temper', "", gettemp);
+	postAjax('http://91.202.27.167/michome/api/getdata.php?cmd=humm', "", gethumm);
+	postAjax('http://91.202.27.167/michome/api/getdata.php?cmd=dawlen', "", getdawlen);
+}
+var ia = "";
+
+function gettemp(d){
+	var data = JSON.parse(d);
+
+    var temp = '';
+
+    for (var i in data.data) {
+        temp = data.data[i];
+    }
+
+    document.getElementById('curtemp').innerHTML = "Текущая температура " + temp + "С";
+}
+function gethumm(d){
+	var data = JSON.parse(d);
+
+    var temp = '';
+
+    for (var i in data.data) {
+        temp = data.data[i];
+    }
+
+    document.getElementById('curhumm').innerHTML = "Текущая влажность " + temp + "%";
+}
+function getdawlen(d){
+	var data = JSON.parse(d);
+
+    var temp = '';
+
+    for (var i in data.data) {
+        temp = data.data[i];
+    }
+
+    document.getElementById('curdawlen').innerHTML = "Текущее давление " + temp + " мм.рт";
+}
+
+function showResult(d){
+	ia = d;
+	document.getElementById("poslob").innerHTML = 'Последнее обновление было ' + ia;
+}
+function addop(d) {
+    var data = JSON.parse(d);
+
+    var list = '';
+
+    for (var i in data.ips) {
+        list += '<option value="' + data.ips[i] + '">' + data.ips[i] + ' (' + data.devicename[i] + ')' + ' (' + data.devicetype[i] + ')' + ' </option>';
+    }
+
+    document.getElementById('select').innerHTML += list;
+}
+
+function GetData()
+  {
+     // получаем индекс выбранного элемента
+  	 var selind = document.getElementById("select").options.selectedIndex;
+   var txt= document.getElementById("textcmd").value;
+   var val= document.getElementById("select").options[selind].value;
+
+   postAjax('http://91.202.27.167/michome/api/setcmd.php?device='+ val +'&cmd='+ txt, "", function(d){document.getElementById("cmdresult").innerHTML = d;});;
+  }
+
+	var x = new Date().getMinutes();
+
+			function backTimer() {
+			window.setTimeout("backTimer()",100);
+				var j = document.getElementById('sledob');
+				var i = new Date(ia).getMinutes();
+				if(i < x) {
+					j.innerHTML = "Следующие обновление будет через: " + String(((x - i)) - 10).substr(1) + " минут";
+					setTimeout(backTimer, 500);
+				} else {
+					j.innerHTML = "Обновление";
+				}
+			}
+
+	function time(){
+window.setTimeout("time()",1000);
+Data = new Date();
+Year = Data.getFullYear();
+Month = Data.getMonth();
+Day = Data.getDate();
+Hour = Data.getHours();
+Minutes = Data.getMinutes();
+Seconds = Data.getSeconds();
+document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' ' + Hour + ":" + Minutes + ':' + Seconds;
+
+	}
+	
+
+	window.setTimeout("time()",1000);
+	window.setTimeout("backTimer()",100);
+	window.setTimeout("SendPost()",1000);
+    </script>
+ 
+ <style>
+ div.page-container {
+  max-width: 75%;
+  min-width: 960px;
+  margin: 0 auto;
+  padding: 0;
+  }
+
+div.page-container-inner {
+  min-width: 960px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0;
+  }
+ </style>
+ 
+ </head>
+
+<body>
+    <div data-role="page">
+  <div data-role="header">
+  <h1 style="text-align: center; color:red;">Управление Michome</h1>
+  <a href="#settings" data-icon="gear" class="ui-btn-right">Options</a>
+  <div style="float: right;">
+        <p id='datetime'>Текущая дата</p>
+        <p id="poslob">Последнее обновление было:</p>
+        <p id='sledob'>Следующие бновление будет через: минут</p>
+    </div>
+  </div>
+  <div data-role="content">   
+
+	<div>
+	
+        <H4>Отправить команду:</H4>
+        <form>
+		<p>Команда: </p> 
+		<input type="text" id="textcmd" style="" name="cmd" />
+		<p> На: </p> 				 				           
+		<script>
+		document.write('<select name="select" id="select">  ');
+		document.write('<option value="91.202.27.167">91.202.27.167 (Gateway) (Gateway)</option></select>');
+		</script>
+			
+        <input name="sendcmd" value="Отправить" OnClick="GetData()" type="button" />
+		<input name="sendcmd" value="Обновить данные" OnClick="SendPost()" type="button" />
+        </form>
+        <span id="cmdresult"></span>
+    </div>
+    <div>
+        <p id="curtemp">Текущая тепература: </p>
+        <p id="curhumm">Текущая влажность: %</p>
+        <p id="curdawlen">Текущие давление: мм.рт</p>
+    </div>
+    <div>
+     <img src="http://91.202.27.167/michome/grafick.php?type=temp">
+     <img src="http://91.202.27.167/michome/grafick.php?type=humm">
+     <img src="http://91.202.27.167/michome/grafick.php?type=dawlen">
+	</div>
+	</div>
+	</div>
+</body>
+</html>
