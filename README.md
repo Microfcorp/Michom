@@ -4,9 +4,15 @@ Michome is the system smart home. It consists of modules. Each module works inde
 Description of folders: 
 
 WindowsFormApplication1 - Console for windows. 
+
 Michom - the firmware for the modules. 
+
 Michomeclient - program to work through a gateway and framework 
+
 Gateway - scripts gateway 
+
+MichomeAndroidGateway - application for Android with Apache Cordova
+
 Michomeframework framework to work through the gateway 
 
 
