@@ -15,13 +15,13 @@ MichomeAndroidGateway - application for Android with Apache Cordova
 
 Michomeframework framework to work through the gateway 
 
-
+<br>
 
 Description of the library/framework (only through a gateway): 
 
-michomeframework.Gateway gtw = new michomeframework.Gateway() //initialization of an object; 
+michomeframework.Gateway gtw = new michomeframework.Gateway(); //initialization of an object 
 
-gtw.Connect(string ip) //connect to the gateway by ip address (***.***.***.***); 
+gtw.Connect(string ip); //connect to the gateway by ip address (***.***.***.***); 
 
 gtw.Disconnect(); //disconnect from the gateway 
 
