@@ -1,4 +1,5 @@
 <?
+header('Access-Control-Allow-Origin: *');
 include_once("/var/www/html/site/mysql.php");
 $num = 0;
 $results = mysqli_query($link, "SELECT DISTINCT ip FROM michom");

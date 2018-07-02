@@ -16,7 +16,14 @@
 	$temper = "";
 	$vlazn = "";
 	$davlenie = "";
-	$results = mysqli_query($link, "SELECT * FROM michom");
+	
+	if($_GET['type'] == "tempul"){
+		$results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.45'");
+	}
+	else{
+		$results = mysqli_query($link, "SELECT * FROM michom WHERE type='msinfoo'");
+	}
+	
 
 while($row = $results->fetch_assoc()) {
 	if($_GET['type'] == "temp"){
@@ -27,6 +34,11 @@ while($row = $results->fetch_assoc()) {
 	elseif($_GET['type'] == "humm"){
 		if($row['humm'] != ""){
     $data[] = $row['humm'];
+	}
+	}
+	elseif($_GET['type'] == "tempul"){
+		if($row['temp'] != ""){
+    $data[] = $row['temp'];
 	}
 	}
 	else{
@@ -51,8 +63,8 @@ while($row = $results->fetch_assoc()) {
     $data[] = '47.24';*/
  
     //параметры изображения  
-    $width   = 500; //ширина
-    $height  = 300; //высота
+    $width   = 540; //ширина
+    $height  = 304; //высота
     $padding = 15;  //отступ от края 
     $step = 0.5;      //шаг координатной сетки
  

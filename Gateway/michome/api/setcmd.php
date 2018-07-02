@@ -1,4 +1,5 @@
 <?
+header('Access-Control-Allow-Origin: *');
 $device = $_GET['device'];
 $cmd = $_GET['cmd'];
 
