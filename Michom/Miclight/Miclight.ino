@@ -88,6 +88,12 @@ void setup() {
   server.on("/gettype", [](){ 
     server.send(200, "text/html", (String)type);
   });
+  
+  server.on("/getnameandid", [](){
+    String tmpe = (String)id + "/n" + (String)type;
+    server.send(200, "text/html", tmpe);
+  });
+
 
   server.on("/pinon", [](){ 
     server.send(200, "text/html", "OK");
