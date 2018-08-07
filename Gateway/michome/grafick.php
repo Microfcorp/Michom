@@ -16,34 +16,70 @@
 	$temper = "";
 	$vlazn = "";
 	$davlenie = "";
+		
 	
 	if($_GET['type'] == "tempul"){
-		$results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.45'");
+		if(!empty($_GET['period'])){
+		  $period = $_GET['period']; //144-oneday		
+		  $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.45' ORDER BY id DESC LIMIT " . $period);
+		}
+		else{
+		   $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.45'");
+		}
 	}
 	else{
+		if(!empty($_GET['period'])){
+			$results = mysqli_query($link, "SELECT * FROM michom WHERE type='msinfoo' ORDER BY id DESC LIMIT " . $_GET['period']);
+		}
+		else{
 		$results = mysqli_query($link, "SELECT * FROM michom WHERE type='msinfoo'");
+		}
 	}
 	
 
 while($row = $results->fetch_assoc()) {
 	if($_GET['type'] == "temp"){
 		if($row['temp'] != ""){
-    $data[] = $row['temp'];
+    $data1[] = $row['temp'];
+	if(!empty($_GET['period'])){
+				$data = array_reverse($data1);
+			}
+			else{
+				$data = $data1;
+			}
 	}
 	}
 	elseif($_GET['type'] == "humm"){
 		if($row['humm'] != ""){
-    $data[] = $row['humm'];
+    $data1[] = $row['humm'];
+	if(!empty($_GET['period'])){
+				$data = array_reverse($data1);
+			}
+			else{
+				$data = $data1;
+			}
 	}
 	}
 	elseif($_GET['type'] == "tempul"){
 		if($row['temp'] != ""){
-    $data[] = $row['temp'];
+    $data1[] = $row['temp'];
+			if(!empty($_GET['period'])){
+				$data = array_reverse($data1);
+			}
+			else{
+				$data = $data1;
+			}
 	}
 	}
 	else{
 		if($row['dawlen'] != ""){
-    $data[] = $row['dawlen'];
+    $data1[] = $row['dawlen'];
+	if(!empty($_GET['period'])){
+				$data = array_reverse($data1);
+			}
+			else{
+				$data = $data1;
+			}
 	}
 	}
 }
@@ -64,7 +100,7 @@ while($row = $results->fetch_assoc()) {
  
     //параметры изображения  
     $width   = 540; //ширина
-    $height  = 304; //высота
+    $height  = 304 + 21; //высота
     $padding = 15;  //отступ от края 
     $step = 0.5;      //шаг координатной сетки
  
@@ -76,11 +112,12 @@ while($row = $results->fetch_assoc()) {
     $bgcolor = ImageColor($im, array('r'=>255, 'g'=>255, 'b'=>255)); 
     $color = ImageColor($im, array('b'=>175)); 
     $green = ImageColor($im, array('g'=>175)); 
-    $gray = ImageColor($im, array('r'=>175, 'g'=>175, 'b'=>175)); 
+    $gray = ImageColor($im, array('r'=>175, 'g'=>175, 'b'=>175));
+    $maxmin = ImageColor($im, array('r'=>3, 'g'=>104, 'b'=>58));	
  
     //определяем область отображения графика
     $gwidth  = $width - 2 * $padding; 
-    $gheight = $height - 2 * $padding; 
+    $gheight = ($height - 21) - 2 * $padding; 
  
     //вычисляем минимальное и максимальное значение  
     $min = min($data) - 0.5;
@@ -116,8 +153,13 @@ while($row = $results->fetch_assoc()) {
       ImageLine($im, $x1, $y1, $x2, $y2, $color);
       ImageLine($im, $x1 + 1, $y1, $x2 + 1, $y2, $color);
     }
+	
+	$SrAr = array_sum($data)/count($data);
+	
+	ImageTTFText($im, 10, 0, 10, $height - 21, $maxmin, "/var/www/html/site/Verdana.ttf", "Максимальным значением на графике " . max($data) . "C. Минимальное " . min($data) . "C.\nАмплитуда равна " . (max($data) - min($data)) . "C. Средняя температура равна ".substr($SrAr,0,5)."C.");
  
     //Отдаем полученный график браузеру, меняя заголовок файла
     header ("Content-type: image/png");	
     ImagePng ($im);
+	imagedestroy($im);
 ?>

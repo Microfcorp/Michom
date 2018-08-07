@@ -9,6 +9,7 @@
 	$davlenie = "";
 	$davlenie2 = "";
 	$date = "";
+	$alarm = "";
 	$results = mysqli_query($link, "SELECT * FROM michom ");
 	
 	
@@ -35,6 +36,23 @@ while($row = $results->fetch_assoc()) {
 	$davlenie2 = $row['humm'];
 	//echo date("Y-m-d H:i:s", $date);
 	}
+	if($row['type'] == "hdc1080andAlarm"){
+    $temper2 = $row['temp'];
+	$davlenie2 = $row['humm'];
+	if($row['data'] == "Alarm"){
+	$alarm = "<p style='color:red;'>Внимание! Проникновение</p>";
+	}
+	elseif($row['data'] == "OK"){
+	$alarm = "<p style='color:green;'>Дверь закрыта охрана установлена</p>";
+	}
+	elseif($row['data'] == "null"){
+	$alarm = "<p style='color:green;'>Охрана снята. Дверь открыта</p>";
+	}
+	elseif($row['data'] == "nullok"){
+	$alarm = "<p style='color:green;'>Охрана снята. Дверь закрыта</p>";
+	}
+	//echo date("Y-m-d H:i:s", $date);
+	}
 }
 /*
 $curdate = date("i", $date);
@@ -58,7 +76,7 @@ echo date("i", $time - $curdate) . "\n";*/
 	<p id='datetime'>Текущая дата</p>
 	<p>Последнее обновление было: <? echo $date; ?></p>
 	<p id='sledob'>Следующие бновление будет через: 0 минут</p>
-	<a href="/michome/room.php">Комнаты</a>
+	<a href="/michome/room.php">Комнаты</a><a href="/michome/calendar.php">Календарь информации</a>
 	</div>
 	
 	    <script type="text/javascript">
@@ -212,8 +230,9 @@ while($row = $results->fetch_assoc()) {
 	<p>Текущее давление: <?echo $davlenie;?> мм.рт</p>
 	<p>Текущая температура в ремянке: <?echo $temper2;?>С</p>
 	<p>Текущая влажность в ремянке: <?echo $davlenie2;?>%</p>
+	<? echo($alarm);?>
 	<!--<p>Текущая высота: <?echo $visot;?> м</p>-->
-	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul"/></span></a>
+	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&period=144"/></span></a>
 	<p><?//include_once("prognoz.php");?></p>
 	</div>
 	</div>

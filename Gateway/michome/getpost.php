@@ -52,6 +52,14 @@ elseif($type == "hdc1080"){
 	$guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', '$ip', 'hdc1080','null','$temper','$humm','','','$date')"; 
 	$result = mysqli_query($link, $guery);
 }
+elseif($type == "hdc1080andAlarm"){	
+	$temper = $obj->{'data'}->{'temper'};
+	$humm = $obj->{'data'}->{'humm'};
+	$status = $obj->{'data'}->{'butt'};
+
+	$guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', '$ip', 'hdc1080andAlarm','$status','$temper','$humm','','','$date')"; 
+	$result = mysqli_query($link, $guery);
+}
 elseif($type == "get_light_status"){	
 	$status = $obj->{'data'}->{'status'};
 
