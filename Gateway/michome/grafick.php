@@ -20,16 +20,26 @@
 	
 	if($_GET['type'] == "tempul"){
 		if(!empty($_GET['period'])){
-		  $period = $_GET['period']; //144-oneday		
-		  $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.45' ORDER BY id DESC LIMIT " . $period);
+		  $period = $_GET['period']; //144-oneday				  
+		  if(!empty($_GET['start'])){
+			  $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.11' AND `id` >= ".$_GET['start']." AND `id` <= (".$_GET['start']." + ".$period.") ORDER BY id DESC LIMIT " . $period);
+		  }
+		  else{
+			  $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.11' ORDER BY id DESC LIMIT " . $period);
+		  }
 		}
 		else{
-		   $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.45'");
+		   $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.11'");
 		}
 	}
 	else{
 		if(!empty($_GET['period'])){
+		  if(!empty($_GET['start'])){
+			  $results = mysqli_query($link, "SELECT * FROM michom WHERE type='msinfoo' AND `id` >= ".$_GET['start']." AND `id` <= (".$_GET['start']." + ".$period.") ORDER BY id DESC LIMIT " . $period);
+		  }
+		  else{
 			$results = mysqli_query($link, "SELECT * FROM michom WHERE type='msinfoo' ORDER BY id DESC LIMIT " . $_GET['period']);
+		  }
 		}
 		else{
 		$results = mysqli_query($link, "SELECT * FROM michom WHERE type='msinfoo'");
@@ -83,20 +93,6 @@ while($row = $results->fetch_assoc()) {
 	}
 	}
 }
-	
-	
-    /*$data[] = '60.00';
-    $data[] = '58.72';
-    $data[] = '60.74';
-    $data[] = '54.30';
-    $data[] = '57.95';
-    $data[] = '61.47';
-    $data[] = '63.78';
-    $data[] = '56.07';
-    $data[] = '52.67';
-    $data[] = '6.07';
-    $data[] = '45.26';
-    $data[] = '47.24';*/
  
     //параметры изображения  
     $width   = 540; //ширина
@@ -156,7 +152,7 @@ while($row = $results->fetch_assoc()) {
 	
 	$SrAr = array_sum($data)/count($data);
 	
-	ImageTTFText($im, 10, 0, 10, $height - 21, $maxmin, "/var/www/html/site/Verdana.ttf", "Максимальным значением на графике " . max($data) . "C. Минимальное " . min($data) . "C.\nАмплитуда равна " . (max($data) - min($data)) . "C. Средняя температура равна ".substr($SrAr,0,5)."C.");
+	ImageTTFText($im, 10, 0, 10, $height - 21, $maxmin, "/var/www/html/site/Verdana.ttf", "Максимальным значением на графике " . max($data) . "C. Минимальное " . min($data) . "C.\nАмплитуда равна " . substr((max($data) - min($data)),0,4) . "C. Средняя температура равна ".substr($SrAr,0,5)."C.");
  
     //Отдаем полученный график браузеру, меняя заголовок файла
     header ("Content-type: image/png");	

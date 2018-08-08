@@ -232,7 +232,7 @@ while($row = $results->fetch_assoc()) {
 	<p>Текущая влажность в ремянке: <?echo $davlenie2;?>%</p>
 	<? echo($alarm);?>
 	<!--<p>Текущая высота: <?echo $visot;?> м</p>-->
-	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&period=144"/></span></a>
+	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=oneday");?>"/></span></a>
 	<p><?//include_once("prognoz.php");?></p>
 	</div>
 	</div>
