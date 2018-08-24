@@ -1,4 +1,3 @@
-<?php include_once("/var/www/html/site/secur.php"); ?>
 <?
 include_once("/var/www/html/site/mysql.php");
 

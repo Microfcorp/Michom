@@ -142,5 +142,23 @@ while($row = $results->fetch_assoc()) {
 );
 echo json_encode( $cart );
 }
+elseif($cmd == "visota"){
+		$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$device);
+
+while($row = $results->fetch_assoc()) {
+    $data[] = $row['visota'];
+	$date[] = $row['date'];
+	$num = $num + 1;
+	}
+		$cart = array(
+  "name" => "getdata",
+  "type" => $cmd,
+  "col" => $num,
+  "device" => $device,
+  "data" => $data,
+  "date" => $date
+);
+echo json_encode( $cart );
+}
 
 ?>
