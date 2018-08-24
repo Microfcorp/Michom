@@ -1,3 +1,4 @@
+<?php include_once("/var/www/html/site/secur.php"); ?>
 <?
 include_once("/var/www/html/site/mysql.php");
 
@@ -11,7 +12,7 @@ include_once("/var/www/html/site/mysql.php");
 // $z_wind текущее направление ветра в английской системе координат типа N, NNW, NW и т.д.
 // $z_trend изменения в атмосферном давлении: 0 = не меняется, 1 = растет, 2 = снижается
 
-function betel_cast( $z_hpa = 740, $z_month = 4, $z_wind = "W", $z_trend = 2, $z_where = 1, $z_baro_top = 1050, $z_baro_bottom = 950, $wh_temp_out = 9)
+function betel_cast( $z_hpa = 740, $z_month = 4, $z_wind = "W", $z_trend = 2, $z_where = 1, $z_baro_top = 1005, $z_baro_bottom = 950, $wh_temp_out = 9)
 {
 
 $z_forecast_uk = Array("Settled fine", "Fine weather", "Becoming fine", "Fine,
@@ -224,7 +225,7 @@ else
     $pressure_trend_text = "Не меняется";
 }
 
-$forecast = betel_cast($abs_pressure, date('n'), $wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)], $pressure_trend, 1, 1050, 950, $temp);
+$forecast = betel_cast($abs_pressure, date('n'), $wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)], $pressure_trend, 1, 1005, 950, $temp);
 
 echo "Направление ветра: ".$wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)]."<br>";
 echo "Скорость ветра: ".$pogod->{'wind'}->{'speed'}." м/с<br>";

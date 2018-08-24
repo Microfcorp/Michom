@@ -1,4 +1,5 @@
 <?php include_once("/var/www/html/site/mysql.php"); ?>
+<?php include_once("/var/www/html/site/secur.php"); ?>
 <?
 $temp1 = "";
 $temp2 = "";

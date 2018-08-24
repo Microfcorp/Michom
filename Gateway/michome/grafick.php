@@ -1,3 +1,4 @@
+<?php include_once("/var/www/html/site/secur.php"); ?>
 <?php include_once("/var/www/html/site/mysql.php"); ?>
 <?
 //вспомогательная функция для определения цвета
@@ -11,12 +12,9 @@
       );
     }
  
+    $par = "C";
+ 
     //определим массив с данными, которые необходимо вывести в виде графика.
-		
-	$temper = "";
-	$vlazn = "";
-	$davlenie = "";
-		
 	
 	if($_GET['type'] == "tempul"){
 		if(!empty($_GET['period'])){
@@ -49,6 +47,7 @@
 
 while($row = $results->fetch_assoc()) {
 	if($_GET['type'] == "temp"){
+		$par = "C";
 		if($row['temp'] != ""){
     $data1[] = $row['temp'];
 	if(!empty($_GET['period'])){
@@ -60,6 +59,7 @@ while($row = $results->fetch_assoc()) {
 	}
 	}
 	elseif($_GET['type'] == "humm"){
+		$par = "%";
 		if($row['humm'] != ""){
     $data1[] = $row['humm'];
 	if(!empty($_GET['period'])){
@@ -71,6 +71,7 @@ while($row = $results->fetch_assoc()) {
 	}
 	}
 	elseif($_GET['type'] == "tempul"){
+		$par = "C";
 		if($row['temp'] != ""){
     $data1[] = $row['temp'];
 			if(!empty($_GET['period'])){
@@ -81,8 +82,21 @@ while($row = $results->fetch_assoc()) {
 			}
 	}
 	}
+	elseif($_GET['type'] == "visota"){
+		$par = "М";
+		if($row['visota'] != ""){
+    $data1[] = $row['visota'];
+			if(!empty($_GET['period'])){
+				$data = array_reverse($data1);
+			}
+			else{
+				$data = $data1;
+			}
+	}
+	}
 	else{
 		if($row['dawlen'] != ""){
+			$par = "мм";
     $data1[] = $row['dawlen'];
 	if(!empty($_GET['period'])){
 				$data = array_reverse($data1);
@@ -152,7 +166,7 @@ while($row = $results->fetch_assoc()) {
 	
 	$SrAr = array_sum($data)/count($data);
 	
-	ImageTTFText($im, 10, 0, 10, $height - 21, $maxmin, "/var/www/html/site/Verdana.ttf", "Максимальным значением на графике " . max($data) . "C. Минимальное " . min($data) . "C.\nАмплитуда равна " . substr((max($data) - min($data)),0,4) . "C. Средняя температура равна ".substr($SrAr,0,5)."C.");
+	ImageTTFText($im, 10, 0, 10, $height - 21, $maxmin, "/var/www/html/site/Verdana.ttf", "Максимальное значение на графике " . max($data) . $par.". Минимальное " . min($data) . $par.".\nАмплитуда равна " . substr((max($data) - min($data)),0,4) . $par.". Среднее значение равно ".substr($SrAr,0,5). $par.".");
  
     //Отдаем полученный график браузеру, меняя заголовок файла
     header ("Content-type: image/png");	

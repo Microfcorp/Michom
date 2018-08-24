@@ -1,5 +1,5 @@
 <?php include_once("/var/www/html/site/mysql.php"); ?>
-
+<?php include_once("/var/www/html/site/secur.php"); ?>
 <html>
 <head>
 <title>Управление Michome</title>
@@ -60,13 +60,13 @@ function postAjax(url, oForm, callback) {
     oXmlHttp.send(sBody);
 }
 
-function Graphics(type,module,device){
+function Graphics(type,module,device,value){
 	if(type == "col"){
-	  var txt= document.getElementById("textcmd").value;
+	  var txt= value;
 	  document.getElementById('img1').src = "grafick.php?type="+module+"&period="+txt;
 	}
 	else if(type == "day"){
-		var txt= document.getElementById("daycmd").value;
+		var txt= value;
 	    document.getElementById('img1').src = "grafick.php?type="+module+"&period="+(txt*144);
 	}
 	else if(type == "curday"){		
@@ -79,6 +79,7 @@ function Rezim(d){
 	document.getElementById("temper").style.display = "none";
 	document.getElementById("vlazn").style.display = "none";
 	document.getElementById("dawlen").style.display = "none";
+	document.getElementById("visota").style.display = "none";
 	document.getElementById(d).style.display = "block";
 }
 
@@ -96,8 +97,60 @@ function CurDate(){
 	
 	return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
 }
-//selected('192.168.1.11','tempul',CurDate());
+function Start(){
+	Graphics('curday','tempul','192.168.1.11')
+}
+
+window.setTimeout("Start()",10);
 </script>
+<style>
+/* скрываем чекбоксы и блоки с содержанием */
+.hide,
+.hide + label ~ div {
+    display: none;
+}
+/* вид текста label */
+.hide + label {
+    margin: 0;
+    padding: 0;
+    color: green;
+    cursor: pointer;
+    display: inline-block;
+}
+/* вид текста label при активном переключателе */
+.hide:checked + label {
+    color: blue;
+    border-bottom: 0;
+}
+/* когда чекбокс активен показываем блоки с содержанием  */
+.hide:checked + label + div {
+    display: block; 
+    background: #efefef;
+    -moz-box-shadow: inset 3px 3px 10px #7d8e8f;
+    -webkit-box-shadow: inset 3px 3px 10px #7d8e8f;
+    box-shadow: inset 1.4px 1.4px 10px #7d8e8f;
+    margin-left: 20px;
+    padding: 10px;
+    /* чуточку анимации при появлении */
+     -webkit-animation:fade ease-in 0.4s; 
+     -moz-animation:fade ease-in 0.4s;
+     animation:fade ease-in 0.4s; 
+}
+
+@-moz-keyframes fade {
+    from { opacity: 0; }
+to { opacity: 1 }
+}
+@-webkit-keyframes fade {
+    from { opacity: 0; }
+to { opacity: 1 }
+}
+@keyframes fade {
+    from { opacity: 0; }
+to { opacity: 1 }   
+}
+
+</style>
 </head>
 
 <body>
@@ -108,57 +161,124 @@ function CurDate(){
 <input value="График комнатной температуры" OnClick="Rezim('temper')" type="button" />
 <input value="График комнатной влажности" OnClick="Rezim('vlazn')" type="button" />
 <input value="График комнатного давления" OnClick="Rezim('dawlen')" type="button" />
+<input value="График ощущаемой высоты" OnClick="Rezim('visota')" type="button" />
 </div>
 
 <div style="display:block;" id="ulpog">
+
 <p style="color:red;">Просмотр графика температуры на улице</p>
-<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
-<input type="text" name="cmd" id='textcmd' />
-<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','tempul','192.168.1.11')" type="button" />
-<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
-<input type="text" name="cmd" id='daycmd' />
-<input value="Прсмотреть" OnClick="Graphics('day','tempul','192.168.1.11')" type="button" /></br>
-<input value="За сегодня" OnClick="Graphics('curday','tempul','192.168.1.11')" type="button" /></br>
+
+    <input class="hide" id="hd-1" type="checkbox">
+    <label for="hd-1">По количеству измерений</label>
+    <div>        
+		<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
+		<input type="text" name="cmd" id='textcmd' />
+		<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','tempul','192.168.1.11',document.getElementById('textcmd').value)" type="button" />
+    </div>
+	
+</br></br>
+
+    <input class="hide" id="hd-2" type="checkbox">
+    <label for="hd-2">По количеству дней</label>
+    <div>        
+		<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
+		<input type="text" name="cmd" id='daycmd' />
+		<input value="Прсмотреть" OnClick="Graphics('day','tempul','192.168.1.11',document.getElementById('daycmd').value)" type="button" /></br>
+    </div>
+</br></br>
+<input value="За сегодня" OnClick="Graphics('curday','tempul','192.168.1.11','')" type="button" /></br>
 <p>За <input onchange="selected('192.168.1.11','tempul',this.value)" type="date" id='vibday' /></p>
 </div>
 
 <div style="display:none;" id="temper">
 <p style="color:red;">Просмотр графика температуры в доме</p>
-<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
-<input type="text" name="cmd" id='textcmd' />
-<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','temp','192.168.1.11')" type="button" />
-<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
-<input type="text" name="cmd" id='daycmd' />
-<input value="Прсмотреть" OnClick="Graphics('day','temp','192.168.1.10')" type="button" /></br>
-<input value="За сегодня" OnClick="Graphics('curday','temp','192.168.1.10')" type="button" /></br>
+<input class="hide" id="hd-3" type="checkbox">
+    <label for="hd-3">По количеству измерений</label>
+    <div>        
+		<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
+		<input type="text" name="cmd" id='textcmd1' />
+		<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','temp','192.168.1.10',document.getElementById('textcmd1').value)" type="button" />
+    </div>
+</br></br>
+    <input class="hide" id="hd-4" type="checkbox">
+    <label for="hd-4">По количеству дней</label>
+    <div>        
+		<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
+		<input type="text" name="cmd" id='daycmd1' />
+		<input value="Прсмотреть" OnClick="Graphics('day','temp','192.168.1.10',document.getElementById('daycmd1').value)" type="button" /></br>
+    </div>
+</br></br>
+<input value="За сегодня" OnClick="Graphics('curday','temp','192.168.1.10','')" type="button" /></br>
 <p>За <input onchange="selected('192.168.1.10','temp',this.value)" type="date" id='vibday' /></p>
 </div>
 
 <div style="display:none;" id="vlazn">
 <p style="color:red;">Просмотр графика влажности в доме</p>
-<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
-<input type="text" name="cmd" id='textcmd' />
-<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','humm','192.168.1.10')" type="button" />
-<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
-<input type="text" name="cmd" id='daycmd' />
-<input value="Прсмотреть" OnClick="Graphics('day','humm','192.168.1.10')" type="button" /></br>
-<input value="За сегодня" OnClick="Graphics('curday','humm','192.168.1.10')" type="button" /></br>
+<input class="hide" id="hd-5" type="checkbox">
+    <label for="hd-5">По количеству измерений</label>
+    <div>        
+		<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
+		<input type="text" name="cmd" id='textcmd2' />
+		<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','humm','192.168.1.10',document.getElementById('textcmd2').value)" type="button" />
+    </div>
+</br></br>
+    <input class="hide" id="hd-6" type="checkbox">
+    <label for="hd-6">По количеству дней</label>
+    <div>        
+		<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
+		<input type="text" name="cmd" id='daycmd2' />
+		<input value="Прсмотреть" OnClick="Graphics('day','humm','192.168.1.10',document.getElementById('daycmd2').value)" type="button" /></br>
+    </div>
+</br></br>
+<input value="За сегодня" OnClick="Graphics('curday','humm','192.168.1.10','')" type="button" /></br>
 <p>За <input onchange="selected('192.168.1.10','vlazn',this.value)" type="date" id='vibday' /></p>
 </div>
 
 <div style="display:none;" id="dawlen">
 <p style="color:red;">Просмотр графика давления в доме</p>
-<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
-<input type="text" name="cmd" id='textcmd' />
-<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','dawlen','192.168.1.10')" type="button" />
-<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
-<input type="text" name="cmd" id='daycmd' />
-<input value="Прсмотреть" OnClick="Graphics('day','dawlen','192.168.1.10')" type="button" /></br>
-<input value="За сегодня" OnClick="Graphics('curday','dawlen','192.168.1.10')" type="button" /></br>
+<input class="hide" id="hd-7" type="checkbox">
+    <label for="hd-7">По количеству измерений</label>
+    <div>        
+		<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
+		<input type="text" name="cmd" id='textcmd3' />
+		<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','dawlen','192.168.1.10',document.getElementById('textcmd3').value)" type="button" />
+    </div>
+</br></br>
+    <input class="hide" id="hd-8" type="checkbox">
+    <label for="hd-8">По количеству дней</label>
+    <div>        
+		<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
+		<input type="text" name="cmd" id='daycmd3' />
+		<input value="Прсмотреть" OnClick="Graphics('day','dawlen','192.168.1.10',document.getElementById('daycmd3').value)" type="button" /></br>
+    </div>
+</br></br>
+<input value="За сегодня" OnClick="Graphics('curday','dawlen','192.168.1.10','')" type="button" /></br>
 <p>За <input onchange="selected('192.168.1.10','dawlen',this.value)" type="date" id='vibday' /></p>
 </div>
 
-<img id="img1" src="grafick.php?type=tempul&period=144"></img>
+<div style="display:none;" id="visota">
+<p style="color:red;">Просмотр графика ощущаемой высоты</p>
+<input class="hide" id="hd-9" type="checkbox">
+    <label for="hd-9">По количеству измерений</label>
+    <div>        
+		<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
+		<input type="text" name="cmd" id='textcmd4' />
+		<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','visota','192.168.1.10',document.getElementById('textcmd4').value)" type="button" />
+    </div>
+</br></br>
+    <input class="hide" id="hd-10" type="checkbox">
+    <label for="hd-10">По количеству дней</label>
+    <div>        
+		<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
+		<input type="text" name="cmd" id='daycmd4' />
+		<input value="Прсмотреть" OnClick="Graphics('day','visota','192.168.1.10',document.getElementById('daycmd4').value)" type="button" /></br>
+    </div>
+</br></br>
+<input value="За сегодня" OnClick="Graphics('curday','visota','192.168.1.10','')" type="button" /></br>
+<p>За <input onchange="selected('192.168.1.10','visota',this.value)" type="date" id='vibday' /></p>
+</div>
+
+<p><img id="img1" src="grafick.php?type=tempul&period=144"></img></p>
 
 </body>
 </html>

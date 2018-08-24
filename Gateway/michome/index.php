@@ -1,5 +1,5 @@
 <?php include_once("/var/www/html/site/mysql.php"); ?>
-
+<?php include_once("/var/www/html/site/secur.php"); ?>
 <?
 	$visot = "";
 	$temper = "";
@@ -72,14 +72,15 @@ echo date("i", $time - $curdate) . "\n";*/
 <body>
 	<?php include_once("/var/www/html/site/verh.php"); ?>
 	<H1 style="text-align: center; color:red;">Управление Michome</H1>
+	
 	<div style="float: right;">
 	<p id='datetime'>Текущая дата</p>
 	<p>Последнее обновление было: <? echo $date; ?></p>
 	<p id='sledob'>Следующие бновление будет через: 0 минут</p>
-	<a href="/michome/room.php">Комнаты</a><a href="/michome/calendar.php">Календарь информации</a>
+	<p><a href="/michome/room.php">Комнаты</a> <a href="/michome/calendar.php">Календарь информации</a></p>
 	</div>
 	
-	    <script type="text/javascript">
+	<script type="text/javascript">
 	
 	//var caz = document.getElementById("cazestvo").value;
 	function createXMLHttp() {
@@ -167,10 +168,6 @@ function GetData()
   
    window.setTimeout(function(){document.getElementById("cmdresult").innerHTML = "";},6000);
    }
-
-    </script>
-	
-	<script>
 	var x = new Date().getMinutes();
 
 			function backTimer() {
@@ -200,7 +197,9 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
 			
 	window.setTimeout("time()",1);
 	window.setTimeout("backTimer()",1);	
-</script>
+	
+    </script>
+	
 	<div>
     <H4>Отправить команду:</H4>
 	  <form>
@@ -209,49 +208,37 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
 	  <?
 	    $results = mysqli_query($link, "SELECT DISTINCT ip FROM michom");
 
-while($row = $results->fetch_assoc()) {
-	if($row['ip'] != ""){
-    echo "<option  name='select' value=".$row['ip'].">".$row['ip']."</option>";
-	}
-}
+		while($row = $results->fetch_assoc()) {
+			if($row['ip'] != ""){
+				echo "<option  name='select' value=".$row['ip'].">".$row['ip']."</option>";
+			}
+		}
 	  ?>
-   </select></p>
+		</select></p>
    
       <p><input name="sendcmd" value="Отправить" OnClick="GetData()" type="button" /></p>
       </form>	  
 	</div>
+	
 	<div style="background-color:#03899C;">
-	<p>Status Log: <p>
+	<p>Status Log: </p>
 	<span id="cmdresult"></span>
 	</div>
+	
 	<div>
-	<p>Текущая температура: <?echo $temper;?>С</p>
-	<p>Текущая влажность: <?echo $vlazn;?>%</p>
-	<p>Текущее давление: <?echo $davlenie;?> мм.рт</p>
-	<p>Текущая температура в ремянке: <?echo $temper2;?>С</p>
-	<p>Текущая влажность в ремянке: <?echo $davlenie2;?>%</p>
+	<a class="tooltip"><p>Текущая температура в комнате: <?echo $temper;?>С</p><span><img src="grafick.php?type=temp&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=oneday");?>"/></span></a>
+	<a class="tooltip"><p>Текущая влажнгсть в комнате: <?echo $vlazn;?>%</p><span><img src="grafick.php?type=humm&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=oneday");?>"/></span></a>
+	<a class="tooltip"><p>Текущее давление в комнате: <?echo $davlenie;?> мм.рт</p><span><img src="grafick.php?type=dawlen&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=oneday");?>"/></span></a>
 	<? echo($alarm);?>
-	<!--<p>Текущая высота: <?echo $visot;?> м</p>-->
+	
+	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=oneday");?>"/></span></a>  
+	
 	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=oneday");?>"/></span></a>
-	<p><?//include_once("prognoz.php");?></p>
-	</div>
-	</div>
-	<div>
-	<table>
-	<tbody>
-	<tr>
-	<td>
-	<img style="width: 540px; -webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);" src="http://<?echo $_SERVER['HTTP_HOST'];?>/michome/grafick.php?type=temp">
-	</td>
-    <td>	
-	<img style="width: 540px; -webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);" src="http://<?echo $_SERVER['HTTP_HOST'];?>/michome/grafick.php?type=humm">
-	</td>
-	<td>	
-	<img style="width: 540px; -webkit-user-select: none;background-position: 0px 0px, 10px 10px;background-size: 20px 20px;background-image:linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%),linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);" src="http://<?echo $_SERVER['HTTP_HOST'];?>/michome/grafick.php?type=dawlen">
-	</td>
-	</tr>
-	</tbody>
-	</table>
+	<p><?include_once("prognoz.php");?></p>
+	
+	<span>Время восхода солнца: <? echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
+	<span>Время захода солнца: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
+	<span>Долгота дня: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3) - date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?> часов</span><br>
 	</div>
 </body>
 
