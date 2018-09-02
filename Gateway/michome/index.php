@@ -226,14 +226,14 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
 	</div>
 	
 	<div>
-	<a class="tooltip"><p>Текущая температура в комнате: <?echo $temper;?>С</p><span><img src="grafick.php?type=temp&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=oneday");?>"/></span></a>
-	<a class="tooltip"><p>Текущая влажнгсть в комнате: <?echo $vlazn;?>%</p><span><img src="grafick.php?type=humm&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=oneday");?>"/></span></a>
-	<a class="tooltip"><p>Текущее давление в комнате: <?echo $davlenie;?> мм.рт</p><span><img src="grafick.php?type=dawlen&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=oneday");?>"/></span></a>
+	<a class="tooltip"><p>Текущая температура в комнате: <?echo $temper;?>С</p><span><img src="grafick.php?type=temp&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>
+	<a class="tooltip"><p>Текущая влажнгсть в комнате: <?echo $vlazn;?>%</p><span><img src="grafick.php?type=humm&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>
+	<a class="tooltip"><p>Текущее давление в комнате: <?echo $davlenie;?> мм.рт</p><span><img src="grafick.php?type=dawlen&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>
 	<? echo($alarm);?>
 	
-	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=oneday");?>"/></span></a>  
+	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>  
 	
-	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&period=<?echo file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=oneday");?>"/></span></a>
+	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>
 	<p><?include_once("prognoz.php");?></p>
 	
 	<span>Время восхода солнца: <? echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>

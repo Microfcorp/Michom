@@ -14,16 +14,14 @@ $data = json_decode(file_get_contents('php://input'));
 if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation') !== 0)
     return;
  
-//Проверяем, что находится в поле "type"
-switch ($data->type) {
     //Если это уведомление для подтверждения адреса сервера...
-    case 'confirmation':
+    if($data->type == 'confirmation'){
         //...отправляем строку для подтверждения адреса
         die($confirmationToken);
-        break;
+	}
  
     //Если это уведомление о новом сообщении...
-    case 'message_new':
+    elseif($data->type == 'message_new' || $data->type == 'message_edit'){
         //...получаем id его автора
         $userId = $data->object->user_id;
 		$body = $data->object->body;
@@ -50,7 +48,7 @@ switch ($data->type) {
 			MessSend($userId, Michome_Prognoz(),$token);
 		}
 		elseif(mb_strtolower($body) == "ссылка"){			
-			MessSend($userId, "ДДос",$token);
+			MessSend($userId, "http://91.202.27.167/michome/",$token);
 		}
 		elseif(mb_strtolower($body) == "время дня" || mb_strtolower($body) == "долготня дня"){			
 			MessSend($userId, Michome_DateVrem(),$token);
@@ -65,10 +63,10 @@ switch ($data->type) {
 			MessSend($userId, "Ах-ты Ивашка ДДОСЕР гнедоделанный))",$token);
 		}
  
-        break;
+	}
  
     // Если это уведомление о вступлении в группу
-    case 'group_join':
+    elseif($data->type == 'group_join'){
         //...получаем id нового участника
         $userId = $data->object->user_id;
  
@@ -80,10 +78,7 @@ switch ($data->type) {
  
         //С помощью messages.send и токена сообщества отправляем ответное сообщение
         $request_params = array(
-            'message' => "Добро пожаловать в наше сообщество МГТУ им. Баумана ИУ5 2016, {$user_name}!<br>" .
-                            "Если у Вас возникнут вопросы, то вы всегда можете обратиться к администраторам сообщества.<br>" .
-                            "Их контакты можно найти в соответсвующем разделе группы.<br>" .
-                            "Успехов в учёбе!",
+            'message' => "Michom приветствует тебя",
             'user_id' => $userId,
             'access_token' => $token,
             'v' => '5.0'
@@ -93,10 +88,7 @@ switch ($data->type) {
  
         file_get_contents('https://api.vk.com/method/messages.send?' . $get_params);
  
-        //Возвращаем "ok" серверу Callback API
-        echo('ok');
- 
-        break;
-}
+	}
+
 echo('ok');
 ?>

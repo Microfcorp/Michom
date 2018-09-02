@@ -2,6 +2,9 @@
 include_once("/var/www/html/site/mysql.php");
 $id = 0;
 
+$rnd = rand(1, 3);
+sleep($rnd);
+
 $results = mysqli_query($link, "SELECT * FROM `michom` WHERE 1");
 while($row = $results->fetch_assoc()) {
     $id = $row['id'] + 1;
@@ -26,18 +29,18 @@ $obj = json_decode($getjson);
 $ip = $obj->{'ip'};
 $type = $obj->{'type'};
 if($type == "msinfoo"){	
-	$temperdht = $obj->{'data'}->{'temper'};
-	$temperbmp = $obj->{'data'}->{'temperbmp'};
+	$temp = $obj->{'data'}->{'temper'};
+	//$temperbmp = $obj->{'data'}->{'temperbmp'};
 	
-	$temp = ($temperdht + $temperbmp) / 2;
+	//$temp = ($temperdht + $temperbmp) / 2;
 	$humm = $obj->{'data'}->{'humm'};			
 	$davlen = $obj->{'data'}->{'davlen'};
 	$visot = $obj->{'data'}->{'visot'};
 	
-	if($temperdht != "nan"){
+	//if($temperdht != "nan"){
 	$guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', '$ip', 'msinfoo','null','$temp','$humm','$davlen','$visot','$date')"; 
 	$result = mysqli_query($link, $guery);
-	}
+	//}
 }
 elseif($type == "termometr"){	
 	$temper = $obj->{'data'}->{'temper'};

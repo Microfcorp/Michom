@@ -70,8 +70,9 @@ function Graphics(type,module,device,value){
 	    document.getElementById('img1').src = "grafick.php?type="+module+"&period="+(txt*144);
 	}
 	else if(type == "curday"){		
-		var txt= "";
-		postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/timeins.php?device='+device+'&type=oneday', "", function(d){document.getElementById('img1').src = "grafick.php?type="+module+"&period="+d;});			    
+		var datea = "<?echo date("Y-m-d");?>";
+		selected(device,module,datea);
+		//postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/timeins.php?device='+device+'&type=oneday', "", function(d){document.getElementById('img1').src = "grafick.php?type="+module+"&period="+d;});			    
 	}
 }
 function Rezim(d){
@@ -98,7 +99,7 @@ function CurDate(){
 	return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
 }
 function Start(){
-	Graphics('curday','tempul','192.168.1.11')
+	Graphics('curday','tempul','192.168.1.11',"")
 }
 
 window.setTimeout("Start()",10);
