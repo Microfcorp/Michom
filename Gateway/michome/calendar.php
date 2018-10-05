@@ -232,7 +232,7 @@ to { opacity: 1 }
     </div>
 </br></br>
 <input value="За сегодня" OnClick="Graphics('curday','humm','192.168.1.10','')" type="button" /></br>
-<p>За <input onchange="selected('192.168.1.10','vlazn',this.value)" type="date" id='vibday' /></p>
+<p>За <input onchange="selected('192.168.1.10','humm',this.value)" type="date" id='vibday' /></p>
 </div>
 
 <div style="display:none;" id="dawlen">

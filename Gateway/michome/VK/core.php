@@ -50,7 +50,7 @@ if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation'
 		elseif(mb_strtolower($body) == "ссылка"){			
 			MessSend($userId, "http://91.202.27.167/michome/",$token);
 		}
-		elseif(mb_strtolower($body) == "время дня" || mb_strtolower($body) == "долготня дня"){			
+		elseif(mb_strtolower($body) == "время дня" || mb_strtolower($body) == "долгота дня"){			
 			MessSend($userId, Michome_DateVrem(),$token);
 		}
 		elseif(mb_strtolower($body) == "последнее обновление"){			

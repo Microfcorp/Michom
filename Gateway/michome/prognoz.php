@@ -224,7 +224,7 @@ else
     $pressure_trend_text = "Не меняется";
 }
 
-$forecast = betel_cast($abs_pressure, date('n'), $wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)], $pressure_trend, 1, 1005, 950, $temp);
+$forecast = betel_cast($abs_pressure, date('n'), $wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)], $pressure_trend, 1, 1010, 950, $temp);
 
 echo "Направление ветра: ".$wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)]."<br>";
 echo "Скорость ветра: ".$pogod->{'wind'}->{'speed'}." м/с<br>";

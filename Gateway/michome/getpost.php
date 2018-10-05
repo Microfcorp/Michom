@@ -29,18 +29,18 @@ $obj = json_decode($getjson);
 $ip = $obj->{'ip'};
 $type = $obj->{'type'};
 if($type == "msinfoo"){	
-	$temp = $obj->{'data'}->{'temper'};
-	//$temperbmp = $obj->{'data'}->{'temperbmp'};
+	$temperdht = $obj->{'data'}->{'temper'};
+	$temp = $obj->{'data'}->{'temperbmp'};
 	
 	//$temp = ($temperdht + $temperbmp) / 2;
 	$humm = $obj->{'data'}->{'humm'};			
 	$davlen = $obj->{'data'}->{'davlen'};
 	$visot = $obj->{'data'}->{'visot'};
 	
-	//if($temperdht != "nan"){
+	if($temperdht != "nan"){
 	$guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', '$ip', 'msinfoo','null','$temp','$humm','$davlen','$visot','$date')"; 
 	$result = mysqli_query($link, $guery);
-	//}
+	}
 }
 elseif($type == "termometr"){	
 	$temper = $obj->{'data'}->{'temper'};

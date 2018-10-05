@@ -138,21 +138,6 @@ function postAjax(url, oForm, callback) {
     // отправка запроса, sBody - строка данных с формы
     oXmlHttp.send(sBody);
 }
-function SendPost()
-  {
-	  postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/getdata.php?cmd=cursvet', "", function(d){
-		  
-	var data = JSON.parse(d);
-
-    var list = '';
-
-    list = data.data[data.col];
-	
-	document.getElementById("cursvet").innerHTML = "Текущее освещение: " + list;
-	
-	});
-	  	
-  }
 
 function GetData()
   {
@@ -163,11 +148,14 @@ function GetData()
   
    document.getElementById("cmdresult").innerHTML = "Отправка данных: " + txt + " На: " + val + ". Пожалуйста подождите..."; //log
   
-   postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ val +'&cmd='+ txt, "", function(d){document.getElementById("cmdresult").innerHTML = d;});;
-   SendPost();
+   postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ val +'&cmd='+ txt, "", function(d){document.getElementById("cmdresult").innerHTML = d;
   
    window.setTimeout(function(){document.getElementById("cmdresult").innerHTML = "";},6000);
+   
+   });
    }
+   
+   
 	var x = new Date().getMinutes();
 
 			function backTimer() {
