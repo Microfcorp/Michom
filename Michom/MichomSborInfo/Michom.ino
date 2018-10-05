@@ -7,7 +7,7 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-#include "DHT.h"
+#include <DHT.h>
 
 
 #define DHTPIN 14     // what digital pin we're connected to
@@ -27,6 +27,7 @@ const char* host1 = "192.168.1.42";
 long previousMillis = 0;   // здесь будет храниться время последнего изменения состояния светодиода 
 long interval = 600000; 
 
+MDNSResponder mdns;
 ESP8266WebServer server(80);
 DHT dht(DHTPIN, DHTTYPE, 15);
 Adafruit_BMP085 bmp;
@@ -68,13 +69,12 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-  if (MDNS.begin("esp8266")) {
-    Serial.println("MDNS responder started");
+  if ( mdns.begin ( "esp82661", WiFi.localIP() ) ) {
+    Serial.println ( "MDNS responder started" );
   }
   
 if (!bmp.begin()) {
   Serial.println("Could not find a valid BMP085 sensor, check wiring!");
-  while (1) {}
   }
   
    server.on("/", [](){
@@ -99,7 +99,7 @@ if (!bmp.begin()) {
   server.on("/gettype", [](){ 
     server.send(200, "text/html", (String)type);
   });
-  
+
   server.on("/getnameandid", [](){
     String tmpe = (String)id + "/n" + (String)type;
     server.send(200, "text/html", tmpe);
@@ -153,13 +153,14 @@ void conn(){
                "6=" + dataaaa);
   unsigned long timeout = millis();
   while (client.available() == 0) {
-    if (millis() - timeout > 5000) {
+    if (millis() - timeout > 3000) {
       Serial.println(">>> Client Timeout !");
       client.stop();
+      ESP.reset();
       return;
     }
   }
-  
+  delay(1000);
   // Read all the lines of the reply from server and print them to Serial
   while(client.available()){
     String line = client.readStringUntil('\r');
@@ -176,6 +177,7 @@ void conn(){
 
 
 void loop() {
+  mdns.update();
   server.handleClient();
   ArduinoOTA.handle();
 
