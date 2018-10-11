@@ -42,6 +42,7 @@ while($row = $results->fetch_assoc()) {
 	<p style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Температура: <? echo($temp1);?></p>
 	<p style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Давление: <? echo($abc1);?></p>
 	<p style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Влажность: <? echo($humm1);?></p>
+	<a href="studiolight.php" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Управление освещением</a>
 	</div>
 	<div style='float: left; margin-left:10px; background-color: green; width: 400px; height: 250px'>
 	<p style="text-align: center">Улица</p>

@@ -27,6 +27,9 @@ function MessSend_Attach($peer_id, $message,$token,$att){
 function Michome_GetParam($cmd,$device){
 	return file_get_contents("http://91.202.27.167/michome/api/getdata.php?cmd=".$cmd."&device=".$device);
 }
+function Michome_SetCmd($cmd,$device){
+	return file_get_contents("http://91.202.27.167/michome/api/setcmd.php?cmd=".$cmd."&device=".$device);
+}
 function Michome_GetParam_JsonParse($cmd,$device){
 	$jsond = json_decode(Michome_GetParam($cmd,$device));
 	
@@ -37,5 +40,8 @@ function Michome_Prognoz(){
 }
 function Michome_DateVrem(){	
 	return ("Время восхода солнца: ".date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)."<br>Время захода солнца: ".date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3));
+}
+function Michome_SetLight($p,$s){
+	return Michome_SetCmd('setlight?p='.$p.'%26s='.$s,"192.168.1.34");
 }
 ?>
