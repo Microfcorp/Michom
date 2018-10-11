@@ -108,6 +108,17 @@ ArduinoOTA.setHostname(id);
     server.send(200, "text/html", String(server.arg(0).toInt()) + " as " + String(server.arg(1).toInt()));
   });
 
+  server.on("/strobo", [](){ 
+    int col = server.arg(1).toInt();
+    for(int i = 0; i < col; i++){
+        analogWrite(Keys[server.arg(0).toInt()], 255);
+        delay(server.arg(2).toInt());
+        analogWrite(Keys[server.arg(0).toInt()], 0);
+        delay(server.arg(2).toInt());
+    }
+    server.send(200, "text/html", String(server.arg(0).toInt()) + " as " + String(server.arg(1).toInt()));
+  });
+
   server.onNotFound([](){
     server.send(200, "text/html", "Not found");
   });
