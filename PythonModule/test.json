@@ -1,0 +1,16 @@
+{
+	"name":"GG",	
+	"params":[
+		{"name":"setlight","pin":"0","brightness":"1023"},
+		{"name":"sleep","time":"2"},
+		{"name":"setlight","pin":"1","brightness":"1023"},
+		{"name":"sleep","time":"2"},
+		{"name":"setlight","pin":"0","brightness":"0"},
+		{"name":"setlight","pin":"1","brightness":"0"},
+		{"name":"sleep","time":"1"},
+		{"name":"strobo","pin":"0","times":"40","col":"10"},
+		{"name":"sleep","time":"5"},
+		{"name":"stroboall","times":"40","col":"10"},
+		{"name":"sleep","time":"1"}
+	]
+}
