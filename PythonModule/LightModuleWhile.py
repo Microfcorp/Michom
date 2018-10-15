@@ -56,17 +56,17 @@ while a != "exit":
 		pin = a.split(' ')[1]
 		light = a.split(' ')[2]
 		send()
+	elif a.find("stroboall") != -1:
+		deistv = "stroboall"
+		pin = a.split(' ')[1]
+		light = a.split(' ')[2]
+		send()	
 	elif a.find("strobo") != -1:
 		deistv = "strobo"
 		pin = a.split(' ')[1]
 		light = a.split(' ')[2]
 		if len(a.split(' ')) > 3:
 			delay = a.split(' ')[3]
-		send()
-	elif a.find("stroboall") != -1:
-		deistv = "stroboall"
-		pin = a.split(' ')[1]
-		light = a.split(' ')[2]
-		send()		
+		send()	
 		
 print("Завершаю работу")

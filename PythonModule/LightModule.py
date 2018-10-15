@@ -50,21 +50,7 @@ except:
 	gateway = "91.202.27.167"
 	print ("Адрес шлюза равен 91.202.27.167. API будет использоваться")
 	
-print ("Адрес шлюза успешно определён")
-#print ("")
-#print ("Начинаю авторизацию")
-#login = b'Lexap'
-#password = b'Mart2005'
-#mydata = b'login='+login+b'&password='+password
-#
-#my_req = urllib.request.Request('http://'+gateway+'/site/secur.php', data=mydata,method='POST')
-#my_form = urllib.request.urlopen(my_req)
-#req = my_form.read().decode('UTF-8')
-#
-#if req == "OK":
-#	print("Авторизовался успешно. Продолжаю")
-#else:
-#	exit("Авторизация неудачна")	
+print ("Адрес шлюза успешно определён")	
 
 print ("")
 

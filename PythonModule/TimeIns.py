@@ -1,7 +1,5 @@
 import urllib.request
 import sys
-import json
-import socket
 
 #s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #s.connect(("gmail.com",80))

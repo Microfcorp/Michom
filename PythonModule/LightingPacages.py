@@ -51,7 +51,7 @@ print("Начинаю выполнение сценария "+jsonDate['name'])
 for val in jsonDate['params']:
 	if val['name'] == "sleep":
 		print("Начинаю выполнять команду "+val['name'])
-		time.sleep(int(val['time']))
+		time.sleep(float(val['time']))
 	elif val['name'] == "setlight":
 		print("Начинаю выполнять команду "+val['name'])
 		Send(deistv='setlight', pin=val['pin'], light=val['brightness'], delay="")
