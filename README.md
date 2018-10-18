@@ -15,6 +15,8 @@ Description of folders:
 
 #### Michomeframework framework to work through the gateway 
 
+#### PythonModule scripts to work through a gateway
+
 <br>
 
 Description of the library/framework (only through a gateway): 
