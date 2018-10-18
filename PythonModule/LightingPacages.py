@@ -22,9 +22,24 @@ def Send(deistv, pin, light, delay):
 		print("Ответ: " + my_web.read().decode('UTF-8'))
 	else:
 		print("Посылаю команду через шлюз")
-		my_web = urllib.request.urlopen('http://91.202.27.167/michome/api/setcmd.php?device=192.168.1.34&cmd='+deistv+'?p='+pin+"%26q="+light+"%26d="+delay)
+		my_web = urllib.request.urlopen('http:///michome/api/setcmd.php?device=192.168.1.34&cmd='+deistv+'?p='+pin+"%26q="+light+"%26d="+delay)
 		print("Ответ: " + my_web.read().decode('UTF-8'))
 	
+def SendKODI(file):
+	if gateway == "192.168.1.42":
+		print("Посылаю команду напрямую")
+		my_web = urllib.request.urlopen('http://:8080/jsonrpc?request={%22jsonrpc%22:%222.0%22,%22id%22:%221%22,%22method%22:%22Player.Open%22,%22params%22:{%22item%22:{%22file%22:%22'+file+'%22}}}')
+		if json.loads(my_web.read().decode('UTF-8'))['result'] == 'OK':
+			print("Успешно")
+		else:
+			print("Ошибка")
+	else:
+		print("Посылаю команду через шлюз")
+		my_web = urllib.request.urlopen('http://:8080/jsonrpc?request={%22jsonrpc%22:%222.0%22,%22id%22:%221%22,%22method%22:%22Player.Open%22,%22params%22:{%22item%22:{%22file%22:%22'+file+'%22}}}')
+		if json.loads(my_web.read().decode('UTF-8'))['result'] == 'OK':
+			print("Успешно")
+		else:
+			print("Ошибка")
 	
 print ("Определяю адрес шлюза")
 gateway = ""
@@ -58,9 +73,16 @@ for val in jsonDate['params']:
 	elif val['name'] == "strobo":
 		print("Начинаю выполнять команду "+val['name'])
 		Send(deistv='strobo', pin=val['pin'], light=val['col'], delay=val['times'])
+		if val['waiting'] == 'true':			
+			time.sleep(float(val['col']) * (float(val['times']) * 2 / 1000))
 	elif val['name'] == "stroboall":
 		print("Начинаю выполнять команду "+val['name'])
 		Send(deistv='stroboall', pin=val['col'], light=val['times'], delay='')
+		if val['waiting'] == 'true':			
+			time.sleep(float(val['col']) * (float(val['times']) * 2 / 1000))
+	elif val['name'] == "playmusic":
+		print("Начинаю выполнять команду "+val['name'])
+		SendKODI(file=val['file'])
 
 
 print("Завершаю работу")
