@@ -1,0 +1,7 @@
+{
+	"name":"TestStrobo",	
+	"params":[
+		{"name":"strobo","pin":"0","times":"50","col":"50"},
+		{"name":"strobo","pin":"1","times":"50","col":"50"}
+		]
+}
