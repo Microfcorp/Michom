@@ -20,44 +20,48 @@ namespace Michomeclient
         {
             InitializeComponent();         
             gtw.Connect("192.168.1.42");
-            int col = 0;
-            comboBox2.Items.AddRange(gtw.Getdeviceip());
 
-            string[] Getdeviceip = gtw.Getdeviceip();
-            string[] Getdevicename = gtw.Getdevicename();
-            string[] Getdevicetype = gtw.Getdevicetype();
+            UpdateModules();
 
-            foreach (string tmp in Getdeviceip)
+            pictureBox4.Image = gtw.Getimage("tempul", gtw.TimeInsCurDay("192.168.1.11").Col, gtw.TimeInsCurDay("192.168.1.11").Min);
+            pictureBox3.Image = gtw.Getimage("temp", gtw.TimeInsCurDay("192.168.1.10").Col, gtw.TimeInsCurDay("192.168.1.10").Min);
+            pictureBox2.Image = gtw.Getimage("humm", gtw.TimeInsCurDay("192.168.1.10").Col, gtw.TimeInsCurDay("192.168.1.10").Min);
+            pictureBox1.Image = gtw.Getimage("dawlen", gtw.TimeInsCurDay("192.168.1.10").Col, gtw.TimeInsCurDay("192.168.1.10").Min);
+
+            JObject obj = JObject.Parse(gtw.Getdata("192.168.1.10", "temper"));
+            JObject obj1 = JObject.Parse(gtw.Getdata("192.168.1.10", "humm"));
+            JObject obj2 = JObject.Parse(gtw.Getdata("192.168.1.10", "dawlen"));
+            JObject obj3 = JObject.Parse(gtw.Getdata("192.168.1.11", "tempertemp"));
+
+            label9.Text = "Последний раз данные обновлялись " + obj1["date"][(Int32)obj1["col"]].ToString();
+            label10.Text = obj["data"][(Int32)obj["col"]].ToString();
+            label11.Text = obj1["data"][(Int32)obj1["col"]].ToString();
+            label12.Text = obj2["data"][(Int32)obj2["col"]].ToString();
+            label16.Text = obj3["data"][(Int32)obj3["col"]].ToString();
+            timer1.Start();
+        }
+
+         private void UpdateModules()
+         {
+            NameAndID[] ids = gtw.GetDevice();
+            foreach (var item in ids)
             {
-                ToolStripMenuItem tr = new ToolStripMenuItem();
-                tr.Text = tmp + " (" + Getdevicename[col] + ") (" + Getdevicetype[col] + ")";
-                tr.Enabled = false;
-                списокМодулейToolStripMenuItem.DropDownItems.Add(tr);
-                col++;
-            }
-            pictureBox3.Image = gtw.Getimage("temp");
-            pictureBox2.Image = gtw.Getimage("humm");
-            pictureBox1.Image = gtw.Getimage("dawlen");
+                comboBox2.Items.Clear();
+                comboBox2.Items.Add(item.IP);
+                    ToolStripMenuItem tr = new ToolStripMenuItem();
+                    tr.Text = item.IP + " (" + item.Name + ") (" + item.ID + ")";
+                    tr.Enabled = false;
+                    списокМодулейToolStripMenuItem.DropDownItems.Add(tr);
 
-            JObject obj = JObject.Parse(gtw.Getdata("192.168.1.35", "temper"));
-            JObject obj1 = JObject.Parse(gtw.Getdata("192.168.1.35", "humm"));
-            JObject obj2 = JObject.Parse(gtw.Getdata("192.168.1.35", "dawlen"));
-
-            col = 0;
-            foreach (string tmp in Getdeviceip)
-            {
-                if (Getdevicetype[col] == "msinfoo")
+                if (item.ID == "msinfoo")
                 {
-                    label13.Text += "\n" + tmp + " (" + Getdevicename[col] + ") (" + Getdevicetype[col] + ")";
-                    col++;
+                    label13.Text += "\n" + item.IP + " (" + item.Name + ") (" + item.ID + ")";
+                }
+                if (item.ID == "termometr")
+                {
+                    label17.Text += "\n" + item.IP + " (" + item.Name + ") (" + item.ID + ")";
                 }
             }
-
-            label9.Text = "Последний раз данные обновлялись " + obj1["date"][(Int32)obj["col"]].ToString();
-            label10.Text = obj["data"][(Int32)obj["col"]].ToString();
-            label11.Text = obj1["data"][(Int32)obj["col"]].ToString();
-            label12.Text = obj2["data"][(Int32)obj["col"]].ToString();
-            timer1.Start();
         }
 
         private void открытьКонсольToolStripMenuItem_Click(object sender, EventArgs e)
@@ -72,66 +76,50 @@ namespace Michomeclient
 
         private void обновитьСписокМодулейToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int col = 0;
-            comboBox2.Items.AddRange(gtw.Getdeviceip());
-            foreach (string tmp in gtw.Getdeviceip())
-            {
-                ToolStripMenuItem tr = new ToolStripMenuItem();
-                tr.Text = tmp + " (" + gtw.Getdevicename()[col] + ")";
-                tr.Enabled = false;
-                списокМодулейToolStripMenuItem.DropDownItems.Add(tr);
-                col++;
-            }
+            UpdateModules();
         }
 
         private void сбораИнформацииToolStripMenuItem_Click(object sender, EventArgs e)
         {
             panel1.Visible = false;
+            panel3.Visible = false;
             panel2.Visible = true;
-
-            pictureBox3.Image = gtw.Getimage("temp");
-            pictureBox2.Image = gtw.Getimage("humm");
-            pictureBox1.Image = gtw.Getimage("dawlen");
-
-            JObject obj = JObject.Parse(gtw.Getdata("192.168.1.35", "temper"));
-            JObject obj1 = JObject.Parse(gtw.Getdata("192.168.1.35", "humm"));
-            JObject obj2 = JObject.Parse(gtw.Getdata("192.168.1.35", "dawlen"));
-
-            label9.Text = "Данные обновлялись в " + obj1["date"][(Int32)obj["col"]].ToString();
-            label10.Text = obj["data"][(Int32)obj["col"]].ToString();
-            label11.Text = obj1["data"][(Int32)obj["col"]].ToString();
-            label12.Text = obj2["data"][(Int32)obj["col"]].ToString();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
-            string[] Getdeviceip = gtw.Getdeviceip();
-            string[] Getdevicename = gtw.Getdevicename();
-            string[] Getdevicetype = gtw.Getdevicetype();
 
-            pictureBox3.Image = gtw.Getimage("temp");
-            pictureBox2.Image = gtw.Getimage("humm");
-            pictureBox1.Image = gtw.Getimage("dawlen");
+            UpdateModules();
 
-            JObject obj = JObject.Parse(gtw.Getdata("192.168.1.35", "temper"));
-            JObject obj1 = JObject.Parse(gtw.Getdata("192.168.1.35", "humm"));
-            JObject obj2 = JObject.Parse(gtw.Getdata("192.168.1.35", "dawlen"));
-            var col = 0;
-            foreach (string tmp in Getdeviceip)
-            {
-                if (Getdevicetype[col] == "msinfoo")
-                {
-                    label13.Text += "\n" + tmp + " (" + Getdevicename[col] + ") (" + Getdevicetype[col] + ")";
-                    col++;
-                }
-            }
+            pictureBox4.Image = gtw.Getimage("tempul", gtw.TimeInsCurDay("192.168.1.11").Col, gtw.TimeInsCurDay("192.168.1.11").Min);
+            pictureBox3.Image = gtw.Getimage("temp", gtw.TimeInsCurDay("192.168.1.10").Col, gtw.TimeInsCurDay("192.168.1.10").Min);
+            pictureBox2.Image = gtw.Getimage("humm", gtw.TimeInsCurDay("192.168.1.10").Col, gtw.TimeInsCurDay("192.168.1.10").Min);
+            pictureBox1.Image = gtw.Getimage("dawlen", gtw.TimeInsCurDay("192.168.1.10").Col, gtw.TimeInsCurDay("192.168.1.10").Min);
 
-            label9.Text = "Последний раз данные обновлялись " + obj1["date"][(Int32)obj["col"]].ToString();
+            JObject obj = JObject.Parse(gtw.Getdata("192.168.1.10", "temper"));
+            JObject obj1 = JObject.Parse(gtw.Getdata("192.168.1.10", "humm"));
+            JObject obj2 = JObject.Parse(gtw.Getdata("192.168.1.10", "dawlen"));
+            JObject obj3 = JObject.Parse(gtw.Getdata("192.168.1.11", "tempertemp"));
+
+            label9.Text = "Последний раз данные обновлялись " + obj1["date"][(Int32)obj1["col"]].ToString();
             label10.Text = obj["data"][(Int32)obj["col"]].ToString();
-            label11.Text = obj1["data"][(Int32)obj["col"]].ToString();
-            label12.Text = obj2["data"][(Int32)obj["col"]].ToString();
+            label11.Text = obj1["data"][(Int32)obj1["col"]].ToString();
+            label12.Text = obj2["data"][(Int32)obj2["col"]].ToString();
+            label16.Text = obj3["data"][(Int32)obj3["col"]].ToString();
             timer1.Start();
+        }
+
+        private void уличногоТермометраToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            panel1.Visible = false;
+            panel3.Visible = true;
+            panel2.Visible = false;
+        }
+
+        private void списокМодулейToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

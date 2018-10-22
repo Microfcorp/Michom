@@ -1,0 +1,7 @@
+C:\VS2015Project\WindowsFormsApplication1\michomeframework\bin\Release\michomeframework.dll
+C:\VS2015Project\WindowsFormsApplication1\michomeframework\bin\Release\michomeframework.pdb
+C:\VS2015Project\WindowsFormsApplication1\michomeframework\bin\Release\Newtonsoft.Json.dll
+C:\VS2015Project\WindowsFormsApplication1\michomeframework\bin\Release\Newtonsoft.Json.xml
+C:\VS2015Project\WindowsFormsApplication1\michomeframework\obj\Release\michomeframework.csprojResolveAssemblyReference.cache
+C:\VS2015Project\WindowsFormsApplication1\michomeframework\obj\Release\michomeframework.dll
+C:\VS2015Project\WindowsFormsApplication1\michomeframework\obj\Release\michomeframework.pdb

@@ -1,0 +1,14 @@
+C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\Michomeclient\bin\Release\Michomeclient.exe.config
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\bin\Release\Michomeclient.exe.config
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\bin\Release\Michomeclient.exe
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\bin\Release\Michomeclient.pdb
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\bin\Release\michomeframework.dll
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\bin\Release\Newtonsoft.Json.dll
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\bin\Release\michomeframework.pdb
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\bin\Release\Newtonsoft.Json.xml
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\obj\Release\Michomeclient.csprojResolveAssemblyReference.cache
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\obj\Release\Michomeclient.Form1.resources
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\obj\Release\Michomeclient.Properties.Resources.resources
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\obj\Release\Michomeclient.csproj.GenerateResource.Cache
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\obj\Release\Michomeclient.exe
+C:\VS2015Project\WindowsFormsApplication1\Michomeclient\obj\Release\Michomeclient.pdb
