@@ -23,19 +23,19 @@ Description of the library/framework (only through a gateway):
 ```C#
 michomeframework.Gateway gtw = new michomeframework.Gateway(); //initialization of an object 
 
+michomeframework.Gateway gtw = new michomeframework.Gateway(string ip); //initialization of an object as URI
+
 gtw.Connect(string ip); //connect to the gateway by ip address (***.***.***.***); 
 
 gtw.Disconnect(); //disconnect from the gateway 
 
 (String)gtw.Getdata(string device_ip, string type); //returns a string of data in json format. 'type' - type of requested data 
 
-(String)gtw.Setdata(string device, string data); //Send data to the device 
+(String)gtw.Setdata(string device, string data); //Send data to the device
 
-(Image)gtw.Getimage(string type); //receive schedule changes(temper, humm, dawlen) 
+(String)michomeframework.Gateway.Setdata(string device, string data); //Send data to the device
 
-(String[])gtw.Getdeviceip(); //get the ip of all modules 
+(Image)gtw.Getimage(string type, int start, int count); //receive schedule changes(temper, humm, dawlen) 
 
-(String[])gtw.Getdevicename(); //get name of all modules 
-
-(String[])gtw.Getdevicetype(); //get the types of all the devices on the network
+(NameAndId)gtw.Getdevices(); //get the info of all modules 
 ```
