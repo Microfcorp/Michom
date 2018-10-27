@@ -2,7 +2,7 @@
 header('Access-Control-Allow-Origin: *');
 include_once("/var/www/html/site/mysql.php");
 if(!empty($_GET['device'])){
-$device = "ip='".$_GET['device']."'";
+$device = "`ip`='".$_GET['device']."'";
 }
 else{
 	$device = 1;
@@ -39,7 +39,7 @@ elseif($type == "selday"){
     //echo $date->format('Y-m-d') . "\n";
 	
 	
-	$results = mysqli_query($link, "SELECT * FROM michom WHERE `date` >= '".$date1."' AND `date` <= '".$date->format('Y-m-d')."'");
+	$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$device." AND `date` >= '".$date1."' AND `date` <= '".$date->format('Y-m-d')."'");
 
 	while($row = $results->fetch_assoc()) {
     $ids[] = $row['id'];

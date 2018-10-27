@@ -11,6 +11,8 @@ $humm2 = "";
 $abc1 = "";
 $abc2 = "";
 
+$log1 = "";
+
 $results = mysqli_query($link, "SELECT * FROM michom WHERE type='msinfoo' AND ip='192.168.1.10'");
 while($row = $results->fetch_assoc()) {
 	$temp1 = $row['temp'];
@@ -25,6 +27,10 @@ $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.12'");
 while($row = $results->fetch_assoc()) {
 	$humm2 = $row['humm'];
 	$temp3 = $row['temp'];
+}
+$results = mysqli_query($link, "SELECT * FROM michom WHERE `type`='Log' AND ip='192.168.1.10'");
+while($row = $results->fetch_assoc()) {
+	$log1 = $log1 + 1;
 }
 ?>
 <html>
@@ -42,6 +48,7 @@ while($row = $results->fetch_assoc()) {
 	<p style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Температура: <? echo($temp1);?></p>
 	<p style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Давление: <? echo($abc1);?></p>
 	<p style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Влажность: <? echo($humm1);?></p>
+	<p style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Всего за сегодня "Нанов": <? echo($log1);?></p>
 	<a href="studiolight.php" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Управление освещением</a>
 	</div>
 	<div style='float: left; margin-left:10px; background-color: green; width: 400px; height: 250px'>

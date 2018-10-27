@@ -44,22 +44,22 @@ if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation'
 		elseif(mb_strtolower($body) == "ощущение высоты"){			
 			MessSend($userId, "Сейчас прям как на".Michome_GetParam_JsonParse("visota","192.168.1.10")." метрах",$token);
 		}		
-		elseif(mb_strtolower($body) == "свет 1 на всю" || mb_strtolower($body) == "включить свет 1"){			
-			MessSend($userId, Michome_SetLight('0','255'),$token);
+		elseif(mb_strtolower($body) == "свет 1 на всю" || mb_strtolower($body) == "включить свет 1" || mb_strtolower($body) == "включи свет 1"){			
+			MessSend($userId, Michome_SetLight('0','1023'),$token);
 		}
-		elseif(mb_strtolower($body) == "свет 2 на всю" || mb_strtolower($body) == "включить свет 2"){			
-			MessSend($userId, Michome_SetLight('1','255'),$token);
+		elseif(mb_strtolower($body) == "свет 2 на всю" || mb_strtolower($body) == "включить свет 2" || mb_strtolower($body) == "включи свет 2"){			
+			MessSend($userId, Michome_SetLight('1','1023'),$token);
 		}
-		elseif(mb_strtolower($body) == "свет 3 на всю" || mb_strtolower($body) == "включить свет 3"){			
-			MessSend($userId, Michome_SetLight('2','255'),$token);
+		elseif(mb_strtolower($body) == "свет 3 на всю" || mb_strtolower($body) == "включить свет 3" || mb_strtolower($body) == "включи свет 3"){			
+			MessSend($userId, Michome_SetLight('2','1023'),$token);
 		}
-		elseif(mb_strtolower($body) == "свет 1 на 0" || mb_strtolower($body) == "выключить свет 1"){			
+		elseif(mb_strtolower($body) == "свет 1 на 0" || mb_strtolower($body) == "выключить свет 1" || mb_strtolower($body) == "выключи свет 1"){			
 			MessSend($userId, Michome_SetLight('0','0'),$token);
 		}
-		elseif(mb_strtolower($body) == "свет 2 на 0" || mb_strtolower($body) == "выключить свет 2"){			
+		elseif(mb_strtolower($body) == "свет 2 на 0" || mb_strtolower($body) == "выключить свет 2" || mb_strtolower($body) == "выключи свет 2"){			
 			MessSend($userId, Michome_SetLight('1','0'),$token);
 		}
-		elseif(mb_strtolower($body) == "свет 3 на 0" || mb_strtolower($body) == "выключить свет 3"){			
+		elseif(mb_strtolower($body) == "свет 3 на 0" || mb_strtolower($body) == "выключить свет 3" || mb_strtolower($body) == "выключи свет 3"){			
 			MessSend($userId, Michome_SetLight('2','0'),$token);
 		}		
 		elseif(mb_strtolower($body) == "прогноз погоды"){			

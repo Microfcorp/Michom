@@ -10,10 +10,12 @@ $results = mysqli_query($link, "SELECT DISTINCT ip FROM michom");
 	  $num = $num + 1;
 	  }
     }
-	
+
 	foreach($ips as $tmp){
-		$ipsname[] = file_get_contents('http://'.$tmp.'/getid');
-		$ipstype[] = file_get_contents('http://'.$tmp.'/gettype');
+		$call = explode("/n", file_get_contents('http://'.$tmp.'/getnameandid'));
+		//var_dump($call);
+		$ipsname[] = $call[0];
+		$ipstype[] = $call[1];
 	}
 	
 	$cart = array(

@@ -140,7 +140,7 @@ function postAjax(url, oForm, callback) {
 }
 
 function GetData()
-  {
+{
      // получаем индекс выбранного элемента
   	 var selind = document.getElementById("select").options.selectedIndex;
    var txt= document.getElementById("textcmd").value;
@@ -148,12 +148,12 @@ function GetData()
   
    document.getElementById("cmdresult").innerHTML = "Отправка данных: " + txt + " На: " + val + ". Пожалуйста подождите..."; //log
   
-   postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ val +'&cmd='+ txt, "", function(d){document.getElementById("cmdresult").innerHTML = d;
+   postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ val +'&cmd='+ txt.replace( /&/g, "%26" ), "", function(d){document.getElementById("cmdresult").innerHTML = d;
   
    window.setTimeout(function(){document.getElementById("cmdresult").innerHTML = "";},6000);
    
    });
-   }
+}
    
    
 	var x = new Date().getMinutes();
