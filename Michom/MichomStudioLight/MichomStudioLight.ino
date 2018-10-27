@@ -5,7 +5,9 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-
+#include <ArduinoJson.h>
+#include <Logger.h>
+#include <Michom.h>
 
 const char *ssid = "10-KORPUSMG";
 const char *password = "10707707";
@@ -24,7 +26,64 @@ MDNSResponder mdns;
 
 ESP8266WebServer server ( 80 );
 
+Logger logg(host, host1);
+Michome m;
+
 const int Keys[] = {12,13,15};
+
+String Parse(String txt){
+  String tmp = "";
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(txt);
+  int leg = root["Params"].size();
+  int delays = 0;
+  tmp += "Name = "+root["name"].as<String>()+"<br />";
+  for(int i=0; i < leg; i++){
+    tmp += root["Params"][i]["name"].as<String>() + "<br />";
+    if(root["Params"][i]["name"].as<String>() == "playmusic"){
+      //http://192.168.1.42:8080/jsonrpc?request={%22jsonrpc%22:%222.0%22,%22id%22:%221%22,%22method%22:%22Player.Open%22,%22params%22:{%22item%22:{%22file%22:%22'+file+'%22}}}
+      m.SendDataGET("/jsonrpc?request={\"jsonrpc\":\"2.0\",\"id\":\"1\",\"method\":\"Player.Open\",\"params\":{\"item\":{\"file\":\""+root["Params"][i]["file"].as<String>()+"\"}}}", "192.168.1.42", 8080);
+      delays = 0;
+    }
+    else if(root["Params"][i]["name"].as<String>() == "setlight"){
+         analogWrite(Keys[root["Params"][i]["pin"].as<int>()], root["Params"][i]["brightness"].as<int>());
+         delays = 0;
+         //logg.Log((String)i + " Setlight");
+    }
+    else if(root["Params"][i]["name"].as<String>() == "strobo"){
+         int col = root["Params"][i]["col"];
+         for(int iq = 0; iq < col; iq++){
+            analogWrite(Keys[root["Params"][i]["pin"].as<int>()], 1023);
+            delay(root["Params"][i]["times"].as<int>());
+            analogWrite(Keys[root["Params"][i]["pin"].as<int>()], 0);
+            delay(root["Params"][i]["times"].as<int>());
+          }
+          delays = col * (root["Params"][i]["times"].as<int>() * 2);
+          //logg.Log((String)i + " strobo");
+    }
+    else if(root["Params"][i]["name"].as<String>() == "stroboall"){
+         int col = root["Params"][i]["col"];
+         for(int iq = 0; iq < col; iq++){
+            analogWrite(Keys[0], 1023);
+            analogWrite(Keys[1], 1023);
+            analogWrite(Keys[2], 1023);
+            delay(root["Params"][i]["times"].as<int>());
+            analogWrite(Keys[0], 0);
+            analogWrite(Keys[1], 0);
+            analogWrite(Keys[2], 0);
+            delay(root["Params"][i]["times"].as<int>());
+         }
+         delays = col * (root["Params"][i]["times"].as<int>() * 2);
+         //logg.Log((String)i + " stroboall");
+    }
+    else if(root["Params"][i]["name"].as<String>() == "sleep"){
+      //logg.Log((String)i + " sleep");
+       delay((root["Params"][i]["times"].as<float>() * 1000) - delays);
+    }
+  }
+  return tmp;
+  //logg.Log(tmp);
+}
 
 void setup ( void ) {
 
@@ -76,7 +135,8 @@ ArduinoOTA.setHostname(id);
   }
 
   server.on("/", [](){
-    server.send(404, "text/html", "Not found");
+    logg.Log("On main");
+    server.send(404, "text/html", "Not found");    
   });
   //refresh -> url
   //Light.sv. <- url
@@ -89,7 +149,7 @@ ArduinoOTA.setHostname(id);
     server.send(200, "text/html", "OK");
     ESP.reset();
   });
-
+//Warning
   server.on("/getid", [](){ 
     server.send(200, "text/html", (String)id);
   });
@@ -97,26 +157,45 @@ ArduinoOTA.setHostname(id);
   server.on("/gettype", [](){ 
     server.send(200, "text/html", (String)type);
   });
-
+// /Warning
   server.on("/getnameandid", [](){
     String tmpe = (String)id + "/n" + (String)type;
     server.send(200, "text/html", tmpe);
   });
 
+  server.on("/jsonget", [](){    
+    server.send(200, "text/html", Parse(server.arg(0)));    
+  });
+
   server.on("/setlight", [](){ 
     analogWrite(Keys[server.arg(0).toInt()], server.arg(1).toInt());
-    server.send(200, "text/html", String(server.arg(0).toInt()) + " as " + String(server.arg(1).toInt()));
+    server.send(200, "text/html", String(server.arg(0).toInt()) + " as " + String(server.arg(1).toInt()));    
   });
 
   server.on("/strobo", [](){ 
+    server.send(200, "text/html", String(server.arg(0).toInt()) + " as " + String(server.arg(1).toInt()));
     int col = server.arg(1).toInt();
     for(int i = 0; i < col; i++){
-        analogWrite(Keys[server.arg(0).toInt()], 255);
+        analogWrite(Keys[server.arg(0).toInt()], 1023);
         delay(server.arg(2).toInt());
         analogWrite(Keys[server.arg(0).toInt()], 0);
         delay(server.arg(2).toInt());
     }
-    server.send(200, "text/html", String(server.arg(0).toInt()) + " as " + String(server.arg(1).toInt()));
+  });
+
+  server.on("/stroboall", [](){ 
+    server.send(200, "text/html", String("all") + " as " + String(server.arg(0).toInt()));
+    int col = server.arg(0).toInt();
+    for(int i = 0; i < col; i++){
+        analogWrite(Keys[0], 1023);
+        analogWrite(Keys[1], 1023);
+        analogWrite(Keys[2], 1023);
+        delay(server.arg(1).toInt());
+        analogWrite(Keys[0], 0);
+        analogWrite(Keys[1], 0);
+        analogWrite(Keys[2], 0);
+        delay(server.arg(1).toInt());
+    }
   });
 
   server.onNotFound([](){
