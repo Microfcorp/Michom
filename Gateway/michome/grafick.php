@@ -33,14 +33,14 @@
 		if(!empty($_GET['period'])){
 			$period = $_GET['period']; //144-oneday
 		  if(!empty($_GET['start'])){
-			  $results = mysqli_query($link, "SELECT * FROM michom WHERE `ip`='192.168.1.10' AND `id` >= ".$_GET['start']." AND `id` <= (".$_GET['start']." + ".$period.") ORDER BY id DESC LIMIT " . $period);
+			  $results = mysqli_query($link, "SELECT * FROM michom WHERE `type`='msinfoo' AND `ip`='192.168.1.10' AND `id` >= ".$_GET['start']." AND `id` <= (".$_GET['start']." + ".$period.") ORDER BY id DESC LIMIT " . $period);
 		  }
 		  else{
-			$results = mysqli_query($link, "SELECT * FROM michom WHERE `ip`='192.168.1.10' ORDER BY id DESC LIMIT " . $_GET['period']);
+			$results = mysqli_query($link, "SELECT * FROM michom WHERE `type`='msinfoo' AND `ip`='192.168.1.10' ORDER BY id DESC LIMIT " . $_GET['period']);
 		  }
 		}
 		else{
-		$results = mysqli_query($link, "SELECT * FROM michom WHERE `ip`='192.168.1.10'");
+		$results = mysqli_query($link, "SELECT * FROM michom WHERE `type`='msinfoo' AND `ip`='192.168.1.10'");
 		}
 	}
 	
