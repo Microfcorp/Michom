@@ -62,6 +62,12 @@ $time = date("i");
 echo date("i", $time - $curdate) . "\n";*/
 	
 	//$sleddate = date_parse($date)['minute'] - $curdate;	
+	
+	$files = scandir("/var/www/html/site/image/graphical/");
+rsort($files, SORT_NUMERIC);
+
+$lastfile = $files[count($files)-1];
+
 	?>
 <!Doctype html>
 <html>
@@ -222,6 +228,9 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
 	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>  
 	
 	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>
+	
+	<a class="tooltip"><p>Последнее фото: <? echo $lastfile;?></p><span><img width="540px" height="335px" src="/site/image/graphical/<?php echo $lastfile;?>"/></span></a>
+
 	<p><?include_once("prognoz.php");?></p>
 	
 	<span>Время восхода солнца: <? echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>

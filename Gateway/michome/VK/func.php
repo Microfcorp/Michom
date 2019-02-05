@@ -44,4 +44,7 @@ function Michome_DateVrem(){
 function Michome_SetLight($p,$s){
 	return Michome_SetCmd('setlight?p='.$p.'%26s='.$s,"192.168.1.34");
 }
+function Michome_SetCharModule($p,$s){
+	return Michome_SetCmd('setlight?p='.$p.'%26s='.$s,"192.168.1.12");
+}
 ?>

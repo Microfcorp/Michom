@@ -64,13 +64,15 @@ function Graphics(type,module,device,value){
 	if(type == "col"){
 	  var txt= value;
 	  document.getElementById('img1').src = "grafick.php?type="+module+"&period="+txt;
+	  Start("type="+module+"&period="+txt);
 	}
 	else if(type == "day"){
 		var txt= value;
 	    document.getElementById('img1').src = "grafick.php?type="+module+"&period="+(txt*144);
+		Start("type="+module+"&period="+(txt*144));
 	}
 	else if(type == "curday"){		
-		var datea = "<?echo date("Y-m-d");?>";
+		var datea = '<?php echo(date("Y-m-d")); ?>';
 		selected(device,module,datea);
 		//postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/timeins.php?device='+device+'&type=oneday', "", function(d){document.getElementById('img1').src = "grafick.php?type="+module+"&period="+d;});			    
 	}
@@ -85,12 +87,18 @@ function Rezim(d){
 }
 
 function selected(device,module,date){
+	//p-11-13-2018 18-40
+	
 	postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/timeins.php?device='+device+'&type=selday&date='+date, "", function(d){
 		
 		var arr = d.split(';');
 		document.getElementById('img1').src = "grafick.php?type="+module+"&period="+arr[2]+"&start="+arr[0];
-		
-		});			    
+		Start("type="+module+"&period="+arr[2]+"&start="+arr[0]);
+	});	
+
+	postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/getphoto.php?date='+date, "", function(d){
+		document.getElementById('img2').src = "/site/image/graphical/"+d;
+	});		
 		
 }
 function CurDate(){
@@ -98,11 +106,42 @@ function CurDate(){
 	
 	return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
 }
-function Start(){
+function Load(){
 	Graphics('curday','tempul','192.168.1.11',"")
 }
 
-window.setTimeout("Start()",10);
+window.setTimeout("Load()",10);
+</script>
+<script>
+function Setn(id){
+	//alert(id);
+	temphist.innerHTML = "  "+id;
+}
+function Start(resp){
+	postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/grafick.php?'+resp, "", function(d){
+        
+        while (maps.firstChild) {
+            maps.removeChild(maps.firstChild);
+        }
+		var json = JSON.parse(d);
+		//alert(json[0][0]);
+		for(var i=0; i < json[0].length; i++){
+			var str = json[0][i];
+			var radius = 4;
+			var x = str.split(';')[0];
+			var y = str.split(';')[1];
+			///////
+			var area = document.createElement('area');
+			area.shape = "circle";
+			area.coords = x+","+y+","+radius;
+			area.target = "_blank";
+			area.alt = "hyacinth";
+			area.setAttribute("onclick", "Setn('"+str.split(';')[2]+" было "+str.split(';')[3]+"')");
+			maps.appendChild(area);
+			
+		}
+	});
+}
 </script>
 <style>
 /* скрываем чекбоксы и блоки с содержанием */
@@ -151,6 +190,15 @@ to { opacity: 1 }
 to { opacity: 1 }   
 }
 
+.temphis{
+	padding-left: 10px;
+	box-shadow: inset 10px 4px 20px 1px #1ea52e;
+	color: blue;
+}
+.temphis:hover{
+	box-shadow: inset 1px 4px 20px 1px #1ea52e;
+	color: red;
+}
 </style>
 </head>
 
@@ -278,8 +326,21 @@ to { opacity: 1 }
 <input value="За сегодня" OnClick="Graphics('curday','visota','192.168.1.10','')" type="button" /></br>
 <p>За <input onchange="selected('192.168.1.10','visota',this.value)" type="date" id='vibday' /></p>
 </div>
-
-<p><img id="img1" src="grafick.php?type=tempul&period=144"></img></p>
+<p class="temphis" id="temphist">Что когда было<p>
+<table>
+<tbody>
+<tr>
+<td><p><img id="img1" usemap="#flowers" src="grafick.php?type=tempul&period=144"></img></p></td>
+<td><p><img id="img2" width="540px" height="335px" src="grafick.php?type=tempul&period=144"></img></p></td>
+</tr>
+<tr>
+<td>
+<map id="maps" name="flowers">
+</map>
+</td>
+</tr>
+</tbody>
+</table>
 
 </body>
 </html>

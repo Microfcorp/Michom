@@ -13,7 +13,7 @@ if(!empty($_GET['type'])){
 $type = "`type`='".$_GET['type']."'";
 }
 else{
-	$type = 1;
+	$type = "`type`!='Log'";
 }
 $cmd = $_GET['cmd'];
 
@@ -21,30 +21,14 @@ $data[] = "";
 $date[] = "";
 
 if($cmd == "temper"){
-		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
-
-while($row = $results->fetch_assoc()) {
-    $data[] = $row['temp'];
-	$date[] = $row['date'];
-	$num = $num + 1;
-	}
-		$cart = array(
-  "name" => "getdata",
-  "type" => $cmd,
-  "col" => $num,
-  "device" => $device,
-  "data" => $data,
-  "date" => $date
-);
-echo json_encode( $cart );
-
-}
-if($cmd == "temperdate"){
+	if(isset($_GET['date'])){
 		$dates = $_GET['date'];
-		//$dates = new DateTime($dates);
-		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));
-		
+		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
 		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `id` >= '".explode(';',$req)[0]."' AND `id` <= '".explode(';',$req)[1]."' AND ".$type." AND ".$device);
+	}
+	else{
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+	}
 
 while($row = $results->fetch_assoc()) {
     $data[] = $row['temp'];
@@ -71,7 +55,14 @@ while($row = $results->fetch_assoc()) {
 echo $data[count($data) - 1];
 }
 elseif($cmd == "humm"){
-		$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$type." AND ".$device);
+	if(isset($_GET['date'])){
+		$dates = $_GET['date'];
+		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `id` >= '".explode(';',$req)[0]."' AND `id` <= '".explode(';',$req)[1]."' AND ".$type." AND ".$device);
+	}
+		else{
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+	}
 
 while($row = $results->fetch_assoc()) {
     $data[] = $row['humm'];
@@ -88,8 +79,16 @@ while($row = $results->fetch_assoc()) {
 );
 echo json_encode( $cart );
 }
+//delet...
 elseif($cmd == "tempertemp"){
-		$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$type." AND ".$device);
+	if(isset($_GET['date'])){
+		$dates = $_GET['date'];
+		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `id` >= '".explode(';',$req)[0]."' AND `id` <= '".explode(';',$req)[1]."' AND ".$type." AND ".$device);
+	}
+		else{
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+	}
 
 while($row = $results->fetch_assoc()) {
     $data[] = $row['temp'];
@@ -106,8 +105,16 @@ while($row = $results->fetch_assoc()) {
 );
 echo json_encode( $cart );
 }
+///delet...///
 elseif($cmd == "dawlen"){
-		$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$type." AND ".$device);
+	if(isset($_GET['date'])){
+		$dates = $_GET['date'];
+		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `id` >= '".explode(';',$req)[0]."' AND `id` <= '".explode(';',$req)[1]."' AND ".$type." AND ".$device);
+	}
+		else{
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+	}
 
 while($row = $results->fetch_assoc()) {
     $data[] = $row['dawlen'];
@@ -124,7 +131,7 @@ while($row = $results->fetch_assoc()) {
 );
 echo json_encode( $cart );
 }
-elseif($cmd == "posledob"){
+elseif($cmd == "posledob"){	
 		$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$type." AND ".$device);
 
 while($row = $results->fetch_assoc()) {
@@ -134,7 +141,14 @@ while($row = $results->fetch_assoc()) {
 echo $date ;
 }
 elseif($cmd == "cursvet"){
-		$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$device." AND type = \"get_light_status\"");
+	if(isset($_GET['date'])){
+		$dates = $_GET['date'];
+		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `id` >= '".explode(';',$req)[0]."' AND `id` <= '".explode(';',$req)[1]."' AND type = \"get_light_status\" AND ".$device);
+	}
+	else{
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE type = \"get_light_status\" AND ".$device);
+	}
 
 while($row = $results->fetch_assoc()) {
     $data[] = $row['data'];
@@ -153,7 +167,14 @@ while($row = $results->fetch_assoc()) {
 echo json_encode( $cart );
 }
 elseif($cmd == "sobit"){
-		$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$type." AND ".$device);
+	if(isset($_GET['date'])){
+		$dates = $_GET['date'];
+		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `id` >= '".explode(';',$req)[0]."' AND `id` <= '".explode(';',$req)[1]."' AND ".$type." AND ".$device);
+	}
+		else{
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+	}
 
 while($row = $results->fetch_assoc()) {
 	$typedata[] = $row['type'];
@@ -173,7 +194,14 @@ while($row = $results->fetch_assoc()) {
 echo json_encode( $cart );
 }
 elseif($cmd == "visota"){
-		$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$type." AND ".$device);
+	if(isset($_GET['date'])){
+		$dates = $_GET['date'];
+		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `id` >= '".explode(';',$req)[0]."' AND `id` <= '".explode(';',$req)[1]."' AND ".$type." AND ".$device);
+	}
+		else{
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+	}
 
 while($row = $results->fetch_assoc()) {
     $data[] = $row['visota'];

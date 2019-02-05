@@ -191,6 +191,10 @@ $wind_dir_text_uk = array("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
 $results = mysqli_query($link, "SELECT * FROM michom WHERE type='msinfoo'");
 while($row = $results->fetch_assoc()) {
 	$pressure[] = $row['dawlen'];
+}
+
+$results = mysqli_query($link, "SELECT * FROM michom WHERE type='termometr'");
+while($row = $results->fetch_assoc()) {
 	$temp = $row['temp'];
 }
 
