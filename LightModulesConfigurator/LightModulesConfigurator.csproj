@@ -58,6 +58,15 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Graphick.cs" />
+    <Compile Include="Module\IMain.cs" />
+    <Compile Include="Module\Light.cs" />
+    <Compile Include="Module\Main.cs" />
+    <Compile Include="Module\PlayFile.cs" />
+    <Compile Include="Module\Sleep.cs" />
+    <Compile Include="Module\Strobo.cs" />
+    <Compile Include="Module\StroboAll.cs" />
+    <Compile Include="Module\StroboAllPro.cs" />
+    <Compile Include="Module\StroboPro.cs" />
     <Compile Include="Player.cs">
       <SubType>Component</SubType>
     </Compile>

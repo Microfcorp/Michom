@@ -10,6 +10,7 @@ using System.Text;
 using System.Windows.Forms;
 using michomeframework;
 using MicrofPlayer;
+using LightModulesConfigurator.Module;
 
 namespace LightModulesConfigurator
 {
@@ -25,7 +26,7 @@ namespace LightModulesConfigurator
         public Form1()
         {
             InitializeComponent();
-            paramss = new object[] { label3, label4, label5, label6, textBox1, trackBar1, trackBar2, trackBar3, label7, textBox2, checkBox1, label8, trackBar4 };
+            paramss = new object[] { label3, label4, label5, label6, textBox1, trackBar1, trackBar2, trackBar3, label7, textBox2, checkBox1, label8, trackBar4, trackBar8, label13 };
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
@@ -69,16 +70,38 @@ namespace LightModulesConfigurator
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Steep tmp = new Steep();
-            tmp.name = namesc;
-            tmp.brightness = trackBar2.Value.ToString();
-            tmp.col = trackBar4.Value.ToString();
-            tmp.file = textBox2.Text;
-            tmp.pin = trackBar1.Value.ToString();
-            tmp.time = textBox1.Text;
-            tmp.times = trackBar3.Value.ToString();
-            tmp.waiting = checkBox1.Checked.ToString().ToLower();
-            scenes.Params.Add(tmp);
+          
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0:
+                    Light li = new Light(namesc, trackBar1.Value.ToString(), trackBar2.Value.ToString());
+                    scenes.Params.Add(li);
+                    break;
+                case 1:
+                    Strobo st = new Strobo(namesc, trackBar1.Value.ToString(), trackBar4.Value.ToString(), checkBox1.Checked.ToString().ToLower(), trackBar3.Value.ToString());
+                    scenes.Params.Add(st);
+                    break;
+                case 2:
+                    StroboPro stp = new StroboPro(namesc, trackBar1.Value.ToString(), trackBar4.Value.ToString(), checkBox1.Checked.ToString().ToLower(), trackBar3.Value.ToString(), trackBar8.Value.ToString());
+                    scenes.Params.Add(stp);
+                    break;
+                case 3:
+                    StroboAll sa = new StroboAll(namesc, trackBar4.Value.ToString(), checkBox1.Checked.ToString().ToLower(), trackBar3.Value.ToString());
+                    scenes.Params.Add(sa);
+                    break;
+                case 4:
+                    StroboAllPro sap = new StroboAllPro(namesc, trackBar4.Value.ToString(), checkBox1.Checked.ToString().ToLower(), trackBar3.Value.ToString(), trackBar8.Value.ToString());
+                    scenes.Params.Add(sap);
+                    break;
+                case 5:
+                    Sleep sl = new Sleep(namesc, textBox1.Text);
+                    scenes.Params.Add(sl);
+                    break;
+                case 6:
+                    PlayFile pf = new PlayFile(namesc, textBox2.Text);
+                    scenes.Params.Add(pf);
+                    break;
+            }
         }
 
         private void CloseOpen(object[] opens)
@@ -123,15 +146,25 @@ namespace LightModulesConfigurator
             }
             else if (comboBox1.SelectedIndex == 2)
             {
+                namesc = "strobopro";
+                CloseOpen(new object[] { label4, label6, label8, trackBar1, trackBar3, trackBar4, checkBox1, trackBar8, label13 });
+            }
+            else if (comboBox1.SelectedIndex == 3)
+            {
                 namesc = "stroboall";
                 CloseOpen(new object[] { label6, trackBar3, checkBox1, label8, trackBar4 });
             }
-            else if (comboBox1.SelectedIndex == 3)
+            else if (comboBox1.SelectedIndex == 4)
+            {
+                namesc = "stroboallpro";
+                CloseOpen(new object[] { label6, trackBar3, checkBox1, label8, trackBar4, trackBar8, label13 });
+            }
+            else if (comboBox1.SelectedIndex == 5)
             {
                 CloseOpen(new object[] { label3, textBox1 });
                 namesc = "sleep";
             }
-            else if (comboBox1.SelectedIndex == 4)
+            else if (comboBox1.SelectedIndex == 6)
             {
                 CloseOpen(new object[] { label7, textBox2 });
                 namesc = "playmusic";
@@ -146,7 +179,7 @@ namespace LightModulesConfigurator
         {
             scenes = new Sceene();
             scenes.name = toolStripTextBox4.Text;
-            scenes.Params = new List<Steep>();
+            scenes.Params = new List<Main>();
         }
 
         private void trackBar4_Scroll(object sender, EventArgs e)
@@ -158,6 +191,7 @@ namespace LightModulesConfigurator
         {
             SaveFileDialog svf = new SaveFileDialog();
             svf.Filter = "JSON File|*.json";
+            svf.FileName = scenes.name;
             if (svf.ShowDialog() == DialogResult.OK)
             {
                 string serialized = JsonConvert.SerializeObject(scenes);
@@ -312,6 +346,16 @@ namespace LightModulesConfigurator
             pl.MediaPlay += Play;
             pl.MediaPause += Pause;
 #endif
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBar8_Scroll(object sender, EventArgs e)
+        {
+            label13.Text = string.Format("Пауза {1}стробо ({0})", trackBar8.Value, Environment.NewLine);
         }
     }
 }

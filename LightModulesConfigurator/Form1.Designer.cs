@@ -39,6 +39,9 @@
             this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.прямоеПодключениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox2 = new System.Windows.Forms.ToolStripTextBox();
+            this.чтоИспользоватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.прямоеПодключениеToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.шлюзToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.kodiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox3 = new System.Windows.Forms.ToolStripTextBox();
             this.управлениеОсвещениемToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,6 +54,7 @@
             this.панель2ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.включитьToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.выключитьToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.полноеУправлениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -71,20 +75,18 @@
             this.label2 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.чтоИспользоватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.шлюзToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.прямоеПодключениеToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.полноеУправлениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.trackBar5 = new System.Windows.Forms.TrackBar();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.label11 = new System.Windows.Forms.Label();
-            this.trackBar6 = new System.Windows.Forms.TrackBar();
+            this.button3 = new System.Windows.Forms.Button();
             this.trackBar7 = new System.Windows.Forms.TrackBar();
             this.label12 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
+            this.trackBar6 = new System.Windows.Forms.TrackBar();
+            this.label11 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.trackBar5 = new System.Windows.Forms.TrackBar();
+            this.label13 = new System.Windows.Forms.Label();
+            this.trackBar8 = new System.Windows.Forms.TrackBar();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar4)).BeginInit();
@@ -92,10 +94,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar8)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -188,6 +191,29 @@
             this.toolStripTextBox2.Size = new System.Drawing.Size(100, 23);
             this.toolStripTextBox2.Text = "192.168.1.34";
             // 
+            // чтоИспользоватьToolStripMenuItem
+            // 
+            this.чтоИспользоватьToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.прямоеПодключениеToolStripMenuItem1,
+            this.шлюзToolStripMenuItem1});
+            this.чтоИспользоватьToolStripMenuItem.Name = "чтоИспользоватьToolStripMenuItem";
+            this.чтоИспользоватьToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.чтоИспользоватьToolStripMenuItem.Text = "Что использовать?";
+            // 
+            // прямоеПодключениеToolStripMenuItem1
+            // 
+            this.прямоеПодключениеToolStripMenuItem1.Name = "прямоеПодключениеToolStripMenuItem1";
+            this.прямоеПодключениеToolStripMenuItem1.Size = new System.Drawing.Size(197, 22);
+            this.прямоеПодключениеToolStripMenuItem1.Text = "Прямое подключение";
+            this.прямоеПодключениеToolStripMenuItem1.Click += new System.EventHandler(this.прямоеПодключениеToolStripMenuItem1_Click);
+            // 
+            // шлюзToolStripMenuItem1
+            // 
+            this.шлюзToolStripMenuItem1.Name = "шлюзToolStripMenuItem1";
+            this.шлюзToolStripMenuItem1.Size = new System.Drawing.Size(197, 22);
+            this.шлюзToolStripMenuItem1.Text = "Шлюз";
+            this.шлюзToolStripMenuItem1.Click += new System.EventHandler(this.шлюзToolStripMenuItem1_Click);
+            // 
             // kodiToolStripMenuItem
             // 
             this.kodiToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -219,20 +245,20 @@
             this.включитьToolStripMenuItem,
             this.выключитьToolStripMenuItem});
             this.панель1ToolStripMenuItem.Name = "панель1ToolStripMenuItem";
-            this.панель1ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.панель1ToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.панель1ToolStripMenuItem.Text = "Панель 1";
             // 
             // включитьToolStripMenuItem
             // 
             this.включитьToolStripMenuItem.Name = "включитьToolStripMenuItem";
-            this.включитьToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.включитьToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.включитьToolStripMenuItem.Text = "Включить";
             this.включитьToolStripMenuItem.Click += new System.EventHandler(this.включитьToolStripMenuItem_Click);
             // 
             // выключитьToolStripMenuItem
             // 
             this.выключитьToolStripMenuItem.Name = "выключитьToolStripMenuItem";
-            this.выключитьToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.выключитьToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.выключитьToolStripMenuItem.Text = "Выключить";
             this.выключитьToolStripMenuItem.Click += new System.EventHandler(this.выключитьToolStripMenuItem_Click);
             // 
@@ -242,20 +268,20 @@
             this.включитьToolStripMenuItem1,
             this.выключитьToolStripMenuItem1});
             this.панель2ToolStripMenuItem.Name = "панель2ToolStripMenuItem";
-            this.панель2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.панель2ToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.панель2ToolStripMenuItem.Text = "Панель 2";
             // 
             // включитьToolStripMenuItem1
             // 
             this.включитьToolStripMenuItem1.Name = "включитьToolStripMenuItem1";
-            this.включитьToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.включитьToolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
             this.включитьToolStripMenuItem1.Text = "Включить";
             this.включитьToolStripMenuItem1.Click += new System.EventHandler(this.включитьToolStripMenuItem1_Click);
             // 
             // выключитьToolStripMenuItem1
             // 
             this.выключитьToolStripMenuItem1.Name = "выключитьToolStripMenuItem1";
-            this.выключитьToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.выключитьToolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
             this.выключитьToolStripMenuItem1.Text = "Выключить";
             this.выключитьToolStripMenuItem1.Click += new System.EventHandler(this.выключитьToolStripMenuItem1_Click);
             // 
@@ -265,22 +291,29 @@
             this.включитьToolStripMenuItem2,
             this.выключитьToolStripMenuItem2});
             this.панель2ToolStripMenuItem1.Name = "панель2ToolStripMenuItem1";
-            this.панель2ToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.панель2ToolStripMenuItem1.Size = new System.Drawing.Size(185, 22);
             this.панель2ToolStripMenuItem1.Text = "Панель 2";
             // 
             // включитьToolStripMenuItem2
             // 
             this.включитьToolStripMenuItem2.Name = "включитьToolStripMenuItem2";
-            this.включитьToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
+            this.включитьToolStripMenuItem2.Size = new System.Drawing.Size(138, 22);
             this.включитьToolStripMenuItem2.Text = "Включить";
             this.включитьToolStripMenuItem2.Click += new System.EventHandler(this.включитьToolStripMenuItem2_Click);
             // 
             // выключитьToolStripMenuItem2
             // 
             this.выключитьToolStripMenuItem2.Name = "выключитьToolStripMenuItem2";
-            this.выключитьToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
+            this.выключитьToolStripMenuItem2.Size = new System.Drawing.Size(138, 22);
             this.выключитьToolStripMenuItem2.Text = "Выключить";
             this.выключитьToolStripMenuItem2.Click += new System.EventHandler(this.выключитьToolStripMenuItem2_Click);
+            // 
+            // полноеУправлениеToolStripMenuItem
+            // 
+            this.полноеУправлениеToolStripMenuItem.Name = "полноеУправлениеToolStripMenuItem";
+            this.полноеУправлениеToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.полноеУправлениеToolStripMenuItem.Text = "Полное управление";
+            this.полноеУправлениеToolStripMenuItem.Click += new System.EventHandler(this.полноеУправлениеToolStripMenuItem_Click);
             // 
             // panel1
             // 
@@ -305,9 +338,11 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.textBox2);
+            this.groupBox1.Controls.Add(this.trackBar8);
             this.groupBox1.Controls.Add(this.trackBar4);
+            this.groupBox1.Controls.Add(this.textBox2);
+            this.groupBox1.Controls.Add(this.label13);
+            this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.button2);
@@ -322,9 +357,9 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.comboBox1);
             this.groupBox1.Controls.Add(this.trackBar1);
-            this.groupBox1.Location = new System.Drawing.Point(23, 57);
+            this.groupBox1.Location = new System.Drawing.Point(23, 27);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(347, 374);
+            this.groupBox1.Size = new System.Drawing.Size(347, 404);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Редактирование сценария";
@@ -341,7 +376,7 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(83, 236);
+            this.textBox2.Location = new System.Drawing.Point(83, 272);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(258, 20);
             this.textBox2.TabIndex = 13;
@@ -362,7 +397,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(9, 259);
+            this.checkBox1.Location = new System.Drawing.Point(6, 289);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(136, 17);
             this.checkBox1.TabIndex = 14;
@@ -373,7 +408,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 239);
+            this.label7.Location = new System.Drawing.Point(6, 275);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(71, 13);
             this.label7.TabIndex = 12;
@@ -382,7 +417,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(6, 282);
+            this.button2.Location = new System.Drawing.Point(6, 312);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(335, 40);
             this.button2.TabIndex = 11;
@@ -392,7 +427,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(6, 328);
+            this.button1.Location = new System.Drawing.Point(6, 358);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(335, 40);
             this.button1.TabIndex = 10;
@@ -486,7 +521,9 @@
             this.comboBox1.Items.AddRange(new object[] {
             "Изменить состояние освещения",
             "Стробо",
+            "Стробо Про",
             "Стробо все",
+            "Стробо все Про",
             "Ожидание",
             "Запустить трек на воспроизведение"});
             this.comboBox1.Location = new System.Drawing.Point(88, 23);
@@ -504,36 +541,6 @@
             this.trackBar1.TabIndex = 5;
             this.trackBar1.Visible = false;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
-            // 
-            // чтоИспользоватьToolStripMenuItem
-            // 
-            this.чтоИспользоватьToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.прямоеПодключениеToolStripMenuItem1,
-            this.шлюзToolStripMenuItem1});
-            this.чтоИспользоватьToolStripMenuItem.Name = "чтоИспользоватьToolStripMenuItem";
-            this.чтоИспользоватьToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.чтоИспользоватьToolStripMenuItem.Text = "Что использовать?";
-            // 
-            // шлюзToolStripMenuItem1
-            // 
-            this.шлюзToolStripMenuItem1.Name = "шлюзToolStripMenuItem1";
-            this.шлюзToolStripMenuItem1.Size = new System.Drawing.Size(197, 22);
-            this.шлюзToolStripMenuItem1.Text = "Шлюз";
-            this.шлюзToolStripMenuItem1.Click += new System.EventHandler(this.шлюзToolStripMenuItem1_Click);
-            // 
-            // прямоеПодключениеToolStripMenuItem1
-            // 
-            this.прямоеПодключениеToolStripMenuItem1.Name = "прямоеПодключениеToolStripMenuItem1";
-            this.прямоеПодключениеToolStripMenuItem1.Size = new System.Drawing.Size(197, 22);
-            this.прямоеПодключениеToolStripMenuItem1.Text = "Прямое подключение";
-            this.прямоеПодключениеToolStripMenuItem1.Click += new System.EventHandler(this.прямоеПодключениеToolStripMenuItem1_Click);
-            // 
-            // полноеУправлениеToolStripMenuItem
-            // 
-            this.полноеУправлениеToolStripMenuItem.Name = "полноеУправлениеToolStripMenuItem";
-            this.полноеУправлениеToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
-            this.полноеУправлениеToolStripMenuItem.Text = "Полное управление";
-            this.полноеУправлениеToolStripMenuItem.Click += new System.EventHandler(this.полноеУправлениеToolStripMenuItem_Click);
             // 
             // groupBox2
             // 
@@ -553,63 +560,17 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Полное управление";
             this.groupBox2.Visible = false;
+            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
-            // trackBar5
+            // button3
             // 
-            this.trackBar5.Location = new System.Drawing.Point(69, 62);
-            this.trackBar5.Maximum = 1023;
-            this.trackBar5.Name = "trackBar5";
-            this.trackBar5.Size = new System.Drawing.Size(285, 45);
-            this.trackBar5.TabIndex = 0;
-            this.trackBar5.Scroll += new System.EventHandler(this.trackBar5_Scroll);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 62);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(65, 13);
-            this.label9.TabIndex = 1;
-            this.label9.Text = "Яркость (0)";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 28);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(45, 13);
-            this.label10.TabIndex = 2;
-            this.label10.Text = "Модуль";
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.Location = new System.Drawing.Point(57, 26);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(290, 20);
-            this.numericUpDown1.TabIndex = 3;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 106);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(58, 13);
-            this.label11.TabIndex = 4;
-            this.label11.Text = "Стробо (0)";
-            // 
-            // trackBar6
-            // 
-            this.trackBar6.Location = new System.Drawing.Point(69, 103);
-            this.trackBar6.Maximum = 100;
-            this.trackBar6.Name = "trackBar6";
-            this.trackBar6.Size = new System.Drawing.Size(278, 45);
-            this.trackBar6.TabIndex = 5;
-            this.trackBar6.Scroll += new System.EventHandler(this.trackBar6_Scroll);
+            this.button3.Location = new System.Drawing.Point(0, 192);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(341, 40);
+            this.button3.TabIndex = 8;
+            this.button3.Text = "Старт";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // trackBar7
             // 
@@ -629,26 +590,95 @@
             this.label12.TabIndex = 6;
             this.label12.Text = "Время (мс) (0)";
             // 
-            // button3
+            // trackBar6
             // 
-            this.button3.Location = new System.Drawing.Point(0, 192);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(341, 40);
-            this.button3.TabIndex = 8;
-            this.button3.Text = "Старт";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.trackBar6.Location = new System.Drawing.Point(69, 103);
+            this.trackBar6.Maximum = 100;
+            this.trackBar6.Name = "trackBar6";
+            this.trackBar6.Size = new System.Drawing.Size(278, 45);
+            this.trackBar6.TabIndex = 5;
+            this.trackBar6.Scroll += new System.EventHandler(this.trackBar6_Scroll);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 106);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(58, 13);
+            this.label11.TabIndex = 4;
+            this.label11.Text = "Стробо (0)";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(57, 26);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(290, 20);
+            this.numericUpDown1.TabIndex = 3;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 28);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(45, 13);
+            this.label10.TabIndex = 2;
+            this.label10.Text = "Модуль";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 62);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(65, 13);
+            this.label9.TabIndex = 1;
+            this.label9.Text = "Яркость (0)";
+            // 
+            // trackBar5
+            // 
+            this.trackBar5.Location = new System.Drawing.Point(69, 62);
+            this.trackBar5.Maximum = 1023;
+            this.trackBar5.Name = "trackBar5";
+            this.trackBar5.Size = new System.Drawing.Size(285, 45);
+            this.trackBar5.TabIndex = 0;
+            this.trackBar5.Scroll += new System.EventHandler(this.trackBar5_Scroll);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(13, 247);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(57, 26);
+            this.label13.TabIndex = 18;
+            this.label13.Text = "Пауза \r\nстробо (0)";
+            this.label13.Visible = false;
+            // 
+            // trackBar8
+            // 
+            this.trackBar8.Location = new System.Drawing.Point(88, 247);
+            this.trackBar8.Maximum = 150;
+            this.trackBar8.Minimum = 1;
+            this.trackBar8.Name = "trackBar8";
+            this.trackBar8.Size = new System.Drawing.Size(253, 45);
+            this.trackBar8.TabIndex = 17;
+            this.trackBar8.Value = 1;
+            this.trackBar8.Visible = false;
+            this.trackBar8.Scroll += new System.EventHandler(this.trackBar8_Scroll);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1108, 443);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.groupBox2);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -663,10 +693,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar8)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -731,6 +762,8 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TrackBar trackBar5;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TrackBar trackBar8;
     }
 }
 

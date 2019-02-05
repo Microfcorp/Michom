@@ -60,13 +60,7 @@ namespace MicrofPlayer
 
         public void SetPath(string URL)
         {
-            string tmp = URL;
-            if (tmp.Split('.')[tmp.Split('.').Length - 1] == "mp3")
-            {               
-                Path = tmp;
-            }
-            else
-                throw new Exception("Error MP3 Files");
+            Path = URL;
         }
 
 
@@ -129,7 +123,7 @@ namespace MicrofPlayer
         private void SelectTrack(object sender, EventArgs e)
         {
             OpenFileDialog opg = new OpenFileDialog();
-            opg.Filter = "MP3 Files|*.mp3";
+            opg.Filter = "MP3 Files|*.mp3|OGG Files|*.ogg|WMV Files|*.wmv|WMA Files|*.wma|AC3 Files|*.ac3|MP4 Files|*.mp4|FLAC Files|*.flac";
             if(opg.ShowDialog() == DialogResult.OK)
             {
                 Path = opg.FileName;
