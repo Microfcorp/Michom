@@ -14,28 +14,29 @@ else:
 	exit("Ошибка ключей!")
 	
 
-def Send(deistv, pin, light, delay):
+def Send(deistv, pin, light, delay, delay1):
 	if gateway == "192.168.1.42":
 		print("Посылаю команду напрямую")
-		#exit('http://192.168.1.34/'+deistv+'?p='+pin+"&q="+light+"&d="+delay)
-		my_web = urllib.request.urlopen('http://192.168.1.34/'+deistv+'?p='+pin+"&q="+light+"&d="+delay)
+		print('http://192.168.1.34/'+deistv+'?p='+pin+"&q="+light+"&d="+delay)
+		my_web = urllib.request.urlopen('http://192.168.1.34/'+deistv+'?p='+pin+"&q="+light+"&d="+delay+"&s="+delay1)
 		print("Ответ: " + my_web.read().decode('UTF-8'))
 	else:
 		print("Посылаю команду через шлюз")
-		my_web = urllib.request.urlopen('http:///michome/api/setcmd.php?device=192.168.1.34&cmd='+deistv+'?p='+pin+"%26q="+light+"%26d="+delay)
+		my_web = urllib.request.urlopen('http://91.202.27.167/michome/api/setcmd.php?device=192.168.1.34&cmd='+deistv+'?p='+pin+"%26q="+light+"%26d="+delay)
 		print("Ответ: " + my_web.read().decode('UTF-8'))
 	
 def SendKODI(file):
 	if gateway == "192.168.1.42":
 		print("Посылаю команду напрямую")
-		my_web = urllib.request.urlopen('http://:8080/jsonrpc?request={%22jsonrpc%22:%222.0%22,%22id%22:%221%22,%22method%22:%22Player.Open%22,%22params%22:{%22item%22:{%22file%22:%22'+file+'%22}}}')
+		my_web = urllib.request.urlopen('http://192.168.1.42:8080/jsonrpc?request={%22jsonrpc%22:%222.0%22,%22id%22:%221%22,%22method%22:%22Player.Open%22,%22params%22:{%22item%22:{%22file%22:%22'+file+'%22}}}')
+		print('http://192.168.1.42:8080/jsonrpc?request={%22jsonrpc%22:%222.0%22,%22id%22:%221%22,%22method%22:%22Player.Open%22,%22params%22:{%22item%22:{%22file%22:%22'+file+'%22}}}');
 		if json.loads(my_web.read().decode('UTF-8'))['result'] == 'OK':
 			print("Успешно")
 		else:
 			print("Ошибка")
 	else:
 		print("Посылаю команду через шлюз")
-		my_web = urllib.request.urlopen('http://:8080/jsonrpc?request={%22jsonrpc%22:%222.0%22,%22id%22:%221%22,%22method%22:%22Player.Open%22,%22params%22:{%22item%22:{%22file%22:%22'+file+'%22}}}')
+		my_web = urllib.request.urlopen('http://91.202.27.167:8080/jsonrpc?request={%22jsonrpc%22:%222.0%22,%22id%22:%221%22,%22method%22:%22Player.Open%22,%22params%22:{%22item%22:{%22file%22:%22'+file+'%22}}}')
 		if json.loads(my_web.read().decode('UTF-8'))['result'] == 'OK':
 			print("Успешно")
 		else:
@@ -63,23 +64,33 @@ jsonDate = json.loads(data)
 
 print("Начинаю выполнение сценария "+jsonDate['name'])
 
-for val in jsonDate['params']:
+for val in jsonDate['Params']:
 	if val['name'] == "sleep":
 		print("Начинаю выполнять команду "+val['name'])
 		time.sleep(float(val['time']))
 	elif val['name'] == "setlight":
 		print("Начинаю выполнять команду "+val['name'])
-		Send(deistv='setlight', pin=val['pin'], light=val['brightness'], delay="")
+		Send(deistv='setlight', pin=val['pin'], light=val['brightness'], delay="", delay1="")
 	elif val['name'] == "strobo":
 		print("Начинаю выполнять команду "+val['name'])
-		Send(deistv='strobo', pin=val['pin'], light=val['col'], delay=val['times'])
+		Send(deistv='strobo', pin=val['pin'], light=val['col'], delay=val['times'], delay1='')
 		if val['waiting'] == 'true':			
 			time.sleep(float(val['col']) * (float(val['times']) * 2 / 1000))
 	elif val['name'] == "stroboall":
 		print("Начинаю выполнять команду "+val['name'])
-		Send(deistv='stroboall', pin=val['col'], light=val['times'], delay='')
+		Send(deistv='stroboall', pin=val['col'], light=val['times'], delay='', delay1='')
 		if val['waiting'] == 'true':			
 			time.sleep(float(val['col']) * (float(val['times']) * 2 / 1000))
+	elif val['name'] == "strobopro":
+		print("Начинаю выполнять команду "+val['name'])
+		Send(deistv='strobopro', pin=val['pin'], light=val['col'], delay=val['times'], delay1=val['nostrob'])
+		if val['waiting'] == 'true':			
+			time.sleep(float(val['col']) * (float(val['times']) * 2 / 1000))
+	elif val['name'] == "stroboallpro":
+		print("Начинаю выполнять команду "+val['name'])
+		Send(deistv='stroboallpro', pin=val['col'], light=val['times'], delay=val['nostrob'], delay1='')
+		if val['waiting'] == 'true':			
+			time.sleep(float(val['col']) * (float(val['times']) * 2 / 1000))		
 	elif val['name'] == "playmusic":
 		print("Начинаю выполнять команду "+val['name'])
 		SendKODI(file=val['file'])
