@@ -18,20 +18,15 @@ long interval = 400000;
 long previousMillis1 = 0;   // здесь будет храниться время последнего изменения состояния светодиода 
 long interval1 = 10000;
 
+long previousMillis2 = 0;   // здесь будет храниться время последнего изменения состояния светодиода 
+long interval2 = interval1-1800;
+
 //Logger logg(host, host1);
 Michome michome(ssid, password, id, type, host, host1);
 
 LiquidCrystal_I2C lcd(0x3F, 16, 2);
 
 ESP8266WebServer& server1 = michome.GetServer();
-
-JsonObject& Parse(String txt){  
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& root = jsonBuffer.parseObject(txt); 
-  
-  return root;
-  //logg.Log(tmp);
-}
 
 byte Dozd[] = {
   0x04,
@@ -121,7 +116,7 @@ byte watchh[] = {
   0x0E
 };
 
-String date[2][9] = {};
+String date[4][11] = {};
 
 int IDtoIcon(int id){
   if(id == 0){
@@ -149,6 +144,7 @@ int IDtoIcon(int id){
 
 void setup ( void ) {    
 
+  pinMode(12, INPUT_PULLUP);
   lcd.begin();
   lcd.createChar(0, Dozd);
   lcd.createChar(1, oblazn);
@@ -183,39 +179,52 @@ void setup ( void ) {
       lcd.noBacklight();
     }
 
-    date[0][0] = String(root["d"].as<int>());
-    date[0][1] = String(IDtoIcon(root["4"].as<int>()));
-    date[0][2] = String(IDtoIcon(root["4"].as<int>()));
-    date[0][3] = String(root["0"].as<String>());
-    date[0][4] = String(root["1"].as<String>());
-    date[0][5] = String(root["2"].as<String>());
-    date[0][6] = String(root["3"].as<String>());
-    date[0][7] = String(root["temp"].as<String>());
-    date[0][8] = String(root["time"].as<String>());
-    date[0][9] = String(root["dawlen"].as<String>());
-  
+    for(int i = 0; i < 3; i++){
+      date[i][0] = String(root["d"].as<int>());
+      date[i][1] = String(IDtoIcon(root["data"][i]["4"].as<int>()));
+      date[i][2] = String(IDtoIcon(root["data"][i]["4"].as<int>()));
+      date[i][3] = String(root["data"][i]["0"].as<String>());
+      date[i][4] = String(root["data"][i]["1"].as<String>());
+      date[i][5] = String(root["data"][i]["2"].as<String>());
+      date[i][6] = String(root["data"][i]["3"].as<String>());
+      date[i][7] = String(root["temp"].as<String>());
+      date[i][8] = String(root["time"].as<String>());
+      date[i][9] = String(root["dawlen"].as<String>());
+      date[i][10] = String(root["data"][i]["times"].as<String>());
+    }
+    
     lcd.clear();
-    lcd.home();
+    lcd.home(); 
     lcd.setCursor(0, 0);
-    lcd.write(IDtoIcon(root["4"].as<int>()));
+    lcd.print("Updating...");
+    
+    /*lcd.setCursor(0, 0);
+    lcd.write(date[0][1].toInt());
     lcd.setCursor(0, 1);
-    lcd.write(IDtoIcon(root["4"].as<int>()));
+    lcd.write(date[0][2].toInt());
     lcd.setCursor(2, 0);
-    lcd.print(root["0"].as<String>());
+    lcd.print(date[0][3]);
     lcd.write(5);
     lcd.setCursor(2, 1);
-    lcd.print(root["1"].as<String>());
+    lcd.print(date[0][4]);
     lcd.write(5);
     lcd.setCursor(9, 0);
-    lcd.print(root["2"].as<String>() + "m/s");
+    lcd.print(date[0][5] + "m/s");
     lcd.setCursor(9, 1);
-    lcd.print(root["3"].as<String>() + "mm");
+    lcd.print(date[0][6] + "mm"); */
     server1.send(200, "text/html", String("OK"));    
   });
 
   michome.init();
 }
 bool st = true;
+int day = 0;
+void plusday(){
+  day++;
+  if(day > 2){
+    day = 0;
+  }
+}
 void loop ( void ) {
 
   michome.running();
@@ -225,46 +234,67 @@ void loop ( void ) {
     michome.SendData(michome.ParseJson(String(type), ""));
   }
 
+  if (millis() - previousMillis2 > interval2) {
+    previousMillis2 = millis();   // запоминаем текущее время
+     
+    if(st){
+        lcd.clear();
+        lcd.home();  
+        lcd.setCursor(0, 0);
+        lcd.print(date[day][10]);
+        lcd.blink();
+    }
+  }
+
   if (millis() - previousMillis1 > interval1) {
     previousMillis1 = millis();   // запоминаем текущее время
+    
     if(date[0][0].toInt() == 1){
        lcd.backlight();
     }
     else{
        lcd.noBacklight();
     }
+    
     lcd.clear();
     lcd.home();   
-    if(st){                    
+    if(st){
         lcd.setCursor(0, 0);
-        lcd.write(date[0][1].toInt());
+        lcd.noBlink();                
+        lcd.setCursor(0, 0);
+        lcd.write(date[day][1].toInt());
         lcd.setCursor(0, 1);
-        lcd.write(date[0][2].toInt());
+        lcd.write(date[day][2].toInt());
         lcd.setCursor(2, 0);
-        lcd.print(date[0][3]);
+        lcd.print(date[day][3]);
         lcd.write(5);
         lcd.setCursor(2, 1);
-        lcd.print(date[0][4]);
+        lcd.print(date[day][4]);
         lcd.write(5);
         lcd.setCursor(9, 0);
-        lcd.print(date[0][5] + "m/s");
+        lcd.print(date[day][5] + "m/s");
         lcd.setCursor(9, 1);
-        lcd.print(date[0][6] + "mm");
+        lcd.print(date[day][6] + "mm");
         st = false;
+        plusday();
     }
     else{
       lcd.setCursor(0, 0);
       lcd.write(6);
-      lcd.setCursor(3, 0);
+      lcd.setCursor(2, 0);
       lcd.print(date[0][7]);
       lcd.setCursor(0, 1);
       lcd.write(7);
       lcd.setCursor(2, 1);
       lcd.print(date[0][8]);
       lcd.setCursor(10, 0);
-      lcd.print(date[0][9]);
+      lcd.print(date[1][9]);
       st = true;
     }
+  }
+
+  if(digitalRead(12) == LOW){
+    lcd.backlight();
   }
 }
 
