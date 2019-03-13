@@ -47,4 +47,7 @@ function Michome_SetLight($p,$s){
 function Michome_SetCharModule($p,$s){
 	return Michome_SetCmd('setlight?p='.$p.'%26s='.$s,"192.168.1.12");
 }
+function Michome_GetPrognoz($cmd,$device){
+	return file_get_contents("http://91.202.27.167/michome/api/getprognoz.php");
+}
 ?>

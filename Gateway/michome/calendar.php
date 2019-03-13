@@ -83,6 +83,7 @@ function Rezim(d){
 	document.getElementById("vlazn").style.display = "none";
 	document.getElementById("dawlen").style.display = "none";
 	document.getElementById("visota").style.display = "none";
+    document.getElementById("batareya").style.display = "none";
 	document.getElementById(d).style.display = "block";
 }
 
@@ -206,7 +207,8 @@ to { opacity: 1 }
 <?php include_once("/var/www/html/site/verh.php"); ?>
 
 <div>
-<input value="График уличной погоды" OnClick="Rezim('ulpog')" type="button" />
+<input value="График уличной температуры" OnClick="Rezim('ulpog')" type="button" />
+<input value="График температуры батереи системы отопления" OnClick="Rezim('batareya')" type="button" />
 <input value="График комнатной температуры" OnClick="Rezim('temper')" type="button" />
 <input value="График комнатной влажности" OnClick="Rezim('vlazn')" type="button" />
 <input value="График комнатного давления" OnClick="Rezim('dawlen')" type="button" />
@@ -237,6 +239,32 @@ to { opacity: 1 }
 </br></br>
 <input value="За сегодня" OnClick="Graphics('curday','tempul','192.168.1.11','')" type="button" /></br>
 <p>За <input onchange="selected('192.168.1.11','tempul',this.value)" type="date" id='vibday' /></p>
+</div>
+
+<div style="display:none;" id="batareya">
+
+<p style="color:red;">Просмотр графика температуры батереи системы отопления</p>
+
+    <input class="hide" id="hd-55" type="checkbox">
+    <label for="hd-55">По количеству измерений</label>
+    <div>        
+		<p>Введите количество измерений. Обратим ваше внимание на то что 144 измерения равняется 1 дню, а 77 - 12 часам, 6 - одному часу</p>
+		<input type="text" name="cmd" id='textcmd55' />
+		<input name="sendcmd" value="Прсмотреть" OnClick="Graphics('col','temperbatarey','localhost',document.getElementById('textcmd55').value)" type="button" />
+    </div>
+	
+</br></br>
+
+    <input class="hide" id="hd-55" type="checkbox">
+    <label for="hd-55">По количеству дней</label>
+    <div>        
+		<p>Введите количество дней. Обратим ваше внимание на то что за 1 день происходит 144 измерения</p>
+		<input type="text" name="cmd" id='daycmd55' />
+		<input value="Прсмотреть" OnClick="Graphics('day','temperbatarey','localhost',document.getElementById('daycmd55').value)" type="button" /></br>
+    </div>
+</br></br>
+<input value="За сегодня" OnClick="Graphics('curday','temperbatarey','localhost','')" type="button" /></br>
+<p>За <input onchange="selected('localhost','temperbatarey',this.value)" type="date" id='vibday' /></p>
 </div>
 
 <div style="display:none;" id="temper">

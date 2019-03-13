@@ -29,6 +29,20 @@
 		   $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.11'");
 		}
 	}
+    elseif($_GET['type'] == "temperbatarey"){
+		if(!empty($_GET['period'])){
+		  $period = $_GET['period']; //144-oneday				  
+		  if(!empty($_GET['start'])){
+			  $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='localhost' AND `id` >= ".$_GET['start']." AND `id` <= (".$_GET['start']." + ".$period.") ORDER BY id DESC LIMIT " . $period);
+		  }
+		  else{
+			  $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='localhost' ORDER BY id DESC LIMIT " . $period);
+		  }
+		}
+		else{
+		   $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='localhost'");
+		}
+	}
 	else{
 		if(!empty($_GET['period'])){
 			$period = $_GET['period']; //144-oneday
@@ -70,7 +84,7 @@ while($row = $results->fetch_assoc()) {
 			}
 	}
 	}
-	elseif($_GET['type'] == "tempul"){
+	elseif($_GET['type'] == "tempul" or $_GET['type'] == "temperbatarey"){
 		$par = "C";
 		if($row['temp'] != ""){
     $data1[] = $row['temp'];

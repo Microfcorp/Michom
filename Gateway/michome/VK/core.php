@@ -68,8 +68,11 @@ if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation'
 		elseif(mb_strtolower($body) == "выключи гирлянду" || mb_strtolower($body) == "выруби гирлянду" || mb_strtolower($body) == "выпусти гирлянду"){			
 			MessSend($userId, Michome_SetCharModule('3','0'),$token);
 		}			
-		elseif(mb_strtolower($body) == "прогноз погоды"){			
+		elseif(mb_strtolower($body) == "погода"){			
 			MessSend($userId, Michome_Prognoz(),$token);
+		}
+        elseif(mb_strtolower($body) == "прогноз погоды"){			
+			MessSend($userId, Michome_GetPrognoz(),$token);
 		}
 		elseif(mb_strtolower($body) == "ссылка"){			
 			MessSend($userId, "http://91.202.27.167/michome/",$token);
@@ -81,7 +84,7 @@ if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation'
 			MessSend($userId, "Последнее обновление модуля сбора информации было: ".Michome_GetParam("posledob","192.168.1.10"),$token);
 		}
 		elseif(mb_strtolower($body) == "справка"){			
-			MessSend($userId, "Привет! Я бот для удобной навигации в системе умного дома Michom<br>Я понимаю команды:<br>Температура на улице,<br>Температура в комнате,<br>Влажность в комнате,<br>Давление в комнате,<br>Прогноз погоды,<br>Время дня,<br>Ощущение высоты,<br>Последнее обновление,<br>Ссылка,<br>Включение/выключение света,<br>Включи/Выключи гирлянду",$token);
+			MessSend($userId, "Привет! Я бот для удобной навигации в системе умного дома Michom<br>Я понимаю команды:<br>Температура на улице,<br>Температура в комнате,<br>Влажность в комнате,<br>Давление в комнате,<br>Прогноз погоды,<br>Прогноз,<br>Время дня,<br>Ощущение высоты,<br>Последнее обновление,<br>Ссылка,<br>Включение/выключение света,<br>Включи/Выключи гирлянду",$token);
 		}
  
 	}

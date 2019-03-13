@@ -5,12 +5,15 @@
 	$temper = "";
 	$temper1 = "";
 	$temper2 = "";
+    $temper3 = "";
 	$vlazn = "";
 	$davlenie = "";
 	$davlenie2 = "";
 	$date = "";
 	$alarm = "";
 	$results = mysqli_query($link, "SELECT * FROM michom ");
+    
+    $seldays = Array(explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d"))), explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=selday&date=".date("Y-m-d"))), explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=localhost&type=selday&date=".date("Y-m-d"))));
 	
 	
 
@@ -29,6 +32,10 @@ while($row = $results->fetch_assoc()) {
 	}
 	if($row['type'] == "termometr"){
     $temper1 = $row['temp'];
+	//echo date("Y-m-d H:i:s", $date);
+	}
+    if($row['type'] == "temperbatarey"){
+    $temper3 = $row['temp'];
 	//echo date("Y-m-d H:i:s", $date);
 	}
 	if($row['type'] == "hdc1080"){
@@ -62,11 +69,35 @@ $time = date("i");
 echo date("i", $time - $curdate) . "\n";*/
 	
 	//$sleddate = date_parse($date)['minute'] - $curdate;	
-	
-	$files = scandir("/var/www/html/site/image/graphical/");
-rsort($files, SORT_NUMERIC);
+    
+function scandir_by_mtime($folder) {
+  $dircontent = scandir($folder);
+  $arr = array();
+  foreach($dircontent as $filename) {
+    if ($filename != '.' && $filename != '..') {
+      if (filemtime($folder.$filename) === false) return false;
+      $dat = filemtime($folder.$filename);
+      $arr[$dat] = $filename;
+    }
+  }
+  if (!ksort($arr)) return false;
+  return $arr;
+}
 
-$lastfile = $files[count($files)-1];
+ $dir = "/var/www/html/site/image/graphical/";
+ $files = array();
+ foreach (scandir($dir) as $file) $files[$file] = filemtime("$dir/$file");
+ asort($files);
+ $files = array_keys($files);
+ //print_r($files);
+	
+	//$files = scandir("/var/www/html/site/image/graphical/");
+    //$files = scandir_by_mtime("/var/www/html/site/image/graphical/");
+//rsort($files, SORT_NUMERIC);
+
+//var_dump($files);
+
+$lastfile = $files[count($files)-2];
 
 	?>
 <!Doctype html>
@@ -220,22 +251,24 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
 	</div>
 	
 	<div>
-	<a class="tooltip"><p>Текущая температура в комнате: <?echo $temper;?>С</p><span><img src="grafick.php?type=temp&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>
-	<a class="tooltip"><p>Текущая влажнгсть в комнате: <?echo $vlazn;?>%</p><span><img src="grafick.php?type=humm&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>
-	<a class="tooltip"><p>Текущее давление в комнате: <?echo $davlenie;?> мм.рт</p><span><img src="grafick.php?type=dawlen&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>
+	<a class="tooltip"><p>Текущая температура в комнате: <?echo $temper;?>С</p><span><img src="grafick.php?type=temp&start=<?echo $seldays[0][0];?>&period=<?echo $seldays[0][2];?>"/></span></a>
+	<a class="tooltip"><p>Текущая влажность в комнате: <?echo $vlazn;?>%</p><span><img src="grafick.php?type=humm&start=<?echo $seldays[0][0];?>&period=<?echo $seldays[0][2];?>"/></span></a>
+	<a class="tooltip"><p>Текущее давление в комнате: <?echo $davlenie;?> мм.рт</p><span><img src="grafick.php?type=dawlen&start=<?echo $seldays[0][0];?>&period=<?echo $seldays[0][2];?>"/></span></a>
 	<? echo($alarm);?>
 	
-	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>  
+	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&start=<?echo $seldays[0][0];?>&period=<?echo $seldays[0][2];?>"/></span></a>  
 	
-	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&start=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=selday&date=".date("Y-m-d")))[0];?>&period=<?echo explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=selday&date=".date("Y-m-d")))[2];?>"/></span></a>
+	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&start=<?echo $seldays[1][0];?>&period=<?echo $seldays[1][2];?>"/></span></a>
 	
+    <a class="tooltip"><p>Текущая температура трубы отопления: <?echo $temper3;?>С</p><span><img src="grafick.php?type=temperbatarey&start=<?echo $seldays[2][0];?>&period=<?echo $seldays[2][2];?>"/></span></a>
+    
 	<a class="tooltip"><p>Последнее фото: <? echo $lastfile;?></p><span><img width="540px" height="335px" src="/site/image/graphical/<?php echo $lastfile;?>"/></span></a>
 
-	<p><?include_once("prognoz.php");?></p>
+	<p><?//include_once("prognoz.php");?></p>
 	
-	<span>Время восхода солнца: <? echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
-	<span>Время захода солнца: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
-	<span>Долгота дня: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3) - date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?> часов</span><br>
+	<span>Время восхода солнца: <? //echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
+	<span>Время захода солнца: <? //echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
+	<span>Долгота дня: <? //echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3) - date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?> часов</span><br>
 	</div>
 </body>
 

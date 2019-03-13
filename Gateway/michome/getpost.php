@@ -29,7 +29,12 @@ $obj = json_decode($getjson);
 
 $ip = $obj->{'ip'};
 $type = $obj->{'type'};
+if(!empty($obj->{'rsid'})){
 $rsid = $obj->{'rsid'};
+}
+else{
+$rsid = $obj->{'rssi'};
+}
 if($type == "msinfoo"){	
 	$temperdht = $obj->{'data'}->{'temper'};
 	$temp = $obj->{'data'}->{'temperbmp'};
@@ -46,6 +51,12 @@ if($type == "msinfoo"){
 	else{
 	$guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', '$ip', 'Log','MsionfooNan','$temp','$humm','$davlen','$visot','$date')"; 
 	$result = mysqli_query($link, $guery);
+    
+    $id = $id + 1;
+
+    $poslhumm = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/getdata.php?device=192.168.1.10&cmd=texthumm");
+    $guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', '$ip', 'msinfoo','$rsid','$temp','$poslhumm','$davlen','$visot','$date')"; 
+	$result = mysqli_query($link, $guery);
 	}
 }
 elseif($type == "termometr"){	
@@ -53,6 +64,23 @@ elseif($type == "termometr"){
 
 	$guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', '$ip', 'termometr','$rsid','$temper','','','','$date')"; 
 	$result = mysqli_query($link, $guery);
+    
+    $temperbater = system("sudo python3 /etc/gettermist.py");
+
+    $id1 = $id + 1;
+    
+    $guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id1', 'localhost', 'temperbatarey','0','$temperbater','','','','$date')"; 
+	$result = mysqli_query($link, $guery);
+}
+elseif($type == "Informetr"){	
+	$type = $obj->{'data'}->{'data'};
+    if($type == "GetData"){
+        file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/setcmd.php?device=192.168.1.13&cmd=setdata?param=".file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/getprognoz.php?type=1"));
+    }
+//GetData
+	$guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', '$ip', 'Informetr','$rsid','','','','','$date')"; 
+	$result = mysqli_query($link, $guery);
+    
 }
 elseif($type == "hdc1080"){	
 	$temper = $obj->{'data'}->{'temper'};
@@ -93,7 +121,7 @@ else{
 	$result = mysqli_query($link, $guery);
 }
 echo $ip . "<br>";
-echo $temp. "<br>";
-echo $humm. "<br>";
+//echo $temp. "<br>";
+//echo $humm. "<br>";
 echo $rsid. "<br>";
 ?>

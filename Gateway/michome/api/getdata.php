@@ -46,11 +46,27 @@ while($row = $results->fetch_assoc()) {
 echo json_encode( $cart );
 
 }
-if($cmd == "textultemp"){
+elseif($cmd == "textultemp"){
 		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
 
 while($row = $results->fetch_assoc()) {
     $data[] = $row['temp'];	
+}
+echo $data[count($data) - 1];
+}
+elseif($cmd == "texthumm"){
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+
+while($row = $results->fetch_assoc()) {
+    $data[] = $row['humm'];	
+}
+echo $data[count($data) - 1];
+}
+elseif($cmd == "textdawlen"){
+		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+
+while($row = $results->fetch_assoc()) {
+    $data[] = $row['dawlen'];	
 }
 echo $data[count($data) - 1];
 }
