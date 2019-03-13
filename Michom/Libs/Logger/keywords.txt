@@ -1,0 +1,31 @@
+#######################################
+# Syntax Coloring Map For Michome
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Michome	KEYWORD1
+Logger	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+SendDataGET	KEYWORD2
+SendDataPOST	KEYWORD2
+SendData	KEYWORD2
+init	KEYWORD2
+running	KEYWORD2
+GetServer	KEYWORD2
+ParseJson	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################

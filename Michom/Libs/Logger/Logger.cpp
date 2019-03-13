@@ -1,7 +1,7 @@
 #include "Logger.h"
 
 //
-// конструктор - вызывается всегда при создании экземпляра класса
+// конструктор - вызывается всегда при создании экземпляра класса RoboCraft
 //
 Logger::Logger(const char* gateway, const char* host)
 {
