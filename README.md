@@ -13,9 +13,9 @@ Description of folders:
 
 #### MichomeAndroidGateway - application for Android with Apache Cordova
 
-#### Michomeframework framework to work through the gateway 
+#### Michomeframework - framework to work through the gateway 
 
-#### PythonModule scripts to work through a gateway
+#### PythonModule - scripts to work through a gateway
 
 <br>
 
