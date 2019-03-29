@@ -17,6 +17,7 @@ long interval = 400000;
 
 long previousMillis1 = 0;   // здесь будет храниться время последнего изменения состояния светодиода 
 long interval1 = 10000;
+//long interval1 = 10000000;
 
 long previousMillis2 = 0;   // здесь будет храниться время последнего изменения состояния светодиода 
 long interval2 = interval1-1800;
@@ -94,17 +95,6 @@ byte gradus[] = {
   0x00
 };
 
-byte outhouse[] = {
-  0x00,
-  0x04,
-  0x0A,
-  0x11,
-  0x11,
-  0x0E,
-  0x00,
-  0x00
-};
-
 byte watchh[] = {
   0x0E,
   0x15,
@@ -152,12 +142,21 @@ void setup ( void ) {
   lcd.createChar(3, soln);
   lcd.createChar(4, sneg);
   lcd.createChar(5, gradus);
-  lcd.createChar(6, outhouse);
-  lcd.createChar(7, watchh);
+  //lcd.createChar(6, watchh);
   lcd.backlight();
   lcd.print("Hello, world!");
 
   server1.on("/onlight", [](){ 
+   /*lcd.clear();
+   lcd.write(0);
+   lcd.write(1);
+   lcd.write(2);
+   lcd.write(3);
+   lcd.write(4);
+   lcd.write(5);
+   //lcd.write(6);
+   LcdProWrite(gradus);
+   LcdProWrite(watchh);*/
    lcd.backlight();
    server1.send(200, "text/html", String("OK"));    
   });
@@ -280,14 +279,15 @@ void loop ( void ) {
     }
     else{
       lcd.setCursor(0, 0);
-      lcd.write(6);
+      lcd.write(1);
       lcd.setCursor(2, 0);
       lcd.print(date[0][7]);
+      lcd.write(5);
       lcd.setCursor(0, 1);
-      lcd.write(7);
+      lcd.write(1);
       lcd.setCursor(2, 1);
       lcd.print(date[0][8]);
-      lcd.setCursor(10, 0);
+      lcd.setCursor(9, 0);
       lcd.print(date[1][9]);
       st = true;
     }

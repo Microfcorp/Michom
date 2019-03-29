@@ -20,7 +20,7 @@ const char* host = "192.168.1.42/michome/getpost.php";
 const char* host1 = "192.168.1.42";
 
 long previousMillis = 0;   // здесь будет храниться время последнего изменения состояния светодиода 
-long interval = 600000;
+long interval = 600110;
 
 MDNSResponder mdns;
 
@@ -203,7 +203,7 @@ void conn(){
                "6=" + dataaaa);
   unsigned long timeout = millis();
   while (client.available() == 0) {
-    if (millis() - timeout > 3000) {
+    if (millis() - timeout > 8000) {
       Serial.println(">>> Client Timeout !");
       client.stop();
       return;
