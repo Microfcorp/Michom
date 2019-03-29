@@ -13,8 +13,8 @@
 	$alarm = "";
 	$results = mysqli_query($link, "SELECT * FROM michom ");
     
-    $seldays = Array(explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d"))), explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.11&type=selday&date=".date("Y-m-d"))), explode(";", file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=localhost&type=selday&date=".date("Y-m-d"))));
-	
+    $fgts = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d"));
+    $seldays = Array(explode(";", $fgts), explode(";", $fgts), explode(";", $fgts));
 	
 
 while($row = $results->fetch_assoc()) {
@@ -114,7 +114,7 @@ $lastfile = $files[count($files)-2];
 	<p id='datetime'>Текущая дата</p>
 	<p>Последнее обновление было: <? echo $date; ?></p>
 	<p id='sledob'>Следующие бновление будет через: 0 минут</p>
-	<p><a href="/michome/room.php">Комнаты</a> <a href="/michome/calendar.php">Календарь информации</a></p>
+	<p><a href="room.php">Комнаты</a> <a href="calendar.php">Календарь информации</a> <a href="logger.php?p=0">Логи</a> </p>
 	</div>
 	
 	<script type="text/javascript">
@@ -229,17 +229,27 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
     <H4>Отправить команду:</H4>
 	  <form>
       <p>Команда: <input type="text" name="cmd" id='textcmd' /></p>	  
-	  <p>На:  <select name="send" id='select'>
-	  <?
+	  <p>На:  
+      <select name="send" id='select'>
+      <option  name='select' value="localhost">localhost</option>
+	  <?php
+        $res1 = [];
 	    $results = mysqli_query($link, "SELECT DISTINCT ip FROM michom");
-
 		while($row = $results->fetch_assoc()) {
-			if($row['ip'] != ""){
+            if($row['ip'] != "" & $row['ip'] != "localhost"){
+                $res1[] = $row['ip'];
+				echo "<option  name='select' value=".$row['ip'].">".$row['ip']."</option>";
+			}
+		}
+        
+        $results = mysqli_query($link, "SELECT DISTINCT ip FROM logging");
+		while($row = $results->fetch_assoc()) {
+            if($row['ip'] != "" & $row['ip'] != "localhost" & !in_array($row['ip'], $res1)){
 				echo "<option  name='select' value=".$row['ip'].">".$row['ip']."</option>";
 			}
 		}
 	  ?>
-		</select></p>
+	  </select></p>
    
       <p><input name="sendcmd" value="Отправить" OnClick="GetData()" type="button" /></p>
       </form>	  
@@ -266,9 +276,9 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
 
 	<p><?//include_once("prognoz.php");?></p>
 	
-	<span>Время восхода солнца: <? //echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
-	<span>Время захода солнца: <? //echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
-	<span>Долгота дня: <? //echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3) - date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?> часов</span><br>
+	<span>Время восхода солнца: <? echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
+	<span>Время захода солнца: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
+	<span>Долгота дня: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3) - date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?> часов</span><br>
 	</div>
 </body>
 

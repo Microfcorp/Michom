@@ -206,13 +206,15 @@ to { opacity: 1 }
 <body>
 <?php include_once("/var/www/html/site/verh.php"); ?>
 
-<div>
-<input value="График уличной температуры" OnClick="Rezim('ulpog')" type="button" />
-<input value="График температуры батереи системы отопления" OnClick="Rezim('batareya')" type="button" />
-<input value="График комнатной температуры" OnClick="Rezim('temper')" type="button" />
-<input value="График комнатной влажности" OnClick="Rezim('vlazn')" type="button" />
-<input value="График комнатного давления" OnClick="Rezim('dawlen')" type="button" />
-<input value="График ощущаемой высоты" OnClick="Rezim('visota')" type="button" />
+<div style="background-color: gray;">
+<select onchange="Rezim(this.options[this.selectedIndex].value)">
+    <option name="select" value="ulpog">График уличной температуры</option>
+    <option name="select" value="batareya">График температуры батереи системы отопления</option>
+    <option name="select" value="temper">График комнатной температуры</option>
+    <option name="select" value="vlazn">График комнатной влажности</option>
+    <option name="select" value="dawlen">График комнатного давления</option>
+    <option name="select" value="visota">График ощущаемой высоты</option>
+</select>
 </div>
 
 <div style="display:block;" id="ulpog">

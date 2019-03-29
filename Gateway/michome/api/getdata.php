@@ -1,26 +1,29 @@
 <?
 header('Access-Control-Allow-Origin: *');
 include_once("/var/www/html/site/mysql.php");
+
 $num = 0;
-if(!empty($_GET['device'])){
-$device = "ip='".$_GET['device']."'";
+
+if(!empty($_GET['device'])){ //Определение IP устройства
+    $device = "ip='".$_GET['device']."'";
 }
 else{
 	$device = 1;
 }
 
-if(!empty($_GET['type'])){
-$type = "`type`='".$_GET['type']."'";
+if(!empty($_GET['type'])){ //Определение типа устройства
+    $type = "`type`='".$_GET['type']."'";
 }
 else{
 	$type = "`type`!='Log'";
 }
-$cmd = $_GET['cmd'];
+
+$cmd = $_GET['cmd']; //Комманда на получение типа данных
 
 $data[] = "";
 $date[] = "";
 
-if($cmd == "temper"){
+if($cmd == "temper"){//Температура
 	if(isset($_GET['date'])){
 		$dates = $_GET['date'];
 		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
@@ -46,37 +49,37 @@ while($row = $results->fetch_assoc()) {
 echo json_encode( $cart );
 
 }
-elseif($cmd == "textultemp"){
-		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+elseif($cmd == "textultemp"){//Текст уличной температуры
+	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
 
-while($row = $results->fetch_assoc()) {
-    $data[] = $row['temp'];	
+    while($row = $results->fetch_assoc()) {
+        $data[] = $row['temp'];	
+    }
+    echo $data[count($data) - 1];
 }
-echo $data[count($data) - 1];
-}
-elseif($cmd == "texthumm"){
-		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+elseif($cmd == "texthumm"){//Текст влажности
+	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
 
-while($row = $results->fetch_assoc()) {
-    $data[] = $row['humm'];	
+    while($row = $results->fetch_assoc()) {
+        $data[] = $row['humm'];	
+    }
+    echo $data[count($data) - 1];
 }
-echo $data[count($data) - 1];
-}
-elseif($cmd == "textdawlen"){
-		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+elseif($cmd == "textdawlen"){//Текст давления
+	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
 
-while($row = $results->fetch_assoc()) {
-    $data[] = $row['dawlen'];	
+    while($row = $results->fetch_assoc()) {
+        $data[] = $row['dawlen'];	
+    }
+    echo $data[count($data) - 1];
 }
-echo $data[count($data) - 1];
-}
-elseif($cmd == "humm"){
+elseif($cmd == "humm"){//Влажность
 	if(isset($_GET['date'])){
 		$dates = $_GET['date'];
 		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
 		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `id` >= '".explode(';',$req)[0]."' AND `id` <= '".explode(';',$req)[1]."' AND ".$type." AND ".$device);
 	}
-		else{
+	else{
 		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
 	}
 
@@ -84,15 +87,15 @@ while($row = $results->fetch_assoc()) {
     $data[] = $row['humm'];
 	$date[] = $row['date'];
 	$num = $num + 1;
-	}
-		$cart = array(
-  "name" => "getdata",
-  "type" => $cmd,
-  "col" => $num,
-  "device" => $device,
-  "data" => $data,
-  "date" => $date
-);
+}
+    $cart = array(
+      "name" => "getdata",
+      "type" => $cmd,
+      "col" => $num,
+      "device" => $device,
+      "data" => $data,
+      "date" => $date
+    );
 echo json_encode( $cart );
 }
 //delet...
@@ -122,13 +125,13 @@ while($row = $results->fetch_assoc()) {
 echo json_encode( $cart );
 }
 ///delet...///
-elseif($cmd == "dawlen"){
+elseif($cmd == "dawlen"){//Давление
 	if(isset($_GET['date'])){
 		$dates = $_GET['date'];
 		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
 		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `id` >= '".explode(';',$req)[0]."' AND `id` <= '".explode(';',$req)[1]."' AND ".$type." AND ".$device);
 	}
-		else{
+	else{
 		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
 	}
 
@@ -136,27 +139,27 @@ while($row = $results->fetch_assoc()) {
     $data[] = $row['dawlen'];
 	$date[] = $row['date'];
 	$num = $num + 1;
-	}
-		$cart = array(
-  "name" => "getdata",
-  "type" => $cmd,
-  "col" => $num,
-  "device" => $device,
-  "data" => $data,
-  "date" => $date
-);
+}
+    $cart = array(
+      "name" => "getdata",
+      "type" => $cmd,
+      "col" => $num,
+      "device" => $device,
+      "data" => $data,
+      "date" => $date
+    );
 echo json_encode( $cart );
 }
-elseif($cmd == "posledob"){	
-		$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$type." AND ".$device);
+elseif($cmd == "posledob"){	//Последнее обновление
+	$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$type." AND ".$device);
 
-while($row = $results->fetch_assoc()) {
-    $date = $row['date'];
-	}
+    while($row = $results->fetch_assoc()) {
+        $date = $row['date'];
+    }
 	
-echo $date ;
+echo $date;
 }
-elseif($cmd == "cursvet"){
+elseif($cmd == "cursvet"){//Текущее состояние света
 	if(isset($_GET['date'])){
 		$dates = $_GET['date'];
 		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
@@ -166,23 +169,23 @@ elseif($cmd == "cursvet"){
 		$results = mysqli_query($link, "SELECT * FROM `michom` WHERE type = \"get_light_status\" AND ".$device);
 	}
 
-while($row = $results->fetch_assoc()) {
-    $data[] = $row['data'];
-	$date[] = $row['date'];
-	$num = $num + 1;
+    while($row = $results->fetch_assoc()) {
+        $data[] = $row['data'];
+        $date[] = $row['date'];
+        $num = $num + 1;
 	}
 	
-			$cart = array(
-  "name" => "getdata",
-  "type" => $cmd,
-  "col" => $num,
-  "device" => $device,
-  "data" => $data,
-  "date" => $date
-);
+    $cart = array(
+      "name" => "getdata",
+      "type" => $cmd,
+      "col" => $num,
+      "device" => $device,
+      "data" => $data,
+      "date" => $date
+    );
 echo json_encode( $cart );
 }
-elseif($cmd == "sobit"){
+elseif($cmd == "sobit"){//События
 	if(isset($_GET['date'])){
 		$dates = $_GET['date'];
 		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
@@ -193,23 +196,23 @@ elseif($cmd == "sobit"){
 	}
 
 while($row = $results->fetch_assoc()) {
-	$typedata[] = $row['type'];
-    $data[] = $row['data'];
-	$date[] = $row['date'];
-	$num = $num + 1;
-	}
-		$cart = array(
-  "name" => "getdata",
-  "type" => $cmd,
-  "col" => $num,
-  "device" => $device,
-  "typedata" => $typedata,
-  "data" => $data,
-  "date" => $date
-);
+        $typedata[] = $row['type'];
+        $data[] = $row['data'];
+        $date[] = $row['date'];
+        $num = $num + 1;
+}
+    $cart = array(
+      "name" => "getdata",
+      "type" => $cmd,
+      "col" => $num,
+      "device" => $device,
+      "typedata" => $typedata,
+      "data" => $data,
+      "date" => $date
+    );
 echo json_encode( $cart );
 }
-elseif($cmd == "visota"){
+elseif($cmd == "visota"){//Высота
 	if(isset($_GET['date'])){
 		$dates = $_GET['date'];
 		$req = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=".$_GET['device']."&type=selday&date=".substr($dates, 0, -6));		
@@ -220,18 +223,18 @@ elseif($cmd == "visota"){
 	}
 
 while($row = $results->fetch_assoc()) {
-    $data[] = $row['visota'];
-	$date[] = $row['date'];
-	$num = $num + 1;
-	}
-		$cart = array(
-  "name" => "getdata",
-  "type" => $cmd,
-  "col" => $num,
-  "device" => $device,
-  "data" => $data,
-  "date" => $date
-);
+        $data[] = $row['visota'];
+        $date[] = $row['date'];
+        $num = $num + 1;
+}
+    $cart = array(
+      "name" => "getdata",
+      "type" => $cmd,
+      "col" => $num,
+      "device" => $device,
+      "data" => $data,
+      "date" => $date
+    );
 echo json_encode( $cart );
 }
 

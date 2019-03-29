@@ -28,7 +28,8 @@ while($row = $results->fetch_assoc()) {
 	$humm2 = $row['humm'];
 	$temp3 = $row['temp'];
 }
-$results = mysqli_query($link, "SELECT * FROM michom WHERE `date` >= CURDATE() AND `type`='Log' AND ip='192.168.1.10'");
+
+$results = mysqli_query($link, "SELECT * FROM `logging` WHERE `date` >= CURDATE() AND `type`='msinfoo' AND ip='192.168.1.10'");
 while($row = $results->fetch_assoc()) {
 	$log1 = $log1 + 1;
 }
@@ -124,8 +125,8 @@ function Giron(q){
 	<p style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Влажность: <? echo($humm1);?></p>
 	<p style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Всего за сегодня "Нанов": <? echo($log1);?></p>
 	<a href="studiolight.php" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Управление освещением</a>
-	<p><a href="#" onclick="Giron('1')" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Включить гирлянду</a></p>
-	<p><a href="#" onclick="Giron('0')" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Выключить гирлянду</a></p>
+	<!-- <p><a href="#" onclick="Giron('1')" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Включить гирлянду</a></p>
+	<p><a href="#" onclick="Giron('0')" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Выключить гирлянду</a></p> -->
 	</div>
 	<div style='float: left; margin-left:10px; background-color: green; width: 400px; height: 300px'>
 	<p style="text-align: center">Улица</p>
