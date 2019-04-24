@@ -1,5 +1,6 @@
 <?
 include_once("/var/www/html/site/mysql.php");
+require_once("/var/www/html/michome/lib/foreca.php");
 
 //$z_where  Северное = 1 (это наше, если что) или Южное = 2 полушарие
 //$z_baro_top  верхний предел 'погодного окна' (1050.0 гПа для Великобритании)
@@ -205,7 +206,9 @@ echo $abs_pressure_1h = $pressure[count($pressure) - 7] * 133.3 / 100;*/
 $abs_pressure = $pressure[count($pressure) - 1] * 133.3 / 100;
 $abs_pressure_1h = $pressure[count($pressure) - 7] * 133.3 / 100;
 
-$pogod = json_decode(file_get_contents("https://openweathermap.org/data/2.5/weather?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric"));
+//$pogod = json_decode(file_get_contents("https://openweathermap.org/data/2.5/weather?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric"));
+
+$foreca = new Foreca('Russia', 'Ostrogozhsk');
 
 //echo $pogod->{'wind'}->{'deg'};
 //echo $wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)];
@@ -228,10 +231,10 @@ else
     $pressure_trend_text = "Не меняется";
 }
 
-$forecast = betel_cast($abs_pressure, date('n'), $wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)], $pressure_trend, 1, 1010, 1006, $temp);
+$forecast = betel_cast($abs_pressure, date('n'), $foreca->Wind()->Degree, $pressure_trend, 1, 1010, 1006, $temp);
 
-echo "Направление ветра: ".$wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)]."<br>";
-echo "Скорость ветра: ".$pogod->{'wind'}->{'speed'}." м/с<br>";
+echo "Направление ветра: ".$foreca->Wind()->Degree."<br>";
+echo "Скорость ветра: ".$foreca->Wind()->Speed." м/с<br>";
 echo "Тенденция давления: $pressure_trend_text<br>";
 echo "Прогноз: $forecast";
 ?>

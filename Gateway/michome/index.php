@@ -1,6 +1,12 @@
 <?php include_once("/var/www/html/site/mysql.php"); ?>
 <?php include_once("/var/www/html/site/secur.php"); ?>
+<?php require_once("/var/www/html/michome/lib/michom.php"); ?>
 <?
+
+    $API = new MichomeAPI('192.168.1.42', $link);
+    
+    header("Michome-Page: index");
+    
 	$visot = "";
 	$temper = "";
 	$temper1 = "";
@@ -13,9 +19,14 @@
 	$alarm = "";
 	$results = mysqli_query($link, "SELECT * FROM michom ");
     
-    $fgts = file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/timeins.php?device=192.168.1.10&type=selday&date=".date("Y-m-d"));
+    $fgts = $API->TimeIns('192.168.1.10', 'selday', date("Y-m-d"));
     $seldays = Array(explode(";", $fgts), explode(";", $fgts), explode(";", $fgts));
 	
+    $fgts1 = $API->TimeIns('192.168.1.11', 'selday', date("Y-m-d"));
+    $seldays1 = Array(explode(";", $fgts1), explode(";", $fgts1), explode(";", $fgts1));
+    
+    $fgts2 = $API->TimeIns('localhost', 'selday', date("Y-m-d"));
+    $seldays2 = Array(explode(";", $fgts2), explode(";", $fgts2), explode(";", $fgts2));
 
 while($row = $results->fetch_assoc()) {
 	if($row['temp'] != "" & $row['humm'] != "" & $row['dawlen'] != "" & $row['type'] == "msinfoo"){
@@ -268,9 +279,9 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
 	
 	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&start=<?echo $seldays[0][0];?>&period=<?echo $seldays[0][2];?>"/></span></a>  
 	
-	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&start=<?echo $seldays[1][0];?>&period=<?echo $seldays[1][2];?>"/></span></a>
+	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&start=<?echo $seldays1[1][0];?>&period=<?echo $seldays1[1][2];?>"/></span></a>
 	
-    <a class="tooltip"><p>Текущая температура трубы отопления: <?echo $temper3;?>С</p><span><img src="grafick.php?type=temperbatarey&start=<?echo $seldays[2][0];?>&period=<?echo $seldays[2][2];?>"/></span></a>
+    <a class="tooltip"><p>Текущая температура трубы отопления: <?echo $temper3;?>С</p><span><img src="grafick.php?type=temperbatarey&start=<?echo $seldays2[2][0];?>&period=<?echo $seldays2[2][2];?>"/></span></a>
     
 	<a class="tooltip"><p>Последнее фото: <? echo $lastfile;?></p><span><img width="540px" height="335px" src="/site/image/graphical/<?php echo $lastfile;?>"/></span></a>
 
