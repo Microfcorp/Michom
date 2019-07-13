@@ -9,20 +9,27 @@
 Michome	KEYWORD1
 Michom	KEYWORD1
 Logger	KEYWORD1
+RTOS	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-SendDataGET	KEYWORD2
+SendDataGET KEYWORD2
 SendDataPOST	KEYWORD2
 SendData	KEYWORD2
-init	KEYWORD2
-running	KEYWORD2
+init    KEYWORD2
+running KEYWORD2
 GetServer	KEYWORD2
 GetLogger	KEYWORD2
 ParseJson	KEYWORD2
 Log	KEYWORD2
+ChangeTime	KEYWORD2
+IsTick	KEYWORD2
+Split	KEYWORD2
+GetSetting	KEYWORD2
+GetSettingRead	KEYWORD2
+SetFormatSettings	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
@@ -32,3 +39,4 @@ Log	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
+IsSettingRead	LITERAL1

@@ -14,9 +14,6 @@ Logger::Logger(const char* gateway, const char* host)
 //
 void Logger::Log(String text)
 {
-          Serial.print("connecting to ");
-		  Serial.println(Host);
-  
 		  // Use WiFiClient class to create TCP connections
 		  WiFiClient client;
 		  const int httpPort = 80;
@@ -26,9 +23,6 @@ void Logger::Log(String text)
 		  }
 		  
 		  String dataaaa = parsejsonlogger("Log", text);
-
-		  Serial.print("Data: ");
-		  Serial.println(dataaaa);
 
 		  String lengt = (String)dataaaa.length(); 
 		  
@@ -46,18 +40,7 @@ void Logger::Log(String text)
 			  client.stop();
 			  return;
 			}
-		  }
-		  delay(1000);
-		  // Read all the lines of the reply from server and print them to Serial
-		  while(client.available()){
-			String line = client.readStringUntil('\r');
-			Serial.print(line);
-		  }
-		  
-		  Serial.println();
-		  Serial.println("closing connection");
-		  //client = null;
-		  lengt = "";
+		  }		 
 }
 
 String Logger::parsejsonlogger(String type, String data){
