@@ -6,7 +6,7 @@ ClosedCube_HDC1080 hdc1080;
 const char *ssid = "10-KORPUSMG";
 const char *password = "10707707";
 
-const char* id = "hdc1080_remyank";
+const char* id = "hdc1080_garadze";
 const char* type = "hdc1080";
 /////////настройки//////////////
 

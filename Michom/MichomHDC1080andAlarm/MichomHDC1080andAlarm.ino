@@ -106,12 +106,6 @@ hdc1080.begin(0x40);
   server.on("/gettype", [](){ 
     server.send(200, "text/html", (String)type);
   });
-	
-server.on("/getnameandid", [](){
-    String tmpe = (String)id + "/n" + (String)type;
-    server.send(200, "text/html", tmpe);
-  });
-	
 
   server.on("/chandeohrana", [](){ 
     server.send(200, "text/html", "OK");
