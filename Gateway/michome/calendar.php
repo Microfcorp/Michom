@@ -215,6 +215,7 @@ to { opacity: 1 }
     <option name="select" value="dawlen">График комнатного давления</option>
     <option name="select" value="visota">График ощущаемой высоты</option>
 </select>
+<a href="facts.php">Интересные факты</a>
 </div>
 
 <div style="display:block;" id="ulpog">

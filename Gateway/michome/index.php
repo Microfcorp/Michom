@@ -17,16 +17,16 @@
 	$davlenie2 = "";
 	$date = "";
 	$alarm = "";
-	$results = mysqli_query($link, "SELECT * FROM michom ");
+	$results = mysqli_query($link, "SELECT * FROM michom WHERE `date` >= \"".date('Y-m-d',strtotime("-1 days"))."\"");
     
     $fgts = $API->TimeIns('192.168.1.10', 'selday', date("Y-m-d"));
-    $seldays = Array(explode(";", $fgts), explode(";", $fgts), explode(";", $fgts));
+    $seldays = explode(";", $fgts);
 	
     $fgts1 = $API->TimeIns('192.168.1.11', 'selday', date("Y-m-d"));
-    $seldays1 = Array(explode(";", $fgts1), explode(";", $fgts1), explode(";", $fgts1));
+    $seldays1 = explode(";", $fgts1);
     
     $fgts2 = $API->TimeIns('localhost', 'selday', date("Y-m-d"));
-    $seldays2 = Array(explode(";", $fgts2), explode(";", $fgts2), explode(";", $fgts2));
+    $seldays2 = explode(";", $fgts2);
 
 while($row = $results->fetch_assoc()) {
 	if($row['temp'] != "" & $row['humm'] != "" & $row['dawlen'] != "" & $row['type'] == "msinfoo"){
@@ -55,31 +55,23 @@ while($row = $results->fetch_assoc()) {
 	//echo date("Y-m-d H:i:s", $date);
 	}
 	if($row['type'] == "hdc1080andAlarm"){
-    $temper2 = $row['temp'];
-	$davlenie2 = $row['humm'];
-	if($row['data'] == "Alarm"){
-	$alarm = "<p style='color:red;'>Внимание! Проникновение</p>";
-	}
-	elseif($row['data'] == "OK"){
-	$alarm = "<p style='color:green;'>Дверь закрыта охрана установлена</p>";
-	}
-	elseif($row['data'] == "null"){
-	$alarm = "<p style='color:green;'>Охрана снята. Дверь открыта</p>";
-	}
-	elseif($row['data'] == "nullok"){
-	$alarm = "<p style='color:green;'>Охрана снята. Дверь закрыта</p>";
-	}
+        $temper2 = $row['temp'];
+        $davlenie2 = $row['humm'];
+        if($row['data'] == "Alarm"){
+        $alarm = "<p style='color:red;'>Внимание! Проникновение</p>";
+        }
+        elseif($row['data'] == "OK"){
+        $alarm = "<p style='color:green;'>Дверь закрыта охрана установлена</p>";
+        }
+        elseif($row['data'] == "null"){
+        $alarm = "<p style='color:green;'>Охрана снята. Дверь открыта</p>";
+        }
+        elseif($row['data'] == "nullok"){
+        $alarm = "<p style='color:green;'>Охрана снята. Дверь закрыта</p>";
+        }
 	//echo date("Y-m-d H:i:s", $date);
 	}
-}
-/*
-$curdate = date("i", $date);
-
-$time = date("i");
- 
-echo date("i", $time - $curdate) . "\n";*/
-	
-	//$sleddate = date_parse($date)['minute'] - $curdate;	
+}	
     
 function scandir_by_mtime($folder) {
   $dircontent = scandir($folder);
@@ -100,21 +92,15 @@ function scandir_by_mtime($folder) {
  foreach (scandir($dir) as $file) $files[$file] = filemtime("$dir/$file");
  asort($files);
  $files = array_keys($files);
- //print_r($files);
-	
-	//$files = scandir("/var/www/html/site/image/graphical/");
-    //$files = scandir_by_mtime("/var/www/html/site/image/graphical/");
-//rsort($files, SORT_NUMERIC);
-
-//var_dump($files);
 
 $lastfile = $files[count($files)-2];
 
-	?>
+?>
 <!Doctype html>
 <html>
 <head>
 <title>Управление Michome</title>
+<script src="/site/MicrofLibrary.js"></script>
 </head>
 
 <body>
@@ -122,118 +108,65 @@ $lastfile = $files[count($files)-2];
 	<H1 style="text-align: center; color:red;">Управление Michome</H1>
 	
 	<div style="float: right;">
-	<p id='datetime'>Текущая дата</p>
-	<p>Последнее обновление было: <? echo $date; ?></p>
-	<p id='sledob'>Следующие бновление будет через: 0 минут</p>
-	<p><a href="room.php">Комнаты</a> <a href="calendar.php">Календарь информации</a> <a href="logger.php?p=0">Логи</a> </p>
-	</div>
+        <p id='datetime'>Текущая дата</p>
+        <p>Последнее обновление было: <? echo $date; ?></p>
+        <p id='sledob'>Следующие бновление будет через: 0 минут</p>
+        
+        <p> 
+            <a href="room.php">Комнаты</a> 
+            <a href="calendar.php">Календарь информации</a> 
+            <a href="logger.php?p=0">Логи</a> 
+            <a href="module.php">Модули</a> 
+        </p> 
+        
+    </div>
 	
 	<script type="text/javascript">
-	
-	//var caz = document.getElementById("cazestvo").value;
-	function createXMLHttp() {
-        if (typeof XMLHttpRequest != "undefined") { // для браузеров аля Mozilla
-            return new XMLHttpRequest();
-        } else if (window.ActiveXObject) { // для Internet Explorer (all versions)
-            var aVersions = [
-                "MSXML2.XMLHttp.5.0",
-                "MSXML2.XMLHttp.4.0",
-                "MSXML2.XMLHttp.3.0",
-                "MSXML2.XMLHttp",
-                "Microsoft.XMLHttp"
-            ];
-            for (var i = 0; i < aVersions.length; i++) {
-                try {
-                    var oXmlHttp = new ActiveXObject(aVersions[i]);
-                    return oXmlHttp;
-                } catch (oError) {}
-            }
-            throw new Error("Невозможно создать объект XMLHttp.");
-        }
+    function GetData()
+    {
+         // получаем индекс выбранного элемента
+         var selind = document.getElementById("select").options.selectedIndex;
+       var txt= document.getElementById("textcmd").value;
+       var val= document.getElementById("select").options[selind].value;
+      
+       document.getElementById("cmdresult").innerHTML = "Отправка данных: " + txt + " На: " + val + ". Пожалуйста подождите..."; //log
+      
+       postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ val +'&cmd='+ txt.replace( /&/g, "%26" ), "", function(d){document.getElementById("cmdresult").innerHTML = d;
+      
+       window.setTimeout(function(){document.getElementById("cmdresult").innerHTML = "";},6000);
+       
+       });
     }
+       
+       
+        var x = new Date().getMinutes();
 
-// фукнция Автоматической упаковки формы любой сложности
-function getRequestBody(oForm) {
-    var aParams = new Array();
-    for (var i = 0; i < oForm.elements.length; i++) {
-        var sParam = encodeURIComponent(oForm.elements[i].name);
-        sParam += "=";
-        sParam += encodeURIComponent(oForm.elements[i].value);
-        aParams.push(sParam);
-    }
-    return aParams.join("&");
-}
-// функция Ajax POST
-function postAjax(url, oForm, callback) {
-    // создаем Объект
-    var oXmlHttp = createXMLHttp();
-    // получение данных с формы
-    var sBody = oForm;
-    // подготовка, объявление заголовков
-    oXmlHttp.open("POST", url, true);
-    oXmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	//oXmlHttp.addHeader("Access-Control-Allow-Origin", "*");
-    // описание функции, которая будет вызвана, когда придет ответ от сервера
-    oXmlHttp.onreadystatechange = function() {
-        if (oXmlHttp.readyState == 4) {
-            if (oXmlHttp.status == 200) {
-                callback(oXmlHttp.responseText);
-            } else {
-                callback('error' + oXmlHttp.statusText);
-            }
-        }
-    };
-    // отправка запроса, sBody - строка данных с формы
-    oXmlHttp.send(sBody);
-}
-
-function GetData()
-{
-     // получаем индекс выбранного элемента
-  	 var selind = document.getElementById("select").options.selectedIndex;
-   var txt= document.getElementById("textcmd").value;
-   var val= document.getElementById("select").options[selind].value;
-  
-   document.getElementById("cmdresult").innerHTML = "Отправка данных: " + txt + " На: " + val + ". Пожалуйста подождите..."; //log
-  
-   postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ val +'&cmd='+ txt.replace( /&/g, "%26" ), "", function(d){document.getElementById("cmdresult").innerHTML = d;
-  
-   window.setTimeout(function(){document.getElementById("cmdresult").innerHTML = "";},6000);
-   
-   });
-}
-   
-   
-	var x = new Date().getMinutes();
-
-			function backTimer() {
-				var j = document.getElementById('sledob');				
-				var i = new Date('<?echo $date;?>').getMinutes();
-				if(i < x) {
-					j.innerHTML = "Следующие обновление будет через: " + String(((x - i)) - 10).substr(1) + " минут";					
-				} else {
-					j.innerHTML = "обновление";
-					//window.setTimeout(function(){location.reload();},600);					
-				}
-				setTimeout(backTimer, 500);
-			}
-			
-	function time(){		
-window.setTimeout("time()",1000);
-Data = new Date();
-Year = Data.getFullYear();
-Month = Data.getMonth();
-Day = Data.getDate();
-Hour = Data.getHours();
-Minutes = Data.getMinutes();
-Seconds = Data.getSeconds();
-document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' ' + Hour + ":" + Minutes + ':' + Seconds;
-
-	}		
-			
-	window.setTimeout("time()",1);
-	window.setTimeout("backTimer()",1);	
-	
+                function backTimer() {
+                    var j = document.getElementById('sledob');				
+                    var i = new Date('<?echo $date;?>').getMinutes();
+                    if(i < x) {
+                        j.innerHTML = "Следующие обновление будет через: " + String(((x - i)) - 10).substr(1) + " минут";					
+                    } else {
+                        j.innerHTML = "обновление";
+                        //window.setTimeout(function(){location.reload();},600);					
+                    }
+                    setTimeout(backTimer, 500);
+                }
+                
+        function time(){		
+            window.setTimeout("time()",1000);
+            Data = new Date();
+            Year = Data.getFullYear();
+            Month = Data.getMonth();
+            Day = Data.getDate();
+            Hour = Data.getHours();
+            Minutes = Data.getMinutes();
+            Seconds = Data.getSeconds();
+            document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' ' + Hour + ":" + Minutes + ':' + Seconds;
+        }		
+                
+        window.setTimeout("time()",1);
+        window.setTimeout("backTimer()",1);	
     </script>
 	
 	<div>
@@ -244,18 +177,9 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
       <select name="send" id='select'>
       <option  name='select' value="localhost">localhost</option>
 	  <?php
-        $res1 = [];
-	    $results = mysqli_query($link, "SELECT DISTINCT ip FROM michom");
+	    $results = mysqli_query($link, "SELECT ip FROM modules");
 		while($row = $results->fetch_assoc()) {
             if($row['ip'] != "" & $row['ip'] != "localhost"){
-                $res1[] = $row['ip'];
-				echo "<option  name='select' value=".$row['ip'].">".$row['ip']."</option>";
-			}
-		}
-        
-        $results = mysqli_query($link, "SELECT DISTINCT ip FROM logging");
-		while($row = $results->fetch_assoc()) {
-            if($row['ip'] != "" & $row['ip'] != "localhost" & !in_array($row['ip'], $res1)){
 				echo "<option  name='select' value=".$row['ip'].">".$row['ip']."</option>";
 			}
 		}
@@ -272,16 +196,16 @@ document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' 
 	</div>
 	
 	<div>
-	<a class="tooltip"><p>Текущая температура в комнате: <?echo $temper;?>С</p><span><img src="grafick.php?type=temp&start=<?echo $seldays[0][0];?>&period=<?echo $seldays[0][2];?>"/></span></a>
-	<a class="tooltip"><p>Текущая влажность в комнате: <?echo $vlazn;?>%</p><span><img src="grafick.php?type=humm&start=<?echo $seldays[0][0];?>&period=<?echo $seldays[0][2];?>"/></span></a>
-	<a class="tooltip"><p>Текущее давление в комнате: <?echo $davlenie;?> мм.рт</p><span><img src="grafick.php?type=dawlen&start=<?echo $seldays[0][0];?>&period=<?echo $seldays[0][2];?>"/></span></a>
+	<a class="tooltip"><p>Текущая температура в комнате: <?echo $temper;?>С</p><span><img src="grafick.php?type=temp&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>
+	<a class="tooltip"><p>Текущая влажность в комнате: <?echo $vlazn;?>%</p><span><img src="grafick.php?type=humm&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>
+	<a class="tooltip"><p>Текущее давление в комнате: <?echo $davlenie;?> мм.рт</p><span><img src="grafick.php?type=dawlen&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>
 	<? echo($alarm);?>
 	
-	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&start=<?echo $seldays[0][0];?>&period=<?echo $seldays[0][2];?>"/></span></a>  
+	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>  
 	
-	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&start=<?echo $seldays1[1][0];?>&period=<?echo $seldays1[1][2];?>"/></span></a>
+	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&start=<?echo $seldays1[0];?>&period=<?echo $seldays1[2];?>"/></span></a>
 	
-    <a class="tooltip"><p>Текущая температура трубы отопления: <?echo $temper3;?>С</p><span><img src="grafick.php?type=temperbatarey&start=<?echo $seldays2[2][0];?>&period=<?echo $seldays2[2][2];?>"/></span></a>
+    <a class="tooltip"><p>Текущая температура трубы отопления: <?echo $temper3;?>С</p><span><img src="grafick.php?type=temperbatarey&start=<?echo $seldays2[0];?>&period=<?echo $seldays2[2];?>"/></span></a>
     
 	<a class="tooltip"><p>Последнее фото: <? echo $lastfile;?></p><span><img width="540px" height="335px" src="/site/image/graphical/<?php echo $lastfile;?>"/></span></a>
 

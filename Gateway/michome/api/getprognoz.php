@@ -3,6 +3,14 @@ header('Access-Control-Allow-Origin: *');
 include_once("/var/www/html/site/mysql.php");
 require_once("/var/www/html/michome/lib/foreca.php");
 
+$today = date("H");
+if($today > 20 || $today < 7){
+    $b = 0;
+}
+else{
+    $b = 1;
+}
+
 $foreca = new Foreca('Russia', 'Ostrogozhsk');
 /*$results = mysqli_query($link, "SELECT * FROM `michom` WHERE type='msinfoo' AND ip='192.168.1.10' ORDER BY id DESC LIMIT 1");
 
@@ -19,9 +27,13 @@ while($row = $results->fetch_assoc()) {
 //echo $data;
 //echo $data1[count($data1) - 1];
 
-$mainreq = file_get_contents("http://openweathermap.org/data/2.5/forecast/daily/?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric");
+$mainreq = @file_get_contents("http://openweathermap.org/data/2.5/forecast/daily/?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric");
 
-$today = date("H");
+if($mainreq === FALSE){
+    $dd = ($b == 0 ? "4" : "3");
+    $ret = Array('type'=>'json', 'd'=>$dd);
+    exit(json_encode($ret));
+}
     
 $req = json_decode($mainreq, true)["list"][0];
 $req1 = json_decode($mainreq, true)["list"][1];
@@ -45,13 +57,6 @@ if(empty($_GET['type'])){
         var_dump($foreca->GetAfterNinePrognoz());
 }
 else{
-
-    if($today > 20 || $today < 7){
-        $b = 0;
-    }
-    else{
-        $b = 1;
-    }
     
     $prognoz = $foreca->GetAllPrognoz();
     

@@ -47,5 +47,28 @@ function _TimeIns($link, $device = 1, $type, $datee = ""){
             return (min($ids).";".max($ids).";".(max($ids)-min($ids)));
         }
     }
+    elseif($type == "diap"){
+        //SELECT * FROM michom WHERE `date` >= "2018-08-06 00:00:00" AND `date` <= "2018-08-07 00:00:00"
+        
+        $date1 = $datee;
+        
+        //echo $date->format('Y-m-d') . "\n";
+        
+        
+        $results = mysqli_query($link, "SELECT * FROM michom WHERE ".$device." AND `date` >= '".$date1."'");
+
+        $ids = array();
+        
+        while($row = $results->fetch_assoc()) {
+        $ids[] = $row['id'];
+        }
+        
+        if(count($ids) < 1){
+            return ('nan'.";".'nan'.";".'nan');
+        }
+        else{
+            return (min($ids).";".max($ids).";".(max($ids)-min($ids)));
+        }
+    }
 }
 ?>

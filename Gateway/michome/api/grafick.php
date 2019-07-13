@@ -152,7 +152,7 @@ while($row = $results->fetch_assoc()) {
     $y2 = $gheight - ($data[$i] - $min) * ($gheight) / ($max - $min) + $padding;
  
 	$arr = array();
-    for($i = 1; $i < $cnt; $i++)
+    for($i = 0; $i < $cnt; $i++)
     {
       $x1 = $x2;
       $x2 = $x1 + (($gwidth) / ($cnt - 1));

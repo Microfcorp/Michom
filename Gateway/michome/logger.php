@@ -3,13 +3,15 @@
 <?
 $page = !empty($_GET['p']) ? $_GET['p'] * 15 : 0;
 
-$results = mysqli_query($link, "SELECT * FROM logging WHERE `id` > ".$page);
+$results = mysqli_query($link, "SELECT * FROM logging WHERE `id` > ".$page . " ");
 
 $serv = [];
 
 while($row = $results->fetch_assoc()) {
     $serv[] = Array($row['id'],$row['ip'],$row['type'],$row['rssi'],$row['log'],$row['date']);
 }
+
+//$serv = array_reverse($serv);
 
 function GetIPName($ip){
     if($ip == "localhost"){
@@ -131,6 +133,9 @@ function postAjax(url, oForm, callback) {
     </table>
     <a href="logger.php?p=<? echo ($page/15 - 1); ?>"><<</a>
     <a href="logger.php?p=<? echo ($page/15 + 1); ?>">>></a>
+    <br />
+    <a href="logger.php?p=<? echo (count($serv)/15); ?>">Последняя</a>
+    <a href="logger.php?p=<? echo (0); ?>">Первая</a>
 </body>
 <?php //include_once("/var/www/html/site/footer.php"); ?>
 </html>

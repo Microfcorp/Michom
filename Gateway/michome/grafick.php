@@ -20,7 +20,7 @@
 		  $period = $_GET['period']; //144-oneday				  
 		  if(!empty($_GET['start'])){
 			  $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.11' AND `id` >= ".$_GET['start']." AND `id` <= (".$_GET['start']." + ".$period.") ORDER BY id DESC LIMIT " . $period);
-		  }
+          }
 		  else{
 			  $results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.11' ORDER BY id DESC LIMIT " . $period);
 		  }
@@ -140,7 +140,7 @@ while($row = $results->fetch_assoc()) {
     $maxmin = ImageColor($im, array('r'=>3, 'g'=>104, 'b'=>58));	
  
     //определяем область отображения графика
-    $gwidth  = $width - 2 * $padding; 
+    $gwidth  = ($width - 2 * $padding); 
     $gheight = ($height - 21) - 2 * $padding; 
  
     //вычисляем минимальное и максимальное значение  
@@ -153,7 +153,7 @@ while($row = $results->fetch_assoc()) {
     for($i = $min; $i < $max + $step; $i += $step)
     {
       $y = $gheight - ($i - $min) * ($gheight) / ($max - $min) + $padding;
-      ImageLine($im, $padding, $y, $gwidth + $padding, $y, $gray);
+      ImageLine($im, $padding, $y, $gwidth + 1.5 * $padding, $y, $gray);
       ImageTTFText($im, 8, 0, $padding + 1, $y - 1, $gray, "/var/www/html/site/Verdana.ttf", $i);
     }
  
@@ -166,7 +166,7 @@ while($row = $results->fetch_assoc()) {
     //в левом верхнем углу, что определяет формулу вычисления координаты y
     $y2 = $gheight - ($data[$i] - $min) * ($gheight) / ($max - $min) + $padding;
  
-    for($i = 1; $i < $cnt; $i++)
+    for($i = 0; $i < $cnt; $i++)
     {
       $x1 = $x2;
       $x2 = $x1 + (($gwidth) / ($cnt - 1));

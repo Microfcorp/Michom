@@ -1,5 +1,6 @@
 <?
-include_once("/var/www/html/site/mysql.php");
+require_once("/var/www/html/site/mysql.php");
+require_once("/var/www/html/michome/lib/michom.php");
 //$id = 0;
 
 //$rnd = rand(0, 2);
@@ -9,6 +10,8 @@ include_once("/var/www/html/site/mysql.php");
 while($row = $results->fetch_assoc()) {
     $id = $row['id'] + 1;
 }*/
+
+$API = new MichomeAPI('192.168.1.42', $link);
 
 $one = 1;
 
@@ -121,6 +124,19 @@ elseif($type == "Log"){	//Лог
     $guery = "INSERT INTO `logging`(`ip`, `type`, `rssi`, `log`, `date`) VALUES ('$ip', 'Log','$rsid','$status','$date')";
 	//$guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'Log','$status','','','','','$date')"; 
 	$result = mysqli_query($link, $guery);
+}
+elseif($type == "init"){ //Инициализация модуля
+	$moduletype = $obj->{'data'}->{'type'};
+    $moduleid = $obj->{'data'}->{'id'};
+
+    $res = mysqli_query($link, "SELECT ip FROM modules WHERE ip = \"".$ip."\" limit 1");
+    $count = mysqli_num_rows($res);
+    if( $count > 0 ) {} //Пропускаем...
+    else { //Добавляем в базу модулей
+        $guery = "INSERT INTO `modules`(`ip`, `type`, `mID`, `urls`) VALUES ('$ip','$moduletype','$moduleid','refresh=Обновить данные;restart=Перезагрузить')";       
+        $result = mysqli_query($link, $guery);
+    }
+    file_get_contents('http://'.$ip.'/setsettings?s='.$API->GetSettings($ip));
 }
 else{//Произвольное событие
 	$data = $obj->{'data'};
