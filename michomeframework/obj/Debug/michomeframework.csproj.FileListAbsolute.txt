@@ -5,3 +5,11 @@ C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsForm
 C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\obj\Debug\michomeframework.pdb
 C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\bin\Debug\Newtonsoft.Json.dll
 C:\Users\10 измерение\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\michomeframework\bin\Debug\Newtonsoft.Json.xml
+C:\Users\USER\Documents\Visual Studio 2019\Projects\michomeframework\bin\Debug\michomeframework.dll
+C:\Users\USER\Documents\Visual Studio 2019\Projects\michomeframework\bin\Debug\michomeframework.pdb
+C:\Users\USER\Documents\Visual Studio 2019\Projects\michomeframework\bin\Debug\Newtonsoft.Json.dll
+C:\Users\USER\Documents\Visual Studio 2019\Projects\michomeframework\obj\Debug\michomeframework.csprojAssemblyReference.cache
+C:\Users\USER\Documents\Visual Studio 2019\Projects\michomeframework\obj\Debug\michomeframework.csproj.CoreCompileInputs.cache
+C:\Users\USER\Documents\Visual Studio 2019\Projects\michomeframework\obj\Debug\michomeframework.csproj.CopyComplete
+C:\Users\USER\Documents\Visual Studio 2019\Projects\michomeframework\obj\Debug\michomeframework.dll
+C:\Users\USER\Documents\Visual Studio 2019\Projects\michomeframework\obj\Debug\michomeframework.pdb

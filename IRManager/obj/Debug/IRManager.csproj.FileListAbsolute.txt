@@ -1,0 +1,15 @@
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\bin\Debug\IRManager.exe
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\bin\Debug\IRManager.pdb
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\obj\Debug\IRManager.csprojAssemblyReference.cache
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\obj\Debug\IRManager.Form1.resources
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\obj\Debug\IRManager.Properties.Resources.resources
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\obj\Debug\IRManager.csproj.GenerateResource.cache
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\obj\Debug\IRManager.csproj.CoreCompileInputs.cache
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\obj\Debug\IRManager.exe
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\obj\Debug\IRManager.pdb
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\bin\Debug\IRManager.exe.config
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\bin\Debug\michomeframework.dll
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\bin\Debug\Newtonsoft.Json.dll
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\bin\Debug\michomeframework.pdb
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\bin\Debug\Newtonsoft.Json.xml
+C:\Users\USER\Documents\Visual Studio 2019\Projects\IRManager\obj\Debug\IRManager.csproj.CopyComplete
