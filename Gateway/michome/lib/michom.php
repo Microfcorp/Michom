@@ -2,6 +2,7 @@
 //require_once("/var/www/html/site/mysql.php");
 require_once("_timeins.php");
 require_once("_module.php");
+require_once("_bddata.php");
 class MichomeAPI
 {
     // объявление свойства
@@ -32,6 +33,18 @@ class MichomeAPI
     }
     public function GetSettings($ip) {
        return _GetSettings($this->link, $ip);
+    }
+    
+    public function GetPosledData($ip){
+       return _GetPosledData($this->link, $ip);
+    }
+    
+    public function GetFromEndData($ip, $count){
+       return _GetFromEndData($this->link, $ip, $count);
+    }
+    
+    public function AddLog($ip, $type, $rssi, $log, $date){
+       return _AddLog($this->link, $ip, $type, $rssi, $log, $date);
     }
     
     public function GetTemperatureDiap($device = 1, $type, $datee = ""){

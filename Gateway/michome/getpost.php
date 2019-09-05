@@ -58,16 +58,10 @@ if($type == "msinfoo"){	//Модуль сбора информации
         $guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'msinfoo','$rsid','$temp','$humm','$davlen','$visot','$date')"; 
         $result = mysqli_query($link, $guery);
 	}
-	else{
-        $guery = "INSERT INTO `logging`(`ip`, `type`, `rssi`, `log`, `date`) VALUES ('$ip', 'msinfoo','$rsid','MsinfooNAN','$date')";
-        $result = mysqli_query($link, $guery);  
+	else{      
+        $API->AddLog($ip, 'msinfoo', $rsid, 'MsinfooNAN', $date);
 
-        $results1 = mysqli_query($link, "SELECT * FROM `michom` WHERE type='msinfoo' AND ip='192.168.1.10' ORDER BY id DESC LIMIT 1");
-
-        $data1 = "";
-        while($row = $results1->fetch_assoc()) {
-            $data1 = $row['humm'];	
-        }
+        $data1 = $API->GetPosledData('192.168.1.10')->Humm;
 
         $guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'msinfoo','$rsid','$temp','$data1','$davlen','$visot','$date')"; 
         $result = mysqli_query($link, $guery);
@@ -75,7 +69,22 @@ if($type == "msinfoo"){	//Модуль сбора информации
 }
 elseif($type == "termometr"){	//Термометр
 	$temper = $obj->{'data'}->{'temper'}; //Температура
-
+	
+	if(intval($temper) < 10 & $ip == "192.168.1.11"){
+		curl_setopt_array($ch = curl_init(), array(
+		  CURLOPT_URL => "https://api.pushover.net/1/messages.json",
+		  CURLOPT_POSTFIELDS => array(
+			"token" => "a3oe1bpbbcj4duooajrm98zx3kw5zi",
+			"user" => "u5oywewtr3ant69yq1u758czivz877",
+			"message" => "Внимание! На улице слишком низкая температура (".$temper.")",
+		  ),
+		  CURLOPT_SAFE_UPLOAD => true,
+		  CURLOPT_RETURNTRANSFER => true,
+		));
+		curl_exec($ch);
+		curl_close($ch);
+	}
+	
 	$guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'termometr','$rsid','$temper','','','','$date')"; 
 	$result = mysqli_query($link, $guery);
     
@@ -83,12 +92,20 @@ elseif($type == "termometr"){	//Термометр
 elseif($type == "Informetr"){	//Информетр
 	$type = $obj->{'data'}->{'data'};
     $message = "Informetr: ".$type;
-    $guery = "INSERT INTO `logging`(`ip`, `type`, `rssi`, `log`, `date`) VALUES ('$ip', 'Informetr','$rsid','$message','$date')";
-	$result = mysqli_query($link, $guery);
-    if($type == "GetData"){
-        file_get_contents("http://192.168.1.13/setdata?param=".file_get_contents("http://".$_SERVER['HTTP_HOST']."/michome/api/getprognoz.php?type=1"));
-    }
     
+    $API->AddLog($ip, 'Informetr', $rsid, $message, $date);
+    
+    if($type == "GetData"){
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, "http://".$_SERVER['HTTP_HOST']."/michome/api/getprognoz.php?type=1");
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+       curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 300);
+       curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 300);
+       $pr = curl_exec($ch);
+	   curl_close($ch);
+       
+       file_get_contents("http://192.168.1.13/setdata?param=".$pr);
+    }
 }
 elseif($type == "hdc1080"){ //HDC1080	
 	$temper = $obj->{'data'}->{'temper'};
@@ -111,19 +128,21 @@ elseif($type == "get_light_status"){//Модуль света
 	$guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'get_light_status','$status','','','','','$date')"; 
 	$result = mysqli_query($link, $guery);
 }
-elseif($type == "StudioLight"){	//Модуль освещения
+elseif($type == "get_button_press"){//Событие нажатия кнопки
 	$status = $obj->{'data'}->{'status'};
 
-    $guery = "INSERT INTO `logging`(`ip`, `type`, `rssi`, `log`, `date`) VALUES ('$ip', 'StudioLight','$rsid','OK','$date')";
-	//$guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'StudioLight','$rsid','','','','','$date')"; 
-	$result = mysqli_query($link, $guery);
+	$guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'get_button_press','$status','','','','','$date')"; 
+	//$result = mysqli_query($link, $guery);
+}
+elseif($type == "StudioLight"){	//Модуль освещения
+	$status = $obj->{'data'}->{'status'};
+    
+    $API->AddLog($ip, 'StudioLight', $rsid, 'OK', $date);
 }
 elseif($type == "Log"){	//Лог
 	$status = $obj->{'data'}->{'log'};
-
-    $guery = "INSERT INTO `logging`(`ip`, `type`, `rssi`, `log`, `date`) VALUES ('$ip', 'Log','$rsid','$status','$date')";
-	//$guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'Log','$status','','','','','$date')"; 
-	$result = mysqli_query($link, $guery);
+    
+    $API->AddLog($ip, 'Log', $rsid, $status, $date);
 }
 elseif($type == "init"){ //Инициализация модуля
 	$moduletype = $obj->{'data'}->{'type'};
@@ -135,8 +154,14 @@ elseif($type == "init"){ //Инициализация модуля
     else { //Добавляем в базу модулей
         $guery = "INSERT INTO `modules`(`ip`, `type`, `mID`, `urls`) VALUES ('$ip','$moduletype','$moduleid','refresh=Обновить данные;restart=Перезагрузить')";       
         $result = mysqli_query($link, $guery);
-    }
-    file_get_contents('http://'.$ip.'/setsettings?s='.$API->GetSettings($ip));
+    }    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'http://'.$ip.'/setsettings?s='.$API->GetSettings($ip));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt ($ch, CURLOPT_TIMEOUT, 10);
+    $pr = curl_exec($ch);
+	curl_close($ch);
 }
 else{//Произвольное событие
 	$data = $obj->{'data'};
@@ -144,7 +169,5 @@ else{//Произвольное событие
 	$result = mysqli_query($link, $guery);
 }
 echo $ip . "<br>";
-//echo $temp. "<br>";
-//echo $humm. "<br>";
 echo $rsid. "<br>";
 ?>

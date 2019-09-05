@@ -12,7 +12,14 @@ $results = mysqli_query($link, "SELECT DISTINCT ip FROM michom");
     }
 
 	foreach($ips as $tmp){
-		$call = explode("/n", file_get_contents('http://'.$tmp.'/getnameandid'));
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'http://'.$tmp.'/getnameandid');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 300);
+        curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 300);
+        $m = @curl_exec($ch);
+        
+		$call = explode("/n", $m);
 		//var_dump($call);
 		$ipsname[] = $call[0];
 		$ipstype[] = $call[1];

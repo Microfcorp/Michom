@@ -1,6 +1,7 @@
 <?
 include_once("/var/www/html/site/mysql.php");
 require_once("/var/www/html/michome/lib/foreca.php");
+require_once("/var/www/html/michome/lib/michom.php");
 
 //$z_where  Северное = 1 (это наше, если что) или Южное = 2 полушарие
 //$z_baro_top  верхний предел 'погодного окна' (1050.0 гПа для Великобритании)
@@ -11,6 +12,8 @@ require_once("/var/www/html/michome/lib/foreca.php");
 // $z_month текущий месяц, от 1 до 12
 // $z_wind текущее направление ветра в английской системе координат типа N, NNW, NW и т.д.
 // $z_trend изменения в атмосферном давлении: 0 = не меняется, 1 = растет, 2 = снижается
+
+$API = new MichomeAPI('192.168.1.42', $link);
 
 function betel_cast( $z_hpa = 740, $z_month = 4, $z_wind = "W", $z_trend = 2, $z_where = 1, $z_baro_top = 1005, $z_baro_bottom = 950, $wh_temp_out = 9)
 {
@@ -188,30 +191,13 @@ $wind_dir_text_uk = array("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
 // Переменные $abs_pressure, $abs_pressure_1h, $wind_dir_avg, $wh_temp_out берутся из базы данных.
 // Процесс заполнения базы и выборки из нее подробно рассмотрен в предыдущей статье,
 // поэтому здесь опускаем эту часть кода
-//$pressure[] = new array();
-$results = mysqli_query($link, "SELECT * FROM michom WHERE type='msinfoo'");
-while($row = $results->fetch_assoc()) {
-	$pressure[] = $row['dawlen'];
-}
 
-$results = mysqli_query($link, "SELECT * FROM michom WHERE type='termometr'");
-while($row = $results->fetch_assoc()) {
-	$temp = $row['temp'];
-}
 
-/*echo $pressure[count($pressure) - 1] * 133.3 / 100;
-echo "<br>";
-echo $abs_pressure_1h = $pressure[count($pressure) - 7] * 133.3 / 100;*/
+$abs_pressure = $API->GetPosledData('192.168.1.10')->Humm * 133.3 / 100;
+$abs_pressure_1h = $API->GetFromEndData('192.168.1.10', 7)[6]->Humm * 133.3 / 100;
 
-$abs_pressure = $pressure[count($pressure) - 1] * 133.3 / 100;
-$abs_pressure_1h = $pressure[count($pressure) - 7] * 133.3 / 100;
-
-//$pogod = json_decode(file_get_contents("https://openweathermap.org/data/2.5/weather?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric"));
 
 $foreca = new Foreca('Russia', 'Ostrogozhsk');
-
-//echo $pogod->{'wind'}->{'deg'};
-//echo $wind_dir_text_uk[($pogod->{'wind'}->{'deg'} / 22)];
 
 // Бесхитростное определение тенденции в изменении давления
 // Здесь и в основной функции значения переведены из мм.рт.ст в гПа
@@ -231,10 +217,11 @@ else
     $pressure_trend_text = "Не меняется";
 }
 
-$forecast = betel_cast($abs_pressure, date('n'), $foreca->Wind()->Degree, $pressure_trend, 1, 1010, 1006, $temp);
+$forecast = betel_cast($abs_pressure, date('n'), $foreca->Wind()->Degree, $pressure_trend, 1, 1010, 1006, $API->GetPosledData('192.168.1.11')->Temp);
 
-echo "Направление ветра: ".$foreca->Wind()->Degree."<br>";
+echo "<p style=\"padding-left: 10px;\">Направление ветра: ".$foreca->Wind()->Degree."<br>";
 echo "Скорость ветра: ".$foreca->Wind()->Speed." м/с<br>";
 echo "Тенденция давления: $pressure_trend_text<br>";
 echo "Прогноз: $forecast";
+echo "</p>";
 ?>

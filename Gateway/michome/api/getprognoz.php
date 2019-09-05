@@ -27,7 +27,14 @@ while($row = $results->fetch_assoc()) {
 //echo $data;
 //echo $data1[count($data1) - 1];
 
-$mainreq = @file_get_contents("http://openweathermap.org/data/2.5/forecast/daily/?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric");
+//$mainreq = @file_get_contents("http://openweathermap.org/data/2.5/forecast/daily/?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric");
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "http://openweathermap.org/data/2.5/forecast/daily/?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 300);
+curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 300);
+$mainreq = @curl_exec($ch);
 
 if($mainreq === FALSE){
     $dd = ($b == 0 ? "4" : "3");

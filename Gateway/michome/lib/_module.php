@@ -1,8 +1,9 @@
-<?php
+<?php 
 function _AllModuleInfo(){
     return [new ModuleInfo('termometr','termometr_okno','Модуль уличного термометра',[]),
             new ModuleInfo('Informetr','Informetr_Pogoda','Модуль информетра',[['onlight','Включить подсветку'],['offlight','Выключить подсветку'],['test','Тест системы']]),
             new ModuleInfo('msinfoo','sborinfo_tv','Модуль сбора информации',[]),
+            new ModuleInfo('hdc1080','hdc1080_garadze','Модуль гаражной метеостанции',[]),
             new ModuleInfo('StudioLight','StudioLight_Main','Модуль объемного освещения',[])
            ];
 }
@@ -68,10 +69,17 @@ class Module{
     public function __construct($ip, $API) {
        $this->IP = $ip;
        
-       $m = @file_get_contents('http://'.$ip . "/getmoduleinfo");       
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, 'http://'.$ip . "/getmoduleinfo");
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+       curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 400);
+       curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 400);
+       
+       $m = @curl_exec($ch);
+
        if($m === FALSE){
            $this->IsOnline = FALSE;
-           $this->PosledDate = array_filter($API->GetDateDevice($ip)['date'])[count(array_filter($API->GetDateDevice($ip)['date']))-1];
+           $this->PosledDate = $API->GetPosledData($ip)->Date;
            //echo $ip;
            //var_dump($API->GetDateDevice($ip)['date']);
        }
@@ -82,7 +90,7 @@ class Module{
                $this->RSSI = $mod[2];
                $this->ModuleInfo = _GetModule($mod[0]);
                $this->IsOnline = TRUE;
-               $this->PosledDate = $API->GetDateDevice($ip)['date'][count($API->GetDateDevice($ip)['date'])-1];
+               $this->PosledDate = $API->GetPosledData($ip)->Date;
            }          
        }
     }

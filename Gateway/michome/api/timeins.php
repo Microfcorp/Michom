@@ -1,6 +1,7 @@
 <?
 header('Access-Control-Allow-Origin: *');
 include_once("/var/www/html/site/mysql.php");
+
 if(!empty($_GET['device'])){
 $device = "`ip`='".$_GET['device']."'";
 }

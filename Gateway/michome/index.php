@@ -5,7 +5,7 @@
 
     $API = new MichomeAPI('192.168.1.42', $link);
     
-    header("Michome-Page: index");
+    header("Michome-Page: Main-Page");
     
 	$visot = "";
 	$temper = "";
@@ -98,125 +98,154 @@ $lastfile = $files[count($files)-2];
 ?>
 <!Doctype html>
 <html>
-<head>
-<title>Управление Michome</title>
-<script src="/site/MicrofLibrary.js"></script>
-</head>
-
-<body>
-	<?php include_once("/var/www/html/site/verh.php"); ?>
-	<H1 style="text-align: center; color:red;">Управление Michome</H1>
-	
-	<div style="float: right;">
-        <p id='datetime'>Текущая дата</p>
-        <p>Последнее обновление было: <? echo $date; ?></p>
-        <p id='sledob'>Следующие бновление будет через: 0 минут</p>
-        
-        <p> 
-            <a href="room.php">Комнаты</a> 
-            <a href="calendar.php">Календарь информации</a> 
-            <a href="logger.php?p=0">Логи</a> 
-            <a href="module.php">Модули</a> 
-        </p> 
-        
-    </div>
-	
-	<script type="text/javascript">
-    function GetData()
-    {
-         // получаем индекс выбранного элемента
-         var selind = document.getElementById("select").options.selectedIndex;
-       var txt= document.getElementById("textcmd").value;
-       var val= document.getElementById("select").options[selind].value;
-      
-       document.getElementById("cmdresult").innerHTML = "Отправка данных: " + txt + " На: " + val + ". Пожалуйста подождите..."; //log
-      
-       postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ val +'&cmd='+ txt.replace( /&/g, "%26" ), "", function(d){document.getElementById("cmdresult").innerHTML = d;
-      
-       window.setTimeout(function(){document.getElementById("cmdresult").innerHTML = "";},6000);
-       
-       });
-    }
-       
-       
-        var x = new Date().getMinutes();
-
-                function backTimer() {
-                    var j = document.getElementById('sledob');				
-                    var i = new Date('<?echo $date;?>').getMinutes();
-                    if(i < x) {
-                        j.innerHTML = "Следующие обновление будет через: " + String(((x - i)) - 10).substr(1) + " минут";					
-                    } else {
-                        j.innerHTML = "обновление";
-                        //window.setTimeout(function(){location.reload();},600);					
-                    }
-                    setTimeout(backTimer, 500);
-                }
-                
-        function time(){		
-            window.setTimeout("time()",1000);
-            Data = new Date();
-            Year = Data.getFullYear();
-            Month = Data.getMonth();
-            Day = Data.getDate();
-            Hour = Data.getHours();
-            Minutes = Data.getMinutes();
-            Seconds = Data.getSeconds();
-            document.getElementById('datetime').innerHTML=Day + '.' + '01' + '.' + Year + ' ' + Hour + ":" + Minutes + ':' + Seconds;
-        }		
-                
-        window.setTimeout("time()",1);
-        window.setTimeout("backTimer()",1);	
-    </script>
-	
-	<div>
-    <H4>Отправить команду:</H4>
-	  <form>
-      <p>Команда: <input type="text" name="cmd" id='textcmd' /></p>	  
-	  <p>На:  
-      <select name="send" id='select'>
-      <option  name='select' value="localhost">localhost</option>
-	  <?php
-	    $results = mysqli_query($link, "SELECT ip FROM modules");
-		while($row = $results->fetch_assoc()) {
-            if($row['ip'] != "" & $row['ip'] != "localhost"){
-				echo "<option  name='select' value=".$row['ip'].">".$row['ip']."</option>";
+	<head>
+		<title>Управление Michome</title>
+		<link rel="stylesheet" type="text/css" href="styles/style.css"/>
+        <script type="text/javascript" src="/site/MicrofLibrary.js"></script>
+		<style>
+			dialog::backdrop {
+			  background-color: rgba(0, 0, 0, 0.8);
 			}
-		}
-	  ?>
-	  </select></p>
-   
-      <p><input name="sendcmd" value="Отправить" OnClick="GetData()" type="button" /></p>
-      </form>	  
-	</div>
-	
-	<div style="background-color:#03899C;">
-	<p>Status Log: </p>
-	<span id="cmdresult"></span>
-	</div>
-	
-	<div>
-	<a class="tooltip"><p>Текущая температура в комнате: <?echo $temper;?>С</p><span><img src="grafick.php?type=temp&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>
-	<a class="tooltip"><p>Текущая влажность в комнате: <?echo $vlazn;?>%</p><span><img src="grafick.php?type=humm&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>
-	<a class="tooltip"><p>Текущее давление в комнате: <?echo $davlenie;?> мм.рт</p><span><img src="grafick.php?type=dawlen&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>
-	<? echo($alarm);?>
-	
-	<a class="tooltip"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?type=visota&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>  
-	
-	<a class="tooltip"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?type=tempul&start=<?echo $seldays1[0];?>&period=<?echo $seldays1[2];?>"/></span></a>
-	
-    <a class="tooltip"><p>Текущая температура трубы отопления: <?echo $temper3;?>С</p><span><img src="grafick.php?type=temperbatarey&start=<?echo $seldays2[0];?>&period=<?echo $seldays2[2];?>"/></span></a>
-    
-	<a class="tooltip"><p>Последнее фото: <? echo $lastfile;?></p><span><img width="540px" height="335px" src="/site/image/graphical/<?php echo $lastfile;?>"/></span></a>
+		</style>
+        <script type="text/javascript">
+            function GetData()
+            {
+                 // получаем индекс выбранного элемента
+                var selind = document.getElementById("select").options.selectedIndex;
+               var txt= document.getElementById("textcmd").value;
+               var val= document.getElementById("select").options[selind].value;
+              
+               document.getElementById("cmdresult").innerHTML = "Отправка данных: " + txt + " На: " + val + ". Пожалуйста подождите..."; //log
+              
+               postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ val +'&cmd='+ txt.replace( /&/g, "%26" ), "POST", "", function(d){document.getElementById("cmdresult").innerHTML = d;
+              
+               window.setTimeout(function(){document.getElementById("cmdresult").innerHTML = ""; m_SendCmd.style.display = 'none';},6000);
+               
+               });              
+            }            
+               
+            var target_date = new Date('<?echo date("Y-m-d H:i:s", strtotime($date)+(60*10));?>').getTime(); // установить дату обратного отсчета
+            var days, hours, minutes, seconds; // переменные для единиц времени
+             
+            var countdown = document.getElementById("sledob"); // получить элемент тега         
+             
+            function getCountdown(){
+             
+                var current_date = new Date().getTime();
+                var seconds_left = (target_date - current_date) / 1000;
+             
+                days = pad( parseInt(seconds_left / 86400) );
+                seconds_left = seconds_left % 86400;
+                      
+                hours = pad( parseInt(seconds_left / 3600) );
+                seconds_left = seconds_left % 3600;
+                       
+                minutes = pad( parseInt(seconds_left / 60) );
+                seconds = pad( parseInt( seconds_left % 60 ) );
+             
+                // строка обратного отсчета  + значение тега       
+                
+                
+                if(parseInt(days) <= 0 & parseInt(hours) <= 0 & parseInt(minutes) <= 0 & parseInt(seconds) <= 0){
+                    countdown.innerHTML = "Обновление";
+                }
+                else{
+                    countdown.innerHTML = "Следующие обновление будет через: " + hours + ":" + minutes + ":" + seconds; 
+                }
+            }
+             
+            function pad(n) {
+                return (n < 10 ? '0' : '') + n;
+            }
 
-	<p><?//include_once("prognoz.php");?></p>
-	
-	<span>Время восхода солнца: <? echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
-	<span>Время захода солнца: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
-	<span>Долгота дня: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3) - date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?> часов</span><br>
-	</div>
-</body>
+                function CloseOpen(e){
+                    e.style.display = (e.style.display == "block") ? 'none' : 'block';
+                }
+               
+                function time(){		
+                    window.setTimeout("time()",1000);
+                    //getCountdown();
+                    Data = new Date();
+                    Year = Data.getFullYear();
+                    Month = Data.getMonth();
+                    Day = Data.getDate();
+                    Hour = Data.getHours();
+                    Minutes = Data.getMinutes();
+                    Seconds = Data.getSeconds();
+                    document.getElementById('datetime').innerHTML= "Текущее время: " + Day + '.' + '01' + '.' + Year + ' ' + Hour + ":" + Minutes + ':' + Seconds;
+                }		
+                
+            window.setTimeout("time()",1);
+    </script>
+	</head>
+	<body>
+		<div class = "body_alfa"></div>
+		<div class = "body">
+			<div class = "title_menu">Управление Michome. Главная</div>
+			<div class = "com">
+                <div style="width: 100%; height: 100%;" class = "components">
+                
+					<div class="padding: 15px;" class = "components_alfa">
+						<!--<div class = "components_title">192.168.45.201 - Что-то тут интересное...</div>-->
+						<div class = "components_text">
+                        
+                            <div style="float: right;">
+                                <p id='datetime'>Текущая дата</p>                                                           
+                            </div>
+                            
+                            <p><a href="#" onclick="CloseOpen(m_SendCmd);">Отправить комманду</a></p>                           
+                            <div style="padding: 4px; margin-top: 5px; display: none;" id="m_SendCmd">
+                                <form>
+                                  <p class="SendCmdF">Команда: <input required type="text" name="cmd" id='textcmd' /></p>	  
+                                  <p class="SendCmdF">На:  
+                                      <select name="send" id='select'>
+                                          <option  name='select' value="localhost">localhost</option>
+                                          <?php
+                                            $results = mysqli_query($link, "SELECT ip FROM modules");
+                                            while($row = $results->fetch_assoc()) {
+                                                if($row['ip'] != "" & $row['ip'] != "localhost"){
+                                                    echo "<option  name='select' value=".$row['ip'].">".$row['ip']."</option>";
+                                                }
+                                            }
+                                          ?>
+                                      </select>
+                                  </p>
+                               
+                                 <p class="SendCmdF"><input name="sendcmd" value="Отправить" OnClick="GetData()" type="button" /></p>
+                                 </form>
 
-<?php //include_once("/var/www/html/site/footer.php"); ?>
+                                 <div class="SendCmdF" style="background-color:#03899C;">
+                                    <p style="color: black;">Status Log: </p>
+                                    <span style="color: black;" id="cmdresult"></span>
+                                 </div>                                 
+                            </div>
+                            <br />
+                            <div>
+                                <a class="tooltip noselect DataV"><p>Текущая температура в комнате: <?echo $temper;?>С</p><span><img src="grafick.php?ip=192.168.1.10&type=temp&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>
+                                <a class="tooltip noselect DataV"><p>Текущая влажность в комнате: <?echo $vlazn;?>%</p><span><img src="grafick.php?ip=192.168.1.10&type=humm&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>
+                                <a class="tooltip noselect DataV"><p>Текущее давление в комнате: <?echo $davlenie;?> мм.рт</p><span><img src="grafick.php?ip=192.168.1.10&type=dawlen&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>
+                                <a class="tooltip noselect DataV"><p>Ощущается как на высоте: <?echo $visot;?> метров над уровнем моря</p><span><img src="grafick.php?ip=192.168.1.10&type=visota&start=<?echo $seldays[0];?>&period=<?echo $seldays[2];?>"/></span></a>  
+                                
+                                <? //echo($alarm);?>
+                                
+                                <a class="tooltip noselect DataV"><p>Текущая температура на улице: <?echo $temper1;?>С</p><span><img src="grafick.php?ip=192.168.1.11&type=tempul&start=<?echo $seldays1[0];?>&period=<?echo $seldays1[2];?>"/></span></a>
+                                
+                                <a class="tooltip noselect DataV"><p>Текущая температура трубы отопления: <?echo $temper3;?>С</p><span><img src="grafick.php?ip=localhost&type=temperbatarey&start=<?echo $seldays2[0];?>&period=<?echo $seldays2[2];?>"/></span></a>
+                                
+                                <a class="tooltip noselect DataV"><p>Последнее фото: <? echo $lastfile;?></p><span><img width="540px" height="335px" src="/site/image/graphical/<?php echo $lastfile;?>"/></span></a>
 
-</html>
+                                <p><?include_once("prognoz.php");?></p>
+                                
+                                <span class="noselect DataV">Время восхода солнца: <? echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
+                                <span class="noselect DataV">Время захода солнца: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
+                                <span class="noselect DataV">Долгота дня: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3) - date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?> часов</span><br>
+                            </div>
+                            
+                        </div>
+					</div>
+			</div>
+		</div>
+        
+		<?php require_once("/var/www/html/site/verhn.php");?>       
+	</body>
+</html>	
