@@ -30,6 +30,8 @@ Split	KEYWORD2
 GetSetting	KEYWORD2
 GetSettingRead	KEYWORD2
 SetFormatSettings	KEYWORD2
+GetSettingToInt	KEYWORD2
+StrobeBuildLed	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
@@ -40,3 +42,5 @@ SetFormatSettings	KEYWORD2
 # Constants (LITERAL1)
 #######################################
 IsSettingRead	LITERAL1
+TimeoutConnection	LITERAL1
+DefaultSettingInt	LITERAL1
