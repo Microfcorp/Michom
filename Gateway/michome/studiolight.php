@@ -3,6 +3,7 @@
 <html>
 <head>
 <title>Управление Michome</title>
+<link rel="stylesheet" type="text/css" href="styles/style.css"/>
 <script type="text/javascript">	
 	//var caz = document.getElementById("cazestvo").value;
 	function createXMLHttp() {
@@ -116,22 +117,34 @@ while (new Date() < ms){}
    }
   </script>
 </head>
-
 <body>
-	<?php include_once("/var/www/html/site/verh.php"); ?>
-	<H1 style="text-align: center; color:red;">Управление Michome. План комнат. Управление освещением</H1>
-	
-	<div style='float: left; background-color: #D4EB66; width: 420px; height: auto'>
-	
-	<p>Свет 1: <input type="range" min="0" max="1023" oninput="sizePic(0, this.value)" value="0"><input type="number" min="0" max="1023" oninput="sizePic(0, this.value)" value="0"><input type="button" onclick="sizePic(0, 1023)" value="На всю"><input type="button" onclick="sizePic(0, 0)" value="На 0"></p>
-	<p>Свет 2: <input type="range" min="0" max="1023" oninput="sizePic(1, this.value)" value="0"><input type="number" min="0" max="1023" oninput="sizePic(1, this.value)" value="0"><input type="button" onclick="sizePic(1, 1023)" value="На всю"><input type="button" onclick="sizePic(1, 0)" value="На 0"></p>
-	<p>Свет 3: <input type="range" min="0" max="1023" oninput="sizePic(2, this.value)" value="0"><input type="number" min="0" max="1023" oninput="sizePic(2, this.value)" value="0"><input type="button" onclick="sizePic(2, 1023)" value="На всю"><input type="button" onclick="sizePic(2, 0)" value="На 0"></p>
-	<br />
-	<p>Свет 1 Стробо: <input type="number" min="0" max="100" id="sb1" value="3"><input type="number" min="0" max="500" id="st1" value="30"><input type="button" onclick="Strobo(0, document.getElementById('sb1').value, document.getElementById('st1').value)" value="Старт"></p>
-	<p>Свет 2 Стробо: <input type="number" min="0" max="100" id="sb2" value="3"><input type="number" min="0" max="500" id="st2" value="30"><input type="button" onclick="Strobo(1, document.getElementById('sb2').value, document.getElementById('st2').value)" value="Старт"></p>
-	<p>Свет 3 Стробо: <input type="number" min="0" max="100" id="sb3" value="3"><input type="number" min="0" max="500" id="st3" value="30"><input type="button" onclick="Strobo(2, document.getElementById('sb3').value, document.getElementById('st3').value)" value="Старт"></p>
-	<br />
-	<p>Стробо: <input type="number" min="0" max="100" id="sb4" value="3"><input type="number" min="0" max="500" id="st4" value="30"><input type="button" onclick="Stroboall(document.getElementById('sb4').value, document.getElementById('st4').value)" value="Старт"></p>
-	</div>
+		<div class = "body_alfa"></div>
+		<div class = "body">
+			<div class = "title_menu">Управление Michome. Комнаты. Управление освещением</div>
+			<div style="text-align: left;" class = "com">
+                <div style="width: auto; height: auto; text-align: left;" class = "components">
+					<div class = "components_alfa">
+						<div style="width: 100%" class = "components_text">
+                            <div style='padding-top: 10px; padding-left: 10px; float: left; background-color: #D4EB66; width: 420px; height: 300px'>	
+                            <p>Свет 1: <input type="range" min="0" max="1023" oninput="sizePic(0, this.value)" value="0"><input type="number" min="0" max="1023" oninput="sizePic(0, this.value)" value="0"><input type="button" onclick="sizePic(0, 1023)" value="На всю"><input type="button" onclick="sizePic(0, 0)" value="На 0"></p>
+                            <p>Свет 2: <input type="range" min="0" max="1023" oninput="sizePic(1, this.value)" value="0"><input type="number" min="0" max="1023" oninput="sizePic(1, this.value)" value="0"><input type="button" onclick="sizePic(1, 1023)" value="На всю"><input type="button" onclick="sizePic(1, 0)" value="На 0"></p>
+                            <p>Свет 3: <input type="range" min="0" max="1023" oninput="sizePic(2, this.value)" value="0"><input type="number" min="0" max="1023" oninput="sizePic(2, this.value)" value="0"><input type="button" onclick="sizePic(2, 1023)" value="На всю"><input type="button" onclick="sizePic(2, 0)" value="На 0"></p>
+                            <br />
+                            <p>Свет 1 Стробо: <input type="number" min="0" max="100" id="sb1" value="3"><input type="number" min="0" max="500" id="st1" value="30"><input type="button" onclick="Strobo(0, document.getElementById('sb1').value, document.getElementById('st1').value)" value="Старт"></p>
+                            <p>Свет 2 Стробо: <input type="number" min="0" max="100" id="sb2" value="3"><input type="number" min="0" max="500" id="st2" value="30"><input type="button" onclick="Strobo(1, document.getElementById('sb2').value, document.getElementById('st2').value)" value="Старт"></p>
+                            <p>Свет 3 Стробо: <input type="number" min="0" max="100" id="sb3" value="3"><input type="number" min="0" max="500" id="st3" value="30"><input type="button" onclick="Strobo(2, document.getElementById('sb3').value, document.getElementById('st3').value)" value="Старт"></p>
+                            <br />
+                            <p>Стробо: <input type="number" min="0" max="100" id="sb4" value="3"><input type="number" min="0" max="500" id="st4" value="30"><input type="button" onclick="Stroboall(document.getElementById('sb4').value, document.getElementById('st4').value)" value="Старт"></p>
+                            <br />
+                            <p>Режим пиано: <input type="button" onclick="sizePic(0, 207)" value="Активировать"></p>
+                            </div>
+                        </div>
+					</div>
+				</div>               
+			</div>
+		</div>
+        
+		<?php require_once("/var/www/html/site/verhn.php");?>        
 </body>
+
 </html>

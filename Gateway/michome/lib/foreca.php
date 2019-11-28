@@ -8,8 +8,16 @@ class Foreca
     
     // объявление метода
     public function __construct($country, $city) {
+        
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, "https://www.foreca.ru/".$country."/".$city."/");
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+       $m = @curl_exec($ch);
+       curl_close($ch);
+        
        $this->html = new simple_html_dom();
-       $this->html->load_file("https://www.foreca.ru/".$country."/".$city."/");
+       $this->html->load(str_get_html($m));
        $this->location[0] = $country;
        $this->location[1] = $city;
     }
@@ -50,12 +58,20 @@ class Foreca
        return strval($this->html->find('div[id=wrap]')[0]->find('div[id=pagewrapper]')[0]->find('div[class=content]')[0]->find('div[class=content_2col]')[0]->find('div[id=webslice_content]')[0]->find('div[class=entry-content]')[0]->find('div[class=table t_cond]')[0]->find('div[class=c1]')[0]->find('div[class=right txt-tight]')[0]->find('strong')[7]->innertext);
     } 
     
-    public function WindSpeed() {
-       return preg_replace("/[^-0-9.]/", '', $this->html->find('div[id=wrap]')[0]->find('div[id=pagewrapper]')[0]->find('div[class=content]')[0]->find('div[class=content_2col]')[0]->find('div[id=webslice_content]')[0]->find('div[class=entry-content]')[0]->find('div[class=table t_cond]')[0]->find('div[class=c1]')[0]->find('div[class=left]')[0]->find('strong')[1]);
+    public function WindSpeed() {       
+       $data = $this->html->find('div[id=wrap]')[0]->find('div[id=pagewrapper]')[0]->find('div[class=content]')[0]->find('div[class=content_2col]')[0]->find('div[id=webslice_content]')[0]->find('div[class=entry-content]')[0]->find('div[class=table t_cond]')[0]->find('div[class=c1]')[0]->find('div[class=left]')[0]->find('strong');
+       
+       if(count($data) > 1)
+        return preg_replace("/[^-0-9.]/", '', $data[1]);
+        else return preg_replace("/[^-0-9.]/", '', "0");
     }
     
     public function WindDeg() {
-       return strval($this->html->find('div[id=wrap]')[0]->find('div[id=pagewrapper]')[0]->find('div[class=content]')[0]->find('div[class=content_2col]')[0]->find('div[id=webslice_content]')[0]->find('div[class=entry-content]')[0]->find('div[class=table t_cond]')[0]->find('div[class=c1]')[0]->find('div[class=left]')[0]->find('img')[1]->alt);
+       $data = $this->html->find('div[id=wrap]')[0]->find('div[id=pagewrapper]')[0]->find('div[class=content]')[0]->find('div[class=content_2col]')[0]->find('div[id=webslice_content]')[0]->find('div[class=entry-content]')[0]->find('div[class=table t_cond]')[0]->find('div[class=c1]')[0]->find('div[class=left]')[0]->find('img');
+       
+       if(count($data) > 1)
+            return strval($this->html->find('div[id=wrap]')[0]->find('div[id=pagewrapper]')[0]->find('div[class=content]')[0]->find('div[class=content_2col]')[0]->find('div[id=webslice_content]')[0]->find('div[class=entry-content]')[0]->find('div[class=table t_cond]')[0]->find('div[class=c1]')[0]->find('div[class=left]')[0]->find('img')[1]->alt);
+        else return strval("None");
     }
     
     public function Wind() {

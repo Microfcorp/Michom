@@ -1,7 +1,9 @@
 <?php
+error_reporting(0);
 header('Access-Control-Allow-Origin: *');
 include_once("/var/www/html/site/mysql.php");
 require_once("/var/www/html/michome/lib/foreca.php");
+require_once("/var/www/html/michome/lib/michom.php");
 
 $today = date("H");
 if($today > 20 || $today < 7){
@@ -12,28 +14,14 @@ else{
 }
 
 $foreca = new Foreca('Russia', 'Ostrogozhsk');
-/*$results = mysqli_query($link, "SELECT * FROM `michom` WHERE type='msinfoo' AND ip='192.168.1.10' ORDER BY id DESC LIMIT 1");
+$michome = new MichomeAPI("localhost", $link);
 
-$data = "";
-while($row = $results->fetch_assoc()) {
-    $data = $row['dawlen'];	
-}*/
-$results = mysqli_query($link, "SELECT * FROM `michom` WHERE type='termometr' AND ip='192.168.1.11' ORDER BY id DESC LIMIT 1");
-
-$data1 = "";
-while($row = $results->fetch_assoc()) {
-    $data1 = $row['temp'];	
-}
-//echo $data;
-//echo $data1[count($data1) - 1];
-
-//$mainreq = @file_get_contents("http://openweathermap.org/data/2.5/forecast/daily/?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric");
+$ultemper = $michome->GetPosledData("192.168.1.11")->Temp;
+$Garage = $michome->GetPosledData("192.168.1.14");
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "http://openweathermap.org/data/2.5/forecast/daily/?appid=b6907d289e10d714a6e88b30761fae22&id=514198&units=metric");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 300);
-curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 300);
 $mainreq = @curl_exec($ch);
 
 if($mainreq === FALSE){
@@ -49,25 +37,48 @@ $req3 = json_decode($mainreq, true)["list"][3];
 $req4 = json_decode($mainreq, true)["list"][4];
 $req5 = json_decode($mainreq, true)["list"][5];
 
+$prognoz = $foreca->GetAllPrognoz();
+
 $ids = Array(200=>0,201=>0,202=>0,210=>0,211=>0,212=>0,221=>0,230=>0,231=>0,232=>0,300=>1,301=>1,302=>1,310=>1,311=>1,312=>1,313=>1,314=>1,321=>1,500=>2,501=>2,502=>2,503=>2,504=>2,511=>2,520=>2,521=>2,522=>2,531=>2,600=>3,601=>3,602=>3,611=>3,612=>3,615=>3,616=>3,620=>3,621=>3,622=>3,800=>4,801=>5,802=>5,803=>5,804=>5);
 
 $local = ["Гроза","Мелкий дождик","Дождик","Снежок","Солнечно","Облачно"];    
     
-if(empty($_GET['type'])){        
-        
-    echo("Днём ".$foreca->GetTodayPrognoz()->TDay."<br />");
-    echo("Ночью ".$foreca->GetTodayPrognoz()->TNight."<br />");
-    echo("Ветер ".$req['speed']." m/s"."<br />");
-    echo("Давление ".$req['pressure']."<br />");
-    echo("Прогноз ".$local[$ids[$req['weather'][0]['id']]]."<br />");
-    
-        var_dump($foreca->GetAfterNinePrognoz());
+if(empty($_GET['type'])){              
+    echo("Прогноз на сегодня: "."<br />");    
+    echo(" Днём: ".$prognoz[0]->TDay."<br />");
+    echo(" Ночью: ".$prognoz[0]->TNight."<br />");
+    echo(" Ветер: ".$req['speed']." m/s"."<br />");
+    echo(" Давление: ".$req['pressure']."<br />");
+    echo(" Прогноз: ".$local[$ids[$req['weather'][0]['id']]]."<br />");
+    echo("<br />");
+    echo("Прогноз на завтра: "."<br />");    
+    echo(" Днём: ".$prognoz[1]->TDay."<br />");
+    echo(" Ночью: ".$prognoz[1]->TNight."<br />");
+    echo(" Ветер: ".$req1['speed']." m/s"."<br />");
+    echo(" Давление: ".$req1['pressure']."<br />");
+    echo(" Прогноз: ".$local[$ids[$req1['weather'][0]['id']]]."<br />");
 }
-else{
+elseif($_GET['type'] == "VK"){
+    if($_GET['d'] == '1'){
+        echo("Прогноз на сегодня: "."\r\n");    
+        echo(" Днём: ".$prognoz[0]->TDay."\r\n");
+        echo(" Ночью: ".$prognoz[0]->TNight."\r\n");
+        echo(" Ветер: ".$req['speed']." m/s"."\r\n");
+        echo(" Давление: ".round($req['pressure'] / 1.33)."мм.рт.ст\r\n");
+        echo(" Прогноз: ".$local[$ids[$req['weather'][0]['id']]]."\r\n");
+    }
+    else{
+        echo("Прогноз на завтра: "."\r\n");    
+        echo(" Днём: ".$prognoz[1]->TDay."\r\n");
+        echo(" Ночью: ".$prognoz[1]->TNight."\r\n");
+        echo(" Ветер: ".$req1['speed']." m/s"."\r\n");
+        echo(" Давление: ".round($req1['pressure'] / 1.33)."мм.рт.ст\r\n");
+        echo(" Прогноз: ".$local[$ids[$req1['weather'][0]['id']]]."\r\n");
+    }
+}
+else{      
     
-    $prognoz = $foreca->GetAllPrognoz();
-    
-    $ret = Array('type'=>'json', 'curdate'=>date("Y-m-d"), 'dawlen'=>$foreca->Pressure(), 'temp'=>$data1, 'time'=>date("H:i:s"), 'd'=>$b, 
+    $ret = Array('type'=>'json', 'curdate'=>date("Y-m-d"), 'dawlen'=>$foreca->Pressure(), 'tempgr'=>$Garage->Temp, 'hummgr'=>$Garage->Humm, 'temp'=>$ultemper, 'time'=>date("H:i:s"), 'd'=>$b, 
      'data'=>Array(
         Array('type'=>'json', 'times'=>gmdate("Y-m-d", $req['dt']),  '0'=>round($prognoz[0]->TDay, 1),  '1'=>round($prognoz[0]->TNight, 1),  '2'=>$prognoz[0]->Wind->Speed,  '3'=>round($req['pressure']/1.334, 2),  '4'=>($ids[$req['weather'][0]['id']])), 
         Array('type'=>'json', 'times'=>gmdate("Y-m-d", $req1['dt']), '0'=>round($prognoz[1]->TDay, 1), '1'=>round($prognoz[1]->TNight, 1), '2'=>$prognoz[1]->Wind->Speed, '3'=>round($req1['pressure']/1.334, 2), '4'=>($ids[$req1['weather'][0]['id']])), 

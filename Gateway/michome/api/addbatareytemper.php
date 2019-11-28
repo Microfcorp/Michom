@@ -26,7 +26,7 @@ $date = date("Y-m-d H:i:s");
 		curl_close($ch);
 	}
 	*/
-    $guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', 'localhost', 'temperbatarey','0','$temperbater','','','','$date')"; 
+    $guery = "INSERT INTO `michom`(`id`, `ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$id', 'localhost', 'temperbatarey','','$temperbater','','','','$date')"; 
 	$result = mysqli_query($link, $guery);
     echo($result);
 ?>

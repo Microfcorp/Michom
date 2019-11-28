@@ -3,7 +3,7 @@ header('Access-Control-Allow-Origin: *');
 include_once("/var/www/html/site/mysql.php");
 
 if(!empty($_GET['device'])){
-$device = "`ip`='".$_GET['device']."'";
+    $device = "`ip`='".mysqli_real_escape_string($link, $_GET['device'])."'";
 }
 else{
 	$device = 1;
@@ -34,13 +34,12 @@ elseif($type == "selday"){
 	//SELECT * FROM michom WHERE `date` >= "2018-08-06 00:00:00" AND `date` <= "2018-08-07 00:00:00"
 	
 	$date1 = $_GET['date'];
-	
+    
 	$date = new DateTime($date1);
     $date->add(new DateInterval('P1D'));
     //echo $date->format('Y-m-d') . "\n";
 	
-	
-	$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$device." AND `date` >= '".$date1."' AND `date` <= '".$date->format('Y-m-d')."'");
+	$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$device." AND `date` >= '".mysqli_real_escape_string($link, $date1)."' AND `date` <= '".$date->format('Y-m-d')."'");
 
 	while($row = $results->fetch_assoc()) {
     $ids[] = $row['id'];

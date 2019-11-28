@@ -15,7 +15,7 @@ require_once("/var/www/html/michome/lib/michom.php");
 
 $API = new MichomeAPI('192.168.1.42', $link);
 
-function betel_cast( $z_hpa = 740, $z_month = 4, $z_wind = "W", $z_trend = 2, $z_where = 1, $z_baro_top = 1005, $z_baro_bottom = 950, $wh_temp_out = 9)
+function betel_cast( $z_hpa = 740, $z_month = 4, $z_wind = "W", $z_trend = 2, $z_where = 1, $z_baro_top = 1050, $z_baro_bottom = 950, $wh_temp_out = 9)
 {
 
 $z_forecast_uk = Array("Settled fine", "Fine weather", "Becoming fine", "Fine,
@@ -186,15 +186,15 @@ $fall_options = Array(25,25,25,25,25,25,25,25,23,23,21,20,17,14,7,3,1,1,1,0,0,0)
 ?>
 
 <?
-$wind_dir_text_uk = array("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", "FALSE");
+$wind_dir_text_uk = array("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", "None");
 
 // Переменные $abs_pressure, $abs_pressure_1h, $wind_dir_avg, $wh_temp_out берутся из базы данных.
 // Процесс заполнения базы и выборки из нее подробно рассмотрен в предыдущей статье,
 // поэтому здесь опускаем эту часть кода
 
 
-$abs_pressure = $API->GetPosledData('192.168.1.10')->Humm * 133.3 / 100;
-$abs_pressure_1h = $API->GetFromEndData('192.168.1.10', 7)[6]->Humm * 133.3 / 100;
+$abs_pressure = $API->GetPosledData('192.168.1.10')->Humm * 133.2;
+$abs_pressure_1h = $API->GetFromEndData('192.168.1.10', 7)[6]->Humm * 133.2;
 
 
 $foreca = new Foreca('Russia', 'Ostrogozhsk');
@@ -217,7 +217,7 @@ else
     $pressure_trend_text = "Не меняется";
 }
 
-$forecast = betel_cast($abs_pressure, date('n'), $foreca->Wind()->Degree, $pressure_trend, 1, 1010, 1006, $API->GetPosledData('192.168.1.11')->Temp);
+$forecast = betel_cast($abs_pressure, date('n'), $foreca->Wind()->Degree, $pressure_trend, 1, 1050, 950, $API->GetPosledData('192.168.1.11')->Temp);
 
 echo "<p style=\"padding-left: 10px;\">Направление ветра: ".$foreca->Wind()->Degree."<br>";
 echo "Скорость ветра: ".$foreca->Wind()->Speed." м/с<br>";

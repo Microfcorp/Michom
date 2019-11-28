@@ -5,17 +5,17 @@ include_once("/var/www/html/site/mysql.php");
 $num = 0;
 
 if(!empty($_GET['device'])){ //Определение IP устройства
-    $device = "ip='".$_GET['device']."'";
+    $device = "`ip` = '".mysqli_real_escape_string($link, $_GET['device'])."'";
 }
 else{
 	$device = 1;
 }
 
 if(!empty($_GET['type'])){ //Определение типа устройства
-    $type = "`type`='".$_GET['type']."'";
+    $type = "`type` = '".mysqli_real_escape_string($link, $_GET['type'])."'";
 }
 else{
-	$type = "`type`!='Log'";
+	$type = "`type` != 'Log'";
 }
 
 $cmd = $_GET['cmd']; //Комманда на получение типа данных
@@ -50,28 +50,28 @@ echo json_encode( $cart );
 
 }
 elseif($cmd == "textultemp"){//Текст уличной температуры
-	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
-
+	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device." ORDER BY `id` DESC LIMIT 1");
+    
     while($row = $results->fetch_assoc()) {
-        $data[] = $row['temp'];	
+        $data = $row['temp'];	
     }
-    echo $data[count($data) - 1];
+    echo $data;
 }
 elseif($cmd == "texthumm"){//Текст влажности
-	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device." ORDER BY `id` DESC LIMIT 1");
 
     while($row = $results->fetch_assoc()) {
-        $data[] = $row['humm'];	
+        $data = $row['humm'];	
     }
-    echo $data[count($data) - 1];
+    echo $data;
 }
 elseif($cmd == "textdawlen"){//Текст давления
-	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device);
+	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE ".$type." AND ".$device." ORDER BY `id` DESC LIMIT 1");
 
     while($row = $results->fetch_assoc()) {
         $data[] = $row['dawlen'];	
     }
-    echo $data[count($data) - 1];
+    echo $data;
 }
 elseif($cmd == "humm"){//Влажность
 	if(isset($_GET['date'])){

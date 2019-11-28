@@ -1,13 +1,16 @@
+<?php
+ include_once("/var/www/html/site/mysql.php");
+?>
 <?
 header('Access-Control-Allow-Origin: *');
-include_once("/var/www/html/site/mysql.php");
+
 $num = 0;
-$results = mysqli_query($link, "SELECT DISTINCT ip FROM michom");
+$results = mysqli_query($link, "SELECT ip FROM modules");
 
     while($row = $results->fetch_assoc()) {
-	  if($row['ip'] != ""){
-      $ips[] = $row['ip'];
-	  $num = $num + 1;
+	  if($row['ip'] != "" & $row['ip'] != "localhost"){
+        $ips[] = $row['ip'];
+        $num = $num + 1;
 	  }
     }
 
@@ -21,11 +24,11 @@ $results = mysqli_query($link, "SELECT DISTINCT ip FROM michom");
         
 		$call = explode("/n", $m);
 		//var_dump($call);
-		$ipsname[] = $call[0];
-		$ipstype[] = $call[1];
+		$ipsname[] = count($call) > 0 ? $call[0] : "";        
+		$ipstype[] = count($call) > 1 ? $call[1] : "";
 	}
 	
-	$cart = array(
+$cart = array(
   "name" => "getdivece",
   "col" => $num,
   "ips" => $ips, 

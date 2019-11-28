@@ -72,8 +72,8 @@ class Module{
        $ch = curl_init();
        curl_setopt($ch, CURLOPT_URL, 'http://'.$ip . "/getmoduleinfo");
        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-       curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 400);
-       curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 400);
+       curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 800);
+       curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 800);
        
        $m = @curl_exec($ch);
 

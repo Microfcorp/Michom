@@ -39,7 +39,7 @@ if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation'
 			MessSend($userId, "Сейчас в комнате ".Michome_GetParam_JsonParse("humm","192.168.1.10")."%",$token);
 		}
 		elseif(mb_strtolower($body) == "давление в комнате" || mb_strtolower($body) == "какое давление в комнате"){			
-			MessSend($userId, "Сейчас ".Michome_GetParam_JsonParse("dawlen","192.168.1.10")." мм.рт",$token);
+			MessSend($userId, "".Michome_GetParam_JsonParse("dawlen","192.168.1.10")." мм.рт.ст.",$token);
 		}
 		elseif(mb_strtolower($body) == "ощущение высоты"){			
 			MessSend($userId, "Сейчас прям как на".Michome_GetParam_JsonParse("visota","192.168.1.10")." метрах",$token);
@@ -61,7 +61,10 @@ if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation'
 		}
 		elseif(mb_strtolower($body) == "свет 3 на 0" || mb_strtolower($body) == "выключить свет 3" || mb_strtolower($body) == "выключи свет 3"){			
 			MessSend($userId, Michome_SetLight('2','0'),$token);
-		}	
+		}
+        elseif(mb_strtolower($body) == "свет на пиано" || mb_strtolower($body) == "включи пианино" || mb_strtolower($body) == "свет на пианино"){			
+			MessSend($userId, Michome_SetLight('0','207'),$token);
+		}        
 		elseif(mb_strtolower($body) == "включи гирлянду" || mb_strtolower($body) == "вруби гирлянду" || mb_strtolower($body) == "запусти гирлянду"){			
 			MessSend($userId, Michome_SetCharModule('3','1'),$token);
 		}
@@ -72,7 +75,8 @@ if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation'
 			MessSend($userId, Michome_Prognoz(),$token);
 		}
         elseif(mb_strtolower($body) == "прогноз погоды"){			
-			MessSend($userId, Michome_GetPrognoz(),$token);
+			MessSend($userId, Michome_GetPrognoz('1'),$token);
+            MessSend($userId, Michome_GetPrognoz('2'),$token);
 		}
 		elseif(mb_strtolower($body) == "ссылка"){			
 			MessSend($userId, "http://91.202.27.167/michome/",$token);

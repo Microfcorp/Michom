@@ -46,6 +46,15 @@ function _AddLog($link, $ip, $type, $rssi, $log, $date){
     $result = mysqli_query($link, $guery);
 }
 
+function _MaxMinTemper($link, $ip, $date = 1){
+    $results = mysqli_query($link, "SELECT MAX(`temp`), MIN(`temp`) FROM michom WHERE `ip` = '$ip' AND `date` >= '$date'");
+    while($row = $results->fetch_assoc()) {
+        $data[] = $row['MAX(`temp`)'];
+        $data[] = $row['MIN(`temp`)'];
+    }
+    return $data;
+}
+
 class BDData
 {
     public $ID;

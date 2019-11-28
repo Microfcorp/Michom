@@ -19,6 +19,21 @@ class MichomeAPI
        return _TimeIns($this->link, $device, $type, $datee);
     }
     
+    public function SendCmd($device, $cmd) {
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, 'http://'.$device.'/'.$cmd);
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+       curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 2000);
+       curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 2000);
+       $m = @curl_exec($ch);
+       curl_close($ch);
+       
+       if($m === FALSE)
+           return "Ошибка соеденения с модулем";
+       else
+           return $m;
+    }
+    
     public function GetModuleInfo() {
        return _AllModuleInfo();
     }
@@ -45,6 +60,10 @@ class MichomeAPI
     
     public function AddLog($ip, $type, $rssi, $log, $date){
        return _AddLog($this->link, $ip, $type, $rssi, $log, $date);
+    }
+    
+    public function MaxMinTemper($ip, $date = 1){
+       return _MaxMinTemper($this->link, $ip, $date);
     }
     
     public function GetTemperatureDiap($device = 1, $type, $datee = ""){

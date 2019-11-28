@@ -1,4 +1,6 @@
 <?
+//ONLY MODULES
+
 require_once("/var/www/html/site/mysql.php");
 require_once("/var/www/html/michome/lib/michom.php");
 //$id = 0;
@@ -31,8 +33,20 @@ $obj = json_decode($getjson);
 //var_dump($obj);
 //print $obj->{'a'}; // 12345
 
-$ip = $obj->{'ip'};
-$type = $obj->{'type'};
+try{
+    $ip = $obj->{'ip'};
+    $type = $obj->{'type'};
+    $secret = $obj->{'secretkey'};
+    $sign = $obj->{'secret'};
+}
+catch (Exception $e){
+    exit("Error");
+}
+
+if(sha1(substr($sign, 0, 13)) != $secret){
+    exit("Error");
+    $API->AddLog($ip, 'LoginFailed', '', 'Failed Password. '.sha1(substr($sign, 0, 13)), $date);
+}
 
 //Получение rsid
 if(!empty($obj->{'rsid'})){
@@ -99,12 +113,12 @@ elseif($type == "Informetr"){	//Информетр
        $ch = curl_init();
        curl_setopt($ch, CURLOPT_URL, "http://".$_SERVER['HTTP_HOST']."/michome/api/getprognoz.php?type=1");
        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-       curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 300);
-       curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 300);
+       //curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 300);
+       //curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 300);
        $pr = curl_exec($ch);
 	   curl_close($ch);
-       
-       file_get_contents("http://192.168.1.13/setdata?param=".$pr);
+
+       file_get_contents("http://".$ip."/setdata?param=".$pr);
     }
 }
 elseif($type == "hdc1080"){ //HDC1080	
@@ -162,6 +176,8 @@ elseif($type == "init"){ //Инициализация модуля
     curl_setopt ($ch, CURLOPT_TIMEOUT, 10);
     $pr = curl_exec($ch);
 	curl_close($ch);
+    
+    $API->AddLog($ip, 'StartingModule', $rsid, "Module '".$moduleid."' Starting", $date);
 }
 else{//Произвольное событие
 	$data = $obj->{'data'};
