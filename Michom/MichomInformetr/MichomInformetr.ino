@@ -1,9 +1,10 @@
+#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <ArduinoJson.h>
 #include <Michom.h>
 
-const char *ssid = "10-KORPUSMG";
-const char *password = "10707707";
+//const char *ssid = "10-KORPUSMG";
+//const char *password = "10707707";
 
 const char* id = "Informetr_Pogoda";
 const char* type = "Informetr";
@@ -15,14 +16,17 @@ const char* host1 = "192.168.1.42";
 RTOS rtos(600000);//Запрос данных
 RTOS rtos1(10000);//Время переключения экранов
 RTOS rtos2(8200);//Врея показа дня
+RTOS Button14(500);//Опрос кнопки режимов
 
 long pogr = 1800; //Отсчет до времени показа дня
 
 bool EtherFail = false;
 long Attempted = 0;
 
+bool PokazType = true;
+
 //Logger logg(host, host1);
-Michome michome(ssid, password, id, type, host, host1);
+Michome michome(id, type, host, host1);
 
 LiquidCrystal_I2C lcd(0x3F, 16, 2);
 
@@ -105,102 +109,144 @@ byte watchh[] = {
   0x0E
 };
 
-String date[4][11] = {};
+byte homes[] = {
+  0x00,
+  0x00,
+  0x04,
+  0x0E,
+  0x1F,
+  0x1F,
+  0x1B,
+  0x1B
+};
 
-int IDtoIcon(int id){
-  if(id == 0){
+String date[4][13] = {};
+
+int IDtoIcon(int id) {
+  if (id == 0) {
     return 2;
   }
-  else if(id == 1){
+  else if (id == 1) {
     return 0;
   }
-  else if(id == 2){
+  else if (id == 2) {
     return 0;
   }
-  else if(id == 3){
+  else if (id == 3) {
     return 4;
   }
-  else if(id == 4){
+  else if (id == 4) {
     return 3;
   }
-  else if(id == 5){
+  else if (id == 5) {
     return 1;
   }
-  else{
+  else {
     return 5;
   }
 }
 
-void setup ( void ) {    
+void ToHomes(){
+  lcd.createChar(0, homes);
+  lcd.createChar(1, watchh);
+  lcd.createChar(2, groza);
+  lcd.createChar(3, soln);
+  lcd.createChar(4, sneg);
+  lcd.createChar(5, gradus);
+}
 
-  pinMode(12, INPUT_PULLUP);
-  lcd.begin();
+void ToPrognoz(){
   lcd.createChar(0, Dozd);
   lcd.createChar(1, oblazn);
   lcd.createChar(2, groza);
   lcd.createChar(3, soln);
   lcd.createChar(4, sneg);
   lcd.createChar(5, gradus);
-  lcd.backlight();
-  lcd.print("Hello, world!");
+}
 
-  server1.on("/onlight", [](){ 
-   lcd.backlight();
-   server1.send(200, "text/html", String("OK"));    
-  });
-  
-  server1.on("/offlight", [](){ 
-   lcd.noBacklight();
-   server1.send(200, "text/html", String("OK"));    
+void setup ( void ) {
+
+  pinMode(12, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
+
+  lcd.init();
+  delay(10);
+  lcd.noBacklight();
+  lcd.print("Informetr");
+
+  server1.on("/onlight", []() {
+    lcd.backlight();
+    server1.send(200, "text/html", String("OK"));
   });
 
-  server1.on("/test", [](){ 
-   lcd.noBacklight();
-   lcd.backlight();
-   
-   lcd.clear();
-   lcd.write(0);
-   lcd.write(1);
-   lcd.write(2);
-   lcd.write(3);
-   lcd.write(4);
-   lcd.write(5);
-   
-   server1.send(200, "text/html", "Pin: " + String(digitalRead(12)) + "<br />System OK");    
+  server1.on("/refresh", []() {
+    server1.send(200, "text/html", "OK");
+    michome.SendData();
   });
-  
-  server1.on("/setdata", [](){ 
+
+  server1.on("/offlight", []() {
+    lcd.noBacklight();
+    server1.send(200, "text/html", String("OK"));
+  });
+
+  server1.on("/test", []() {
+    lcd.noBacklight();
+    lcd.backlight();
+    ToPrognoz();
+    
+    lcd.clear();
+    lcd.write(0);
+    lcd.write(1);
+    lcd.write(2);
+    lcd.write(3);
+    lcd.write(4);
+    lcd.write(5);
+
+    server1.send(200, "text/html", "Pin mode: " + String(digitalRead(12)) + "<br />Pin button1: " + String(digitalRead(14)) + "<br />System OK");
+  });
+
+  server1.on("/setdata", []() {
     //digitalWrite(Keys[server.arg(0).toInt()], server.arg(1).toInt());
+
+    String datareads = server1.arg(0);
+    
+    int firstClosingBracket = datareads.lastIndexOf("error");
+
+    if(firstClosingBracket != -1){
+      lcd.print("Error Update");
+      return;
+    }
+    
     DynamicJsonBuffer jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(server1.arg(0));    
-      
-    if(root["d"].as<int>() == 3){
+    JsonObject& root = jsonBuffer.parseObject(datareads);
+
+    if (root["d"].as<int>() == 3) {
       lcd.backlight();
       EtherFail = true;
       Attempted += 1;
     }
-    else if(root["d"].as<int>() == 4){
+    else if (root["d"].as<int>() == 4) {
       lcd.noBacklight();
       EtherFail = true;
       Attempted += 1;
     }
-    else if(root["d"].as<int>() == 1){
+    else if (root["d"].as<int>() == 1) {
       lcd.backlight();
       EtherFail = false;
       Attempted = 0;
     }
-    else if(root["d"].as<int>() == 0){
+    else if (root["d"].as<int>() == 0) {
       lcd.noBacklight();
       EtherFail = false;
       Attempted = 0;
     }
-    else{
+    else {
       EtherFail = true;
       Attempted += 1;
     }
 
-    if(!EtherFail){
-      for(int i = 0; i < 3; i++){
+    if (!EtherFail) {
+      for (int i = 0; i < 3; i++) {
         date[i][0] = String(root["d"].as<int>());
         date[i][1] = String(IDtoIcon(root["data"][i]["4"].as<int>()));
         date[i][2] = String(IDtoIcon(root["data"][i]["4"].as<int>()));
@@ -212,25 +258,27 @@ void setup ( void ) {
         date[i][8] = String(root["time"].as<String>());
         date[i][9] = String(root["dawlen"].as<String>());
         date[i][10] = String(root["data"][i]["times"].as<String>());
+        date[i][11] = String(root["tempgr"].as<String>());
+        date[i][12] = String(root["hummgr"].as<String>());
       }
-      
+
       lcd.clear();
-      lcd.home(); 
+      lcd.home();
       lcd.setCursor(0, 0);
-      lcd.print("Updating...");     
+      lcd.print("Updating...");
     }
-    
-    server1.send(200, "text/html", String("OK"));    
+
+    server1.send(200, "text/html", String("OK"));
   });
-  
+
   michome.SetFormatSettings(3);
-  michome.init(true); 
+  michome.init(true);
 }
 bool st = true;
 int day = 0;
-void plusday(){
+void plusday() {
   day++;
-  if(day > 2){
+  if (day > 2) {
     day = 0;
   }
 }
@@ -238,113 +286,126 @@ void loop ( void ) {
 
   michome.running();
 
-  if(michome.GetSettingRead()){
+  if (michome.GetSettingRead()) {
     rtos.ChangeTime(michome.GetSetting("update").toInt());
     rtos1.ChangeTime(michome.GetSetting("timeupdate").toInt());
     rtos2.ChangeTime(rtos1.GetTime() - pogr);
-    
-    if(michome.GetSetting("running")=="0"){
+
+    if (michome.GetSetting("running") == "0") {
       rtos.Stop();
       rtos1.Stop();
       rtos2.Stop();
     }
-    else{
+    else {
       rtos.Start();
       rtos1.Start();
       rtos2.Start();
     }
   }
-  
-  if (rtos.IsTick()) {
-    michome.SendData(michome.ParseJson(String(type), ""));
-  }
-  
-  if (rtos2.IsTick()) {
+
+  if (rtos.IsTick())
+    michome.SendData();
+
+  if (rtos2.IsTick())
     i2();
-  }
+
+  if (rtos1.IsTick())
+    i1();
+
+  bool tickss = Button14.IsTick();
+  /*if (tickss && )
+    lcd.backlight();*/
   
-  if (rtos1.IsTick()) {
+  if (tickss && digitalRead(14) == LOW) {
+    PokazType =! PokazType;
+    if(PokazType)
+      ToPrognoz();
+    else
+      ToHomes();
     i1();
   }
-  
-  if(digitalRead(12) == LOW){
-    lcd.backlight();
-  }
 }
 
-void PrintETError(){
-        lcd.clear();
-        lcd.home();
-        lcd.setCursor(0, 0);
-        lcd.print("Ethernet Error");
-        lcd.setCursor(0, 1);
-        lcd.print("Attempt "+String(Attempted));
+void PrintETError() {
+  lcd.noBlink();
+  lcd.clear();
+  lcd.home();
+  lcd.setCursor(0, 0);
+  lcd.print("Ethernet Error");
+  lcd.setCursor(0, 1);
+  lcd.print("Attempt " + String(Attempted));
+  michome.SendData();
 }
 
-void i1(){
-  
-  if(!EtherFail){
-    if(date[0][0].toInt() == 1){
+void i1() {
+  lcd.noBlink();
+  if (!EtherFail) {    
+    if (date[0][0].toInt() == 1 || digitalRead(12) == LOW) {
       lcd.backlight();
     }
-    else{
+    else {
       lcd.noBacklight();
     }
-        
+
     lcd.clear();
-    lcd.home();   
-    if(st){
-       lcd.setCursor(0, 0);
-       lcd.noBlink();                
-       lcd.setCursor(0, 0);
-       lcd.write(date[day][1].toInt());
-       lcd.setCursor(0, 1);
-       lcd.write(date[day][2].toInt());
-       lcd.setCursor(2, 0);
-       lcd.print(date[day][3]);
-       lcd.write(5);
-       lcd.setCursor(2, 1);
-       lcd.print(date[day][4]);
-       lcd.write(5);
-       lcd.setCursor(9, 0);
-       lcd.print(date[day][5] + "m/s");
-       lcd.setCursor(9, 1);
-       lcd.print(date[day][6] + "mm");
-       st = false;
-       plusday();
+    lcd.home();
+    
+    if (PokazType) {
+      ToPrognoz();
+      lcd.setCursor(0, 0);
+      lcd.noBlink();
+      lcd.setCursor(0, 0);
+      lcd.write(date[day][1].toInt());
+      lcd.setCursor(0, 1);
+      lcd.write(date[day][2].toInt());
+      lcd.setCursor(2, 0);
+      lcd.print(date[day][3]);
+      lcd.write(5);
+      lcd.setCursor(2, 1);
+      lcd.print(date[day][4]);
+      lcd.write(5);
+      lcd.setCursor(9, 0);
+      lcd.print(date[day][5] + "m/s");
+      lcd.setCursor(9, 1);
+      lcd.print(date[day][6] + "mm");
+      plusday();
     }
-    else{
-       lcd.setCursor(0, 0);
-       lcd.write(1);
-       lcd.setCursor(2, 0);
-       lcd.print(date[0][7]);
-       lcd.write(5);
-       lcd.setCursor(0, 1);
-       lcd.write(1);
-       lcd.setCursor(2, 1);
-       lcd.print(date[0][8]);
-       lcd.setCursor(9, 0);
-       lcd.print(date[1][9]);
-       st = true;
-       }
+    else {
+      ToHomes();
+      lcd.setCursor(0, 0);
+      lcd.write(0);
+      lcd.setCursor(2, 0);
+      lcd.print(date[0][7]);
+      lcd.write(5);
+      lcd.setCursor(9, 0);
+      lcd.print(date[1][9]);
+      
+      lcd.setCursor(0, 1);
+      lcd.write(0);
+      lcd.setCursor(2, 1);
+      lcd.print(date[0][11]);
+      lcd.write(5);
+      lcd.setCursor(9, 1);
+      lcd.print(date[0][12] + "%");
+    }
   }
-  else{
+  else {
     PrintETError();
   }
 }
 
-void i2(){
-  if(!EtherFail){ 
-      if(st){
-          lcd.clear();
-          lcd.home();  
-          lcd.setCursor(0, 0);
-          lcd.print(date[day][10]);
-          lcd.blink();
-        }
-      }
-   else{
-      PrintETError();
-   }
+void i2() {
+  if (!EtherFail) {
+    if (PokazType) {
+      lcd.clear();
+      lcd.home();
+      lcd.setCursor(0, 0);
+      lcd.print(date[day][10]);
+      lcd.blink();
+    }
+  }
+  else {
+    PrintETError();
+  }
 }
 

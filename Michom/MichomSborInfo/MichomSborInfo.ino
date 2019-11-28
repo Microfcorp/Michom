@@ -6,8 +6,8 @@
 #define DHTTYPE DHT11   // DHT 11
 
 /////////настройки//////////////
-const char* ssid = "10-KORPUSMG";
-const char* password = "10707707";
+//const char* ssid = "10-KORPUSMG";
+//const char* password = "10707707";
 
 const char* id = "sborinfo_tv";
 const char* type = "msinfoo";
@@ -18,7 +18,7 @@ const char* host1 = "192.168.1.42";
 
 RTOS rtos(600000);
 
-Michome michome(ssid, password, id, type, host, host1);
+Michome michome(id, type, host, host1);
 
 DHT dht(DHTPIN, DHTTYPE, 15);
 Adafruit_BMP085 bmp;
@@ -31,6 +31,11 @@ void setup() {
   }
   dht.begin();  
 
+  server1.on("/refresh", [](){ 
+      server1.send(200, "text/html", "OK");
+      SendData();
+  });  
+   
   michome.SetFormatSettings(1);
   michome.init(false);  
   
@@ -49,6 +54,6 @@ void loop() {
 }
 
 void SendData(){
-  michome.SendData(michome.ParseJson(String(type), String(bmp.readPressure()/133.3)+";"+String(bmp.readTemperature())+";"+String(bmp.readAltitude())+";"+String(dht.readTemperature())+";"+String(dht.readHumidity())));
+  michome.SendData(michome.ParseJson(String(type), String(bmp.readPressure()/133.332)+";"+String(bmp.readTemperature())+";"+String(bmp.readAltitude())+";"+String(dht.readTemperature())+";"+String(dht.readHumidity())));
 }
 

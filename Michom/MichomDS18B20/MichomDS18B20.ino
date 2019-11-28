@@ -1,8 +1,8 @@
 #include <Michom.h>
 #include <OneWire.h>
 
-const char *ssid = "10-KORPUSMG";
-const char *password = "10707707";
+//const char *ssid = "10-KORPUSMG";
+//const char *password = "10707707";
 
 const char* id = "termometr_okno";
 const char* type = "termometr";
@@ -13,7 +13,7 @@ const char* host1 = "192.168.1.42";
 
 RTOS rtos(600000);
 
-Michome michome(ssid, password, id, type, host, host1);
+Michome michome(id, type, host, host1);
 
 ESP8266WebServer& server1 = michome.GetServer();
 OneWire ds(10);
@@ -59,8 +59,13 @@ float getTemp(){
 const int led = 13;
 
 void setup ( void ) {
-  michome.init(false);
+  server1.on("/refresh", [](){ 
+    server1.send(200, "text/html", "OK");
+    SendData();
+ });    
+ 
   michome.SetFormatSettings(1);
+  michome.init(false);
   SendData();
 }
 
