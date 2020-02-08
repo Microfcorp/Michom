@@ -32,19 +32,18 @@ function _TimeIns($link, $device = 1, $type, $datee = ""){
         //echo $date->format('Y-m-d') . "\n";
         
         
-        $results = mysqli_query($link, "SELECT * FROM michom WHERE ".$device." AND `date` >= '".$date1."' AND `date` <= '".$date->format('Y-m-d')."'");
-
-        $ids = array();
+        $results = mysqli_query($link, "SELECT MAX(`id`), MIN(`id`) FROM michom WHERE ".$device." AND `date` >= '".$date1."' AND `date` <= '".$date->format('Y-m-d')."' LIMIT 1");
         
         while($row = $results->fetch_assoc()) {
-        $ids[] = $row['id'];
+            $max = $row['MAX(`id`)'];
+            $min = $row['MIN(`id`)'];
         }
         
-        if(count($ids) < 1){
+        if(empty($max)){
             return ('nan'.";".'nan'.";".'nan');
         }
         else{
-            return (min($ids).";".max($ids).";".(max($ids)-min($ids)));
+            return ($min.";".$max.";".($max-$min));
         }
     }
     elseif($type == "diap"){

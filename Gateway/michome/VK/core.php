@@ -65,12 +65,18 @@ if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation'
         elseif(mb_strtolower($body) == "свет на пиано" || mb_strtolower($body) == "включи пианино" || mb_strtolower($body) == "свет на пианино"){			
 			MessSend($userId, Michome_SetLight('0','207'),$token);
 		}        
-		elseif(mb_strtolower($body) == "включи гирлянду" || mb_strtolower($body) == "вруби гирлянду" || mb_strtolower($body) == "запусти гирлянду"){			
-			MessSend($userId, Michome_SetCharModule('3','1'),$token);
+		elseif(mb_strtolower($body) == "включить ель" || mb_strtolower($body) == "вруби ель" || mb_strtolower($body) == "запусти ель"){			
+			MessSend($userId, Michome_SetCharModule('1','1'),$token);
 		}
-		elseif(mb_strtolower($body) == "выключи гирлянду" || mb_strtolower($body) == "выруби гирлянду" || mb_strtolower($body) == "выпусти гирлянду"){			
-			MessSend($userId, Michome_SetCharModule('3','0'),$token);
-		}			
+		elseif(mb_strtolower($body) == "выключить ель" || mb_strtolower($body) == "выруби ель" || mb_strtolower($body) == "выпусти ель"){			
+			MessSend($userId, Michome_SetCharModule('1','0'),$token);
+		}
+        elseif(mb_strtolower($body) == "включить гирлянду" || mb_strtolower($body) == "вруби гирлянду" || mb_strtolower($body) == "запусти гирлянду"){			
+			MessSend($userId, Michome_SetHDC1080Module(1),$token);
+		}
+		elseif(mb_strtolower($body) == "выключить гирлянду" || mb_strtolower($body) == "выруби гирлянду" || mb_strtolower($body) == "выпусти гирлянду"){			
+			MessSend($userId, Michome_SetHDC1080Module(0),$token);
+		}        
 		elseif(mb_strtolower($body) == "погода"){			
 			MessSend($userId, Michome_Prognoz(),$token);
 		}
@@ -80,6 +86,22 @@ if(strcmp($data->secret, $secretKey) !== 0 && strcmp($data->type, 'confirmation'
 		}
 		elseif(mb_strtolower($body) == "ссылка"){			
 			MessSend($userId, "http://91.202.27.167/michome/",$token);
+		}
+        elseif(mb_strtolower($body) == "подписаться на уведомления"){	
+            AddNot($userId);
+			MessSend($userId, "Вы успешно подписались на уведомления", $token);
+		}
+        elseif(mb_strtolower($body) == "отписаться от уведомлений"){
+            RemoveNot($userId);
+			MessSend($userId, "Вы успешно отписались от уведомлений", $token);
+		}
+        elseif(mb_strtolower($body) == "все уведомления"){	
+            ChangeNot($userId, 'all');
+			MessSend($userId, "Тип обновлений изменен на \"Все\"", $token);
+		}
+        elseif(mb_strtolower($body) == "основные уведомления"){	
+            ChangeNot($userId, 'general');
+			MessSend($userId, "Тип уведомлений изменен на \"Основные\"", $token);
 		}
 		elseif(mb_strtolower($body) == "время дня" || mb_strtolower($body) == "долгота дня"){			
 			MessSend($userId, Michome_DateVrem(),$token);

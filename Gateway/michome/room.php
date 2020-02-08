@@ -15,17 +15,17 @@ $pressed = false;
 
 $log1 = "";
 
-$results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.10' ORDER BY `id` DESC limit 1");
+$results = mysqli_query($link, "SELECT `temp`,`humm`,`dawlen` FROM michom WHERE ip='192.168.1.10' ORDER BY `id` DESC limit 1");
 while($row = $results->fetch_assoc()) {
 	$temp1 = $row['temp'];
 	$humm1 = $row['humm'];
 	$abc1 = $row['dawlen'];
 }
-$results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.11' ORDER BY `id` DESC limit 1");
+$results = mysqli_query($link, "SELECT `temp` FROM michom WHERE ip='192.168.1.11' ORDER BY `id` DESC limit 1");
 while($row = $results->fetch_assoc()) {
 	$temp2 = $row['temp'];
 }
-$results = mysqli_query($link, "SELECT * FROM michom WHERE ip='192.168.1.14' ORDER BY `id` DESC limit 1");
+$results = mysqli_query($link, "SELECT `temp`,`humm` FROM michom WHERE ip='192.168.1.14' ORDER BY `id` DESC limit 1");
 while($row = $results->fetch_assoc()) {
 	$humm2 = $row['humm'];
 	$temp3 = $row['temp'];
@@ -37,15 +37,15 @@ while($row = $results->fetch_assoc()) {
     $pressed =! $pressed;
 }*/
 
-$results = mysqli_query($link, "SELECT * FROM `logging` WHERE `date` >= CURDATE() AND `type`='msinfoo' AND ip='192.168.1.10'");
+$results = mysqli_query($link, "SELECT COUNT(`id`) FROM `logging` WHERE `date` >= CURDATE() AND ip='192.168.1.10' AND Log=\"MsinfooNAN\" LIMIT 1");
 while($row = $results->fetch_assoc()) {
-	$log1 = $log1 + 1;
+	$log1 = $row["COUNT(`id`)"];
 }
 ?>
 <!Doctype html>
 <html>
 	<head>
-		<title>Настройки</title>
+		<title>Комнаты</title>
 		<link rel="stylesheet" type="text/css" href="styles/style.css"/>
         <script type="text/javascript" src="/site/MicrofLibrary.js"></script>
         <script type="text/javascript">        
@@ -54,11 +54,28 @@ while($row = $results->fetch_assoc()) {
                 
                 if(host != "192.168.1.42"){
                     //console.log('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ '192.168.1.34' +'&cmd='+ 'setlight?p='+p+'%26s='+size);
-                    postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ '192.168.1.12' +'&cmd='+ 'setlight?p=3%26s='+q,'POST', "", function(){});
+                    postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ '192.168.1.12' +'&cmd='+ 'setlight?p=1%26s='+q,'POST', "", function(){});
                 }
                 else{
                     //console.log('http://192.168.1.34/setlight?p='+p+'&s='+size);
-                    postAjax('http://192.168.1.12/setlight?p=3&s='+q, 'POST', "", function(){});
+                    postAjax('http://192.168.1.12/setlight?p=1&s='+q, 'POST', "", function(){});
+                }
+                //sleep(500);
+            }
+            
+            function Winon(q){
+                var host = '<?echo $_SERVER['HTTP_HOST'];?>';
+                
+                if(host != "192.168.1.42"){
+                    //console.log('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ '192.168.1.34' +'&cmd='+ 'setlight?p='+p+'%26s='+size);
+                    if(q == 1)
+                        postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ '192.168.1.14' +'&cmd='+ 'setlight?s=1','POST', "", function(){});
+                    else postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/api/setcmd.php?device='+ '192.168.1.14' +'&cmd='+ 'setlight?s=0','POST', "", function(){});
+                }
+                else{
+                    //console.log('http://192.168.1.34/setlight?p='+p+'&s='+size);
+                    if(q == 1) postAjax('http://192.168.1.14/setlight?s=1', 'POST', "", function(){});
+                    else postAjax('http://192.168.1.14/setlight?s=0', 'POST', "", function(){});
                 }
                 //sleep(500);
             }
@@ -112,7 +129,7 @@ while($row = $results->fetch_assoc()) {
 	<body>
 		<div class = "body_alfa"></div>
 		<div class = "body">
-			<div class = "title_menu">Управление Michome. Модули</div>
+			<div class = "title_menu">Управление Michome. План комнат</div>
 			<div class = "com">
                 <div class = "components">
 					<div class = "components_alfa">
@@ -127,8 +144,12 @@ while($row = $results->fetch_assoc()) {
                             <span><a href="studiolight.php" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Управление освещением</a></span><br />
                             <span><a href="ircontrol.php?type=sab" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Управление сабвуфером</a></span><br />
                             <span>Положение выключателя</span> <label class="switch"><input type="checkbox"><div class="slider"></div></label>
-                            <!-- <p><a href="#" onclick="Giron('1')" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Включить гирлянду</a></p>
-                            <p><a href="#" onclick="Giron('0')" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Выключить гирлянду</a></p> -->
+                            
+                            <p><a href="#" onclick="Giron('1')" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Включить ель</a></p>
+                            <p><a href="#" onclick="Giron('0')" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Выключить ель</a></p>
+                            
+                            <p><a href="#" onclick="Winon(1)" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Включить окно</a></p>
+                            <p><a href="#" onclick="Winon(0)" style="font-size: 12pt; font-family: Verdana, Arial, Helvetica, sans-serif;">Выключить окно</a></p>
                         </div>
 					</div>
 				</div>

@@ -3,6 +3,8 @@
 require_once("_timeins.php");
 require_once("_module.php");
 require_once("_bddata.php");
+require_once("/var/www/html/michome/VK/func.php");
+require_once("/var/www/html/site/BotSet.php");
 class MichomeAPI
 {
     // объявление свойства
@@ -19,12 +21,12 @@ class MichomeAPI
        return _TimeIns($this->link, $device, $type, $datee);
     }
     
-    public function SendCmd($device, $cmd) {
+    public function SendCmd($device, $cmd, $timeout=2000) {
        $ch = curl_init();
        curl_setopt($ch, CURLOPT_URL, 'http://'.$device.'/'.$cmd);
        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-       curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, 2000);
-       curl_setopt ($ch, CURLOPT_TIMEOUT_MS, 2000);
+       curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT_MS, $timeout);
+       curl_setopt ($ch, CURLOPT_TIMEOUT_MS, $timeout);
        $m = @curl_exec($ch);
        curl_close($ch);
        
@@ -54,6 +56,14 @@ class MichomeAPI
        return _GetPosledData($this->link, $ip);
     }
     
+    public function SendNotification($text, $group){
+        global $token;
+       $results = mysqli_query($this->link, "SELECT `ID` FROM `UsersVK` WHERE `Enable`=1 AND `Type` = '".$group."'");
+       while($row = $results->fetch_assoc()) {
+            MessSend($row['ID'], $text, $token);
+       }  
+    }
+    
     public function GetFromEndData($ip, $count){
        return _GetFromEndData($this->link, $ip, $count);
     }
@@ -64,6 +74,10 @@ class MichomeAPI
     
     public function MaxMinTemper($ip, $date = 1){
        return _MaxMinTemper($this->link, $ip, $date);
+    }
+    
+    public function GetSettingsFromType($type){
+        return _GetSettingsFromType($this->link, $type);
     }
     
     public function GetTemperatureDiap($device = 1, $type, $datee = ""){
@@ -125,5 +139,93 @@ class MichomeAPI
         );
         return $cart;
     }
+    
+    public function GetConstant($strl){
+        $str = $strl;
+        //^rm_192.168.1.11_Temp;
+        while(IsStr($str, "^rm")){
+            $expl = substr($str, strpos($str, "^rm")+4, (strpos($str, ";") - (strpos($str, "^rm")+4)));     
+            $rd = $this->GetPosledData(explode('_', $expl)[0])->GetFromName(explode('_', $expl)[1]);
+            $rd = str_replace("_","-", $rd);
+            $str = str_replace("^rm_".$expl.";", $rd, $str);      
+        }              
+        return $str;
+    }
+    public function GetButton($strl, $m, $p, $c){
+        $str = $strl;
+        //^bt_192.168.1.34_1_1_1;
+        while(IsStr($str, "^bt")){
+            $expl = substr($str, strpos($str, "^bt")+4, (strpos($str, ";") - (strpos($str, "^bt")+4)));
+            
+            if(count(explode('_', $expl)) == 4) $fullif = '1';
+            elseif(count(explode('_', $expl)) == 2) $fullif = '0';
+            elseif(count(explode('_', $expl)) == 3) $fullif = '3';
+            else $fullif = '2';
+            
+            $md = explode('_', $expl)[0];                                   
+                       
+            if($fullif == '1'){
+                $pi = explode('_', $expl)[1];
+                $co = explode('_', $expl)[2];           
+                if($m == $md & $pi == $p & $co == $c) $rd = '1';
+                else $rd = '0';                   
+                $rd = "^if_".$rd."==".explode('_', $expl)[3].";";
+            }
+            elseif($fullif == '3'){
+                $pi = explode('_', $expl)[1];
+                $co = explode('_', $expl)[2];           
+                if($m == $md & $pi == $p & $co == $c) $rd = '1';
+                else $rd = '0';                   
+                $rd = "^if_".$rd."==1;";
+            }
+            elseif($fullif == '0'){
+                $pi = explode('_', $expl)[1];
+                if($m == $md & $pi == $p) $rd = '1';
+                else $rd = '0';                   
+                $rd = "^if_".$rd."==1;";
+            }
+            else{
+                if($m == $md) $rd = '1';
+                else $rd = '0';                   
+                $rd = "^if_".$rd."==1;";
+            }          
+            
+            $str = str_replace("^bt_".$expl.";", $rd, $str);      
+        }
+        return $str;
+    }
+    public function GetIFs($strl, $enb){
+        $Name = $strl;
+        $enable = $enb;
+        if($enb == '0') return [$Name, $enable];
+        while(IsStr($Name, "^if")){
+            $expl = substr($Name, strpos($Name, "^if")+4, (strpos($Name, ";") - (strpos($Name, "^if")+4))); 
+            if(IsStr($expl, "<")){  if(doubleval(preg_replace("/[^-0-9\.]/","",explode('<', $expl)[0])) > doubleval(preg_replace("/[^-0-9\.]/","",explode('<', $expl)[1]))){ $enable = "0"; echo "1>2 ";}}
+            elseif(IsStr($expl, ">")){ if(doubleval(preg_replace("/[^-0-9\.]/","",explode('>', $expl)[0])) < doubleval(preg_replace("/[^-0-9\.]/","",explode('>', $expl)[1]))){ $enable = "0"; echo "1<2 ";}}
+            elseif(IsStr($expl, "<=")){ if(doubleval(preg_replace("/[^-0-9\.]/","",explode('<=', $expl)[0])) >= doubleval(preg_replace("/[^-0-9\.]/","",explode('<=', $expl)[1]))){ $enable = "0"; echo "1>=2 ";}}
+            elseif(IsStr($expl, ">=")){ if(doubleval(preg_replace("/[^-0-9\.]/","",explode('>=', $expl)[0])) <= doubleval(preg_replace("/[^-0-9\.]/","",explode('>=', $expl)[1]))){ $enable = "0"; echo "1<=2 ";}}
+            elseif(IsStr($expl, "==")){ if(doubleval(preg_replace("/[^-0-9\.]/","",explode('==', $expl)[0])) != doubleval(preg_replace("/[^-0-9\.]/","",explode('==', $expl)[1]))){ $enable = "0"; echo "1!=2 ";}}
+            elseif(IsStr($expl, "!=")){ if(doubleval(preg_replace("/[^-0-9\.]/","",explode('!=', $expl)[0])) == doubleval(preg_replace("/[^-0-9\.]/","",explode('!=', $expl)[1]))){ $enable = "0"; echo "1==2 ";}}
+            $Name = str_replace("^if_".$expl.";", "", $Name);
+        }
+        return [$Name, $enable];
+    }
+    public function GetNotification($strl){
+        $str = $strl;
+        //^sn_all_Привет, мир;
+        while(IsStr($str, "^sn")){
+            $expl = substr($str, strpos($str, "^sn")+4, (strpos($str, ";") - (strpos($str, "^sn")+4)));     
+            $text = explode('_', $expl)[1];
+            $group = explode('_', $expl)[0];
+            $this->SendNotification($text, $group);
+            $str = str_replace("^sn_".$expl.";", "", $str);
+            //echo "SendNotification ";
+        }
+        return $str;
+    }
+}
+function IsStr($str, $search){
+    if(strpos($str, $search) !== FALSE) return true;
+    else return false;
 }
 ?>

@@ -82,8 +82,21 @@ class BDData
        $this->link = $link;
     }
     
+    public function GetFromName($name){
+        if($name == "ID") return $this->ID;
+        elseif($name == "IP") return $this->IP;
+        elseif($name == "Type") return $this->Type;
+        elseif($name == "Data") return $this->Data;
+        elseif($name == "Temp") return $this->Temp;
+        elseif($name == "Humm") return $this->Humm;
+        elseif($name == "Dawlen") return $this->Dawlen;
+        elseif($name == "Visota") return $this->Visota;
+        elseif($name == "Date") return $this->Date;
+        else return "";
+    }
+    
     public function Update($key, $data){
-        $results = mysqli_query($this->$link, "UPDATE `michom` SET `".$key."`='$data' WHERE `id`=".$this->$ID."");
+        $results = mysqli_query($this->$link, "UPDATE `michom` SET `".$key."`='$data' WHERE `id`=".$this->ID."");
         return $results;
     }
 }

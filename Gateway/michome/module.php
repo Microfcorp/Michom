@@ -19,6 +19,16 @@
     {
         return strcmp($b->IsOnline, $a->IsOnline);
     }
+    
+    function formatFileSize($size) {
+    $a = array("B", "KB", "MB", "GB", "TB", "PB");
+    $pos = 0;
+    while ($size >= 1024) {
+        $size /= 1024;
+        $pos++;
+    }
+    return round($size,2)." ".$a[$pos];
+}
 ?>
 <!Doctype html>
 <html>
@@ -101,7 +111,7 @@
                             echo "<div class = \"components\">";
                                 echo "<div class = \"components_alfa\">";
                                     echo "<div class = \"components_title\">".$tmp->IP." - ".$tmp->ModuleInfo->Descreption."</div>";
-                                    echo "<div class = \"components_text\"><p style=\"color: green;\">Модуль в сети</p><p>Уровень связи: ".$tmp->RSSI."</p> <p>Поледнее соеденение было установленно <span style=\"left: 3px;\">".$tmp->PosledDate."</span></p>";
+                                    echo "<div class = \"components_text\"><p style=\"color: green;\">Модуль в сети</p><p>Уровень связи: ".$tmp->RSSI."</p><p>Размер память: ".formatFileSize($tmp->FlashSize)."</p> <p>Поледнее соеденение было установленно <span style=\"left: 3px;\">".$tmp->PosledDate."</span></p>";
                                     foreach($tmp->ModuleInfo->URL as $mdu){
                                         echo "<p><a href='#' onclick='SendModule(\"".$tmp->IP."\",\"".$mdu[0]."\")'>".$mdu[1]."</a></p>";
                                     }

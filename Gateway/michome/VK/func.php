@@ -28,6 +28,51 @@ function MessSend($peer_id, $message,$token){
                                 "payload" => array(
                                     "button" => "1"
                                 ),
+                                "label" => "Включить гирлянду"
+                            ),
+                            'color' => 'positive'
+                        ),
+                        array(
+                            'action' => array(
+                                "type" => "text",
+                                "payload" => array(
+                                    "button" => "1"
+                                ),
+                                "label" => "Выключить гирлянду"
+                            ),
+                            'color' => 'negative'
+                        ),
+                    ),
+                    /*array(
+                        array(
+                            'action' => array(
+                                "type" => "text",
+                                "payload" => array(
+                                    "button" => "1"
+                                ),
+                                "label" => "Включить ель"
+                            ),
+                            'color' => 'positive'
+                        ),
+                        
+                        array(
+                            'action' => array(
+                                "type" => "text",
+                                "payload" => array(
+                                    "button" => "1"
+                                ),
+                                "label" => "Выключить ель"
+                            ),
+                            'color' => 'negative'
+                        ),
+                    ),*/
+                    array(
+                        array(
+                            'action' => array(
+                                "type" => "text",
+                                "payload" => array(
+                                    "button" => "1"
+                                ),
                                 "label" => "Включить свет 1"
                             ),
                             'color' => 'positive'
@@ -108,7 +153,7 @@ function MessSend($peer_id, $message,$token){
                         ),
                     ),
                     array(
-                        array(
+                        /*array(
                             'action' => array(
                                 "type" => "text",
                                 "payload" => array(
@@ -117,7 +162,7 @@ function MessSend($peer_id, $message,$token){
                                 "label" => "Влажность в комнате"
                             ),
                             'color' => 'primary'
-                        ),
+                        ),*/
                         array(
                             'action' => array(
                                 "type" => "text",
@@ -129,7 +174,7 @@ function MessSend($peer_id, $message,$token){
                             'color' => 'primary'
                         ),
                     ),
-                    array(
+                    /*array(
                         array(
                             'action' => array(
                                 "type" => "text",
@@ -140,14 +185,22 @@ function MessSend($peer_id, $message,$token){
                             ),
                             'color' => 'primary'
                         ),                        
-                    ),
+                    ),*/
                 ),
             ))
         );
  
         $get_params = http_build_query($request_params);
  
-        file_get_contents('https://api.vk.com/method/messages.send?' . $get_params);      
+        //file_get_contents('https://api.vk.com/method/messages.send?' . $get_params);      
+
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, 'https://api.vk.com/method/messages.send?' . $get_params);
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+       //curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 3);
+       //curl_setopt ($ch, CURLOPT_TIMEOUT, 3);
+       $m = @curl_exec($ch);
+       curl_close($ch);
 
         //var_dump($request_params);
 }
@@ -187,8 +240,30 @@ function Michome_SetLight($p,$s){
 function Michome_SetCharModule($p,$s){
 	return Michome_SetCmd('setlight?p='.$p.'%26s='.$s,"192.168.1.12");
 }
+function Michome_SetHDC1080Module($p){
+    if($p == 1)
+        return Michome_SetCmd('setlight?s=1',"192.168.1.14");
+    else
+        return Michome_SetCmd('setlight?s=0',"192.168.1.14");
+}
 function Michome_GetPrognoz($d){ 
 	//return str_replace(file_get_contents("http://localhost/michome/api/getprognoz.php"), "<br />", " ");
     return file_get_contents("http://localhost/michome/api/getprognoz.php?type=VK&d=".$d);
+}
+function AddNot($id){
+    global $link;
+    $res = mysqli_query($link, "SELECT `ID` FROM `UsersVK` WHERE `ID` = ".$id);
+    $count = mysqli_num_rows($res);
+    if($count <= 0)
+        mysqli_query($link, "INSERT INTO `UsersVK`(`ID`, `Type`, `Enable`) VALUES ('$id','all','1')");
+}
+function ChangeNot($id, $group){
+    global $link;
+    AddNot($id);    
+    mysqli_query($link, "UPDATE `UsersVK` SET `Type`='$group' WHERE `ID`=".$id);
+}
+function RemoveNot($id){
+    global $link;
+    mysqli_query($link, "DELETE FROM `UsersVK` WHERE `ID`=".$id);
 }
 ?>

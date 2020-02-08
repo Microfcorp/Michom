@@ -84,7 +84,7 @@ if($type == "msinfoo"){	//Модуль сбора информации
 elseif($type == "termometr"){	//Термометр
 	$temper = $obj->{'data'}->{'temper'}; //Температура
 	
-	if(intval($temper) < 10 & $ip == "192.168.1.11"){
+	/*if(intval($temper) < 10 & $ip == "192.168.1.11"){
 		curl_setopt_array($ch = curl_init(), array(
 		  CURLOPT_URL => "https://api.pushover.net/1/messages.json",
 		  CURLOPT_POSTFIELDS => array(
@@ -97,7 +97,7 @@ elseif($type == "termometr"){	//Термометр
 		));
 		curl_exec($ch);
 		curl_close($ch);
-	}
+	}*/
 	
 	$guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'termometr','$rsid','$temper','','','','$date')"; 
 	$result = mysqli_query($link, $guery);
@@ -144,8 +144,30 @@ elseif($type == "get_light_status"){//Модуль света
 }
 elseif($type == "get_button_press"){//Событие нажатия кнопки
 	$status = $obj->{'data'}->{'status'};
+    $pin = explode('=',$status)[0];
+    $count = explode('=',$status)[1];
 
-	$guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'get_button_press','$status','','','','','$date')"; 
+    $results = mysqli_query($link, "SELECT * FROM `scenes` WHERE `Enable`=1 AND `Name` LIKE '%^bt%%".$ip."%'");//Жестко качаем все из БД
+    while($row = $results->fetch_assoc()) {
+        $na = $row['Name'];
+        $na = str_replace("^cbp", $count, $na);
+        $na = str_replace("^pbp", $pin, $na);
+        
+        $N = $API->GetIFs($API->GetButton($API->GetConstant($na), $ip, $pin, $count), $row['Enable']);
+        $Name = $N[0];
+        if($N[1] != "0"){
+            $data = $API->GetConstant($row['Data']);
+            $data = str_replace("^cbp", $count, $data);
+            $data = str_replace("^pbp", $pin, $data);
+            
+            $API->GetNotification($data);
+            if($API->SendCmd($row['Module'], $data.'&m=cron') != "Ошибка соеденения с модулем" || IsStr($Name, "^nos")){ //Отправляем команду
+                mysqli_query($link, "UPDATE `scenes` SET `CSE`='".date("H:i")."' WHERE `ID`=".$row['ID']);//Запоминаем время работы
+            }
+        }
+    }
+    
+	//$guery = "INSERT INTO `michom`(`ip`, `type`, `data`, `temp`, `humm`, `dawlen`, `visota`, `date`) VALUES ('$ip', 'get_button_press','$status','','','','','$date')"; 
 	//$result = mysqli_query($link, $guery);
 }
 elseif($type == "StudioLight"){	//Модуль освещения
@@ -166,7 +188,8 @@ elseif($type == "init"){ //Инициализация модуля
     $count = mysqli_num_rows($res);
     if( $count > 0 ) {} //Пропускаем...
     else { //Добавляем в базу модулей
-        $guery = "INSERT INTO `modules`(`ip`, `type`, `mID`, `urls`) VALUES ('$ip','$moduletype','$moduleid','refresh=Обновить данные;restart=Перезагрузить')";       
+        $setting = $API->GetSettingsFromType($moduletype);
+        $guery = "INSERT INTO `modules`(`ip`, `type`, `mID`, `urls`, `setting`) VALUES ('$ip','$moduletype','$moduleid','refresh=Обновить данные;restart=Перезагрузить;clearlogs=Отчистить логи;cleardatalogs=Отчистить логи данных', '$setting')";       
         $result = mysqli_query($link, $guery);
     }    
     $ch = curl_init();

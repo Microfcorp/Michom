@@ -193,8 +193,8 @@ $wind_dir_text_uk = array("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
 // поэтому здесь опускаем эту часть кода
 
 
-$abs_pressure = $API->GetPosledData('192.168.1.10')->Humm * 133.2;
-$abs_pressure_1h = $API->GetFromEndData('192.168.1.10', 7)[6]->Humm * 133.2;
+$abs_pressure = $API->GetPosledData('192.168.1.10')->Dawlen * 1.333;
+$abs_pressure_1h = $API->GetFromEndData('192.168.1.10', 7)[6]->Dawlen * 1.333;
 
 
 $foreca = new Foreca('Russia', 'Ostrogozhsk');

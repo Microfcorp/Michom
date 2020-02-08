@@ -17,7 +17,8 @@
 	$davlenie2 = "";
 	$date = "";
 	$alarm = "";
-	$results = mysqli_query($link, "SELECT * FROM michom WHERE `date` >= \"".date('Y-m-d',strtotime("-1 days"))."\"");
+
+	$results = mysqli_query($link, "SELECT * FROM `michom` WHERE `date` >= \"".date('Y-m-d'/*,strtotime("-1 days")*/)."\"");
     
     $fgts = $API->TimeIns('192.168.1.10', 'selday', date("Y-m-d"));
     $seldays = explode(";", $fgts);
@@ -29,7 +30,7 @@
     $seldays2 = explode(";", $fgts2);
 
 while($row = $results->fetch_assoc()) {
-	if($row['temp'] != "" & $row['humm'] != "" & $row['dawlen'] != "" & $row['type'] == "msinfoo"){
+	if($row['type'] == "msinfoo"){
     $temper = $row['temp'];
 	$vlazn = $row['humm'];
 	$davlenie = $row['dawlen'];
@@ -37,24 +38,24 @@ while($row = $results->fetch_assoc()) {
 	$date = $row['date'];
 	//echo date("Y-m-d H:i:s", $date);
 	}
-	if($row['type'] == "get_light_status"){
+	elseif($row['type'] == "get_light_status"){
     $statussvet = $row['data'];
 	//echo date("Y-m-d H:i:s", $date);
 	}
-	if($row['type'] == "termometr"){
+	elseif($row['type'] == "termometr"){
     $temper1 = $row['temp'];
 	//echo date("Y-m-d H:i:s", $date);
 	}
-    if($row['type'] == "temperbatarey"){
+    elseif($row['type'] == "temperbatarey"){
     $temper3 = $row['temp'];
 	//echo date("Y-m-d H:i:s", $date);
 	}
-	if($row['type'] == "hdc1080"){
+	elseif($row['type'] == "hdc1080"){
     $temper2 = $row['temp'];
 	$davlenie2 = $row['humm'];
 	//echo date("Y-m-d H:i:s", $date);
 	}
-	if($row['type'] == "hdc1080andAlarm"){
+	elseif($row['type'] == "hdc1080andAlarm"){
         $temper2 = $row['temp'];
         $davlenie2 = $row['humm'];
         if($row['data'] == "Alarm"){
@@ -71,7 +72,8 @@ while($row = $results->fetch_assoc()) {
         }
 	//echo date("Y-m-d H:i:s", $date);
 	}
-}	
+}
+mysqli_free_result($results);
     
 function scandir_by_mtime($folder) {
   $dircontent = scandir($folder);
@@ -174,8 +176,12 @@ $lastfile = $files[count($files)-2];
                     Seconds = Data.getSeconds();
                     document.getElementById('datetime').innerHTML= "Текущее время: " + Day + '.' + '01' + '.' + Year + ' ' + Hour + ":" + Minutes + ':' + Seconds;
                 }		
-                
+            function autoload(){
+               postAjax('http://<?echo $_SERVER['HTTP_HOST'];?>/michome/prognoz.php', "GET", "", function(d){document.getElementById("prognoz").innerHTML = d;});
+            }
+            
             window.setTimeout("time()",1);
+            window.setTimeout("autoload()",1);
     </script>
 	</head>
 	<body>
@@ -234,7 +240,10 @@ $lastfile = $files[count($files)-2];
                                 
                                 <a class="tooltip noselect DataV"><p>Последнее фото: <? echo $lastfile;?></p><span><img width="540px" height="335px" src="/site/image/graphical/<?php echo $lastfile;?>"/></span></a>
 
-                                <p><?include_once("prognoz.php");?></p>
+                                <p id="prognoz">Направление ветра: Загрузка...<br />
+                                                Скорость ветра: Загрузка...<br />
+                                                Тенденция давления: Загрузка...<br />
+                                                Прогноз: Загрузка...</p>
                                 
                                 <span class="noselect DataV">Время восхода солнца: <? echo(date_sunrise(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
                                 <span class="noselect DataV">Время захода солнца: <? echo(date_sunset(time(),SUNFUNCS_RET_STRING,50.860145, 39.082347, 90+50/60, 3)); ?></span><br>
