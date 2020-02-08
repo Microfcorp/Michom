@@ -39,11 +39,18 @@ elseif($type == "selday"){
     $date->add(new DateInterval('P1D'));
     //echo $date->format('Y-m-d') . "\n";
 	
-	$results = mysqli_query($link, "SELECT * FROM michom WHERE ".$device." AND `date` >= '".mysqli_real_escape_string($link, $date1)."' AND `date` <= '".$date->format('Y-m-d')."'");
+	$results = mysqli_query($link, "SELECT MAX(`id`), MIN(`id`) FROM michom WHERE ".$device." AND `date` >= '".mysqli_real_escape_string($link, $date1)."' AND `date` <= '".$date->format('Y-m-d')."' LIMIT 1");
 
-	while($row = $results->fetch_assoc()) {
-    $ids[] = $row['id'];
-	}
-	echo (min($ids).";".max($ids).";".(max($ids)-min($ids)));
+    while($row = $results->fetch_assoc()) {
+            $max = $row['MAX(`id`)'];
+            $min = $row['MIN(`id`)'];
+        }
+        
+        if(empty($max)){
+            exit ('nan'.";".'nan'.";".'nan');
+        }
+        else{
+            exit ($min.";".$max.";".($max-$min));
+        }
 }
 ?>
