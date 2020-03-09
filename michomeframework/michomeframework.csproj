@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="Modules\StaticController\LightModule.cs" />
+    <Compile Include="Modules\StaticController\Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenaries\Node.cs" />
     <Compile Include="Scenaries\Parameters.cs" />
@@ -53,6 +55,7 @@
     <Compile Include="Scenaries\Scenes.cs" />
     <Compile Include="Setting.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
