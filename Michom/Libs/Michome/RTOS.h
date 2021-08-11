@@ -11,15 +11,18 @@ class RTOS
 {
         public:
                 RTOS(long Time);
+                RTOS();
                 bool IsTick();
                 bool IsRun();              
                 void Stop();
                 void Start();                
                 void ChangeTime(long Time);
+                void SetOffset(long Time);
                 long GetTime();
         private:
             long _Time = 0;
             long _previousMillis = 0;
+            long _offvet = 0;
             bool running;
 };
 
