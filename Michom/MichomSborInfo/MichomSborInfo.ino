@@ -36,7 +36,6 @@ void setup() {
       SendData();
   });  
    
-  michome.SetFormatSettings(1);
   michome.init(false);  
   
   SendData();

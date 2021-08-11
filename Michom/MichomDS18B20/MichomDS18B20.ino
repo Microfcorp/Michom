@@ -62,9 +62,13 @@ void setup ( void ) {
   server1.on("/refresh", [](){ 
     server1.send(200, "text/html", "OK");
     SendData();
+ });  
+ 
+   server1.on("/gettemp", [](){ 
+    server1.send(200, "text/html", String(getTemp())+"C");
+    SendData();
  });    
  
-  michome.SetFormatSettings(1);
   michome.init(false);
   SendData();
 }

@@ -2,6 +2,8 @@
 #include <LiquidCrystal_I2C.h>
 #include <ArduinoJson.h>
 #include <Michom.h>
+#include "GyverButton.h"
+#include <MichomUDP.h>
 
 //const char *ssid = "10-KORPUSMG";
 //const char *password = "10707707";
@@ -18,151 +20,25 @@ RTOS rtos1(10000);//Время переключения экранов
 RTOS rtos2(8200);//Врея показа дня
 RTOS Button14(500);//Опрос кнопки режимов
 
+//13
+//10
+GButton button14(13);//Кнопка смены режимов
+
 long pogr = 1800; //Отсчет до времени показа дня
 
-bool EtherFail = false;
-long Attempted = 0;
+bool EtherFail = false; //Ошибка интернета
+long Attempted = 0; //попытка соеденения
 
-bool PokazType = true;
+bool PokazType = true; //тип экрана (прогноз (сменный)) или домашний (статичный)
 
-//Logger logg(host, host1);
+bool pause = false; // пауза обновления
+
 Michome michome(id, type, host, host1);
-
 LiquidCrystal_I2C lcd(0x3F, 16, 2);
-
 ESP8266WebServer& server1 = michome.GetServer();
-
-byte Dozd[] = {
-  0x04,
-  0x0A,
-  0x11,
-  0x0E,
-  0x00,
-  0x02,
-  0x08,
-  0x02
-};
-
-byte groza[] = {
-  0x04,
-  0x0A,
-  0x11,
-  0x0E,
-  0x04,
-  0x06,
-  0x02,
-  0x02
-};
-
-byte oblazn[] = {
-  0x04,
-  0x0A,
-  0x11,
-  0x0E,
-  0x00,
-  0x00,
-  0x00,
-  0x00
-};
-
-byte soln[] = {
-  0x00,
-  0x00,
-  0x04,
-  0x0E,
-  0x1F,
-  0x0E,
-  0x04,
-  0x00
-};
-
-byte sneg[] = {
-  0x04,
-  0x0A,
-  0x11,
-  0x0E,
-  0x00,
-  0x04,
-  0x0A,
-  0x04
-};
-
-byte gradus[] = {
-  0x18,
-  0x18,
-  0x03,
-  0x04,
-  0x04,
-  0x04,
-  0x03,
-  0x00
-};
-
-byte watchh[] = {
-  0x0E,
-  0x15,
-  0x15,
-  0x15,
-  0x17,
-  0x11,
-  0x11,
-  0x0E
-};
-
-byte homes[] = {
-  0x00,
-  0x00,
-  0x04,
-  0x0E,
-  0x1F,
-  0x1F,
-  0x1B,
-  0x1B
-};
+MichomeUDP MUDP(michome);
 
 String date[4][13] = {};
-
-int IDtoIcon(int id) {
-  if (id == 0) {
-    return 2;
-  }
-  else if (id == 1) {
-    return 0;
-  }
-  else if (id == 2) {
-    return 0;
-  }
-  else if (id == 3) {
-    return 4;
-  }
-  else if (id == 4) {
-    return 3;
-  }
-  else if (id == 5) {
-    return 1;
-  }
-  else {
-    return 5;
-  }
-}
-
-void ToHomes(){
-  lcd.createChar(0, homes);
-  lcd.createChar(1, watchh);
-  lcd.createChar(2, groza);
-  lcd.createChar(3, soln);
-  lcd.createChar(4, sneg);
-  lcd.createChar(5, gradus);
-}
-
-void ToPrognoz(){
-  lcd.createChar(0, Dozd);
-  lcd.createChar(1, oblazn);
-  lcd.createChar(2, groza);
-  lcd.createChar(3, soln);
-  lcd.createChar(4, sneg);
-  lcd.createChar(5, gradus);
-}
 
 void setup ( void ) {
 
@@ -179,13 +55,23 @@ void setup ( void ) {
     server1.send(200, "text/html", String("OK"));
   });
 
+  server1.on("/offlight", []() {
+    lcd.noBacklight();
+    server1.send(200, "text/html", String("OK"));
+  });
+  
   server1.on("/refresh", []() {
     server1.send(200, "text/html", "OK");
     michome.SendData();
   });
 
-  server1.on("/offlight", []() {
-    lcd.noBacklight();
+  server1.on("/print", []() {
+    lcd.clear();
+    lcd.home();
+    lcd.setCursor(0, 0);
+    lcd.print(server1.arg("fl"));
+    lcd.setCursor(0, 1);
+    lcd.print(server1.arg("sl"));
     server1.send(200, "text/html", String("OK"));
   });
 
@@ -267,11 +153,10 @@ void setup ( void ) {
       lcd.setCursor(0, 0);
       lcd.print("Updating...");
     }
-
+    pause = false;
     server1.send(200, "text/html", String("OK"));
   });
 
-  michome.SetFormatSettings(3);
   michome.init(true);
 }
 bool st = true;
@@ -287,8 +172,8 @@ void loop ( void ) {
   michome.running();
 
   if (michome.GetSettingRead()) {
-    rtos.ChangeTime(michome.GetSetting("update").toInt());
-    rtos1.ChangeTime(michome.GetSetting("timeupdate").toInt());
+    rtos.ChangeTime(michome.GetSettingToInt("update"));
+    rtos1.ChangeTime(michome.GetSettingToInt("timeupdate"));
     rtos2.ChangeTime(rtos1.GetTime() - pogr);
 
     if (michome.GetSetting("running") == "0") {
@@ -303,18 +188,51 @@ void loop ( void ) {
     }
   }
 
-  if (rtos.IsTick())
+  if(!pause){
+    if (rtos.IsTick())
+      michome.SendData();
+  
+    if (rtos2.IsTick())
+      i2();
+  
+    if (rtos1.IsTick())
+      i1();
+  }
+
+
+  button14.tick();
+
+  if(button14.isSingle()){
+    PokazType =! PokazType;
+    if(PokazType)
+      ToPrognoz();
+    else
+      ToHomes();
+    i1();  
+  }
+  else if(button14.isDouble()){
+    pause = !pause;
+    if(pause){
+      lcd.setCursor(0, 1);
+      lcd.print("P");
+      lcd.blink();
+    }
+    else{
+      lcd.setCursor(0, 1);
+      lcd.print("R");
+      lcd.noBlink();
+    }
+  }
+  else if(button14.isTriple()){
+    pause = true;
+    lcd.clear();
+    lcd.home();
+    lcd.setCursor(0, 0);
+    lcd.print("Start Update");
     michome.SendData();
-
-  if (rtos2.IsTick())
-    i2();
-
-  if (rtos1.IsTick())
-    i1();
-
-  bool tickss = Button14.IsTick();
-  /*if (tickss && )
-    lcd.backlight();*/
+  }
+  
+  /*bool tickss = Button14.IsTick();
   
   if (tickss && digitalRead(14) == LOW) {
     PokazType =! PokazType;
@@ -323,7 +241,7 @@ void loop ( void ) {
     else
       ToHomes();
     i1();
-  }
+  }*/
 }
 
 void PrintETError() {
