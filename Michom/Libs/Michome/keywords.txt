@@ -17,6 +17,7 @@ Telnet	KEYWORD1
 TimerLightModule	KEYWORD1
 TimerLightModuleQ	KEYWORD1
 MichomeUDP	KEYWORD1
+MichomUDP	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -44,6 +45,14 @@ CreateFadeData	KEYWORD2
 StartFade	KEYWORD2
 StopAllFade	KEYWORD2
 SetLightAll	KEYWORD2
+SetLight	KEYWORD2
+SetLightID	KEYWORD2
+Strobo	KEYWORD2
+StroboPro	KEYWORD2
+StroboAll	KEYWORD2
+StroboAllPro	KEYWORD2
+AddBuferState	KEYWORD2
+RunBuffer	KEYWORD2
 AddPin	KEYWORD2
 GetMichome	KEYWORD2
 CountPins	KEYWORD2
@@ -75,3 +84,5 @@ Msinfoo	LITERAL1
 Relay	LITERAL1
 PWM	LITERAL1
 SaveState	LITERAL1
+MinimumBrightnes	LITERAL1
+MaximumBrightnes	LITERAL1

@@ -1,4 +1,10 @@
 #include "Michom.h"
+#include "config.h"
+
+#ifndef config_h
+    //#pragma ErrorCompilation
+    #error "Error Read ConfigFiles";     
+#endif
 
 ESP8266WebServer server(80);
 
@@ -153,38 +159,32 @@ void Michome::_init(void)
       
       #if defined(UsingFastStart)
         if(WiFi.status() != WL_CONNECTED){
-            if (WiFi.getMode() != WIFIMode)
-            {
-                WiFi.mode(WIFIMode);
-                wifi_set_sleep_type(NONE_SLEEP_T); //LIGHT_SLEEP_T and MODE_SLEEP_T
-                delay(10);
-            }
+            ChangeWiFiMode();
         }
       #else
         WiFi.disconnect(true);     
-        if (WiFi.getMode() != WIFIMode)
-        {
-            WiFi.mode(WIFIMode);
-            wifi_set_sleep_type(NONE_SLEEP_T); //LIGHT_SLEEP_T and MODE_SLEEP_T
-            delay(10);
-        }
+		ChangeWiFiMode();
       #endif
 
       WiFi.hostname(id);      
       
-      if(WiFi.status() != WL_CONNECTED)
-        WiFi.begin (ssid, password);
+      if(WiFi.status() != WL_CONNECTED && ssid != "")
+		WiFi.begin (ssid, password);
+	  else
+        Serial.println("Not Connect for null ssid or alredy connection"); 
     
-      if(ssid == "" && password == "") IsConfigured = false;
+      if(ssid == "" || password == "") IsConfigured = false;
       else IsConfigured = true;
       
-      long wifi_try = millis();      
-      // Wait for connection
-      while ( (WiFi.status() != WL_CONNECTED) && (ssid != "")) {
-        delay ( 500 );
-        Serial.print ( "." );      
-        if (millis() - wifi_try > WaitConnectWIFI) break;
-      }
+	  if(IsConfigured){
+		  long wifi_try = millis();      
+		  // Wait for connection
+		  while (WiFi.status() != WL_CONNECTED) {		
+			delay ( 500 );
+			Serial.print ( "." );      
+			if (millis() - wifi_try > WaitConnectWIFI) break;
+		  }
+	  }
       
       if(WiFi.status() != WL_CONNECTED){
           #ifndef NoFS
@@ -219,19 +219,19 @@ void Michome::_init(void)
             server.send(200, "text/html", WebConfigurator());
         }
         else{
-            server.send(200, "text/html", WebMain(type, id));    
+            server.send(200, "text/html", GetMainWeb());    
         }                        
        #endif
        #ifdef NoFs
-        server.send(200, "text/html", WebMain(type, id));
+        server.send(200, "text/html", GetMainWeb());
        #endif
       });
       
       server.on("/generate_204", [this](){  //Android captive portal. Maybe not needed. Might be handled by notFound handler.      
-        server.send(200, "text/html", WebMain(type, id));
+        server.send(200, "text/html", GetMainWeb());
       });
       server.on("/fwlink", [this](){  //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.     
-        server.send(200, "text/html", WebMain(type, id));
+        server.send(200, "text/html", GetMainWeb());
       });        
 
       server.on("/restart", [this](){ 
@@ -450,42 +450,45 @@ void Michome::running(void)
 #ifndef NoAutoReconect
   #pragma NoReconnecting
   if ((WiFi.status() != WL_CONNECTED) && (ssid != "")) {
-      #ifndef NoFS
-          FSLoger.AddLogFile("Reconecting to WIFI");
-      #endif 
-      Serial.println("Reconecting to WIFI...");   
-      WiFi.disconnect(true);
-      WiFi.begin(ssid, password);
-      long wifi_try = millis();
-      while (WiFi.status() != WL_CONNECTED) {
-         delay(500);
-         #ifdef UsingWDT
-             ESP.wdtFeed();   // покормить пёсика
-         #endif
-         Serial.print(".");
-         if (millis() - wifi_try > 10000) break;
-      }
-      Serial.println("");
+    #ifndef NoFS
+        FSLoger.AddLogFile("Reconecting to WIFI");
+    #endif
+	
+    Serial.println("Reconecting to WIFI...");   
+    WiFi.disconnect(true);
+    WiFi.begin(ssid, password);
+	
+    long wifi_try = millis();
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        #ifdef UsingWDT
+            ESP.wdtFeed();   // покормить пёсика
+        #endif
+        Serial.print(".");
+		yieldWarn();
+        if (millis() - wifi_try > 10000) break;
+    }
+    Serial.println("Error Reconecting. Try again");
   }
 #endif
 
 #ifndef NoCheckWIFI
 if((WiFi.status() != WL_CONNECTED) && (millis() - wifi_check > 10000)){
     wifi_check = millis();
+	
     #ifdef UsingWDT
         ESP.wdtFeed();   // покормить пёсика
     #endif
+	
     Serial.println("Connection lost");
+	
     #ifndef NoFS
           FSLoger.AddLogFile("Connection lost");
     #endif
 }
 #endif
 
-  //mdns.update();
-  server.handleClient();
-  ArduinoOTA.handle();
-  dnsServer.processNextRequest();
+	yieldWarn();
 }
 
 void Michome::StrobeBuildLed(byte timeout){
@@ -493,6 +496,20 @@ void Michome::StrobeBuildLed(byte timeout){
     delay(timeout);
     digitalWrite(BuiltLED, HIGH);
 }
+
+String Michome::GetMainWeb(){
+    return WebMain(type, id, GetOptionFirmware(1), GetOptionFirmware(2));
+}
+
+void Michome::ChangeWiFiMode(){
+if (WiFi.getMode() != WIFIMode)
+    {
+        WiFi.mode(WIFIMode);
+        wifi_set_sleep_type(NONE_SLEEP_T); //LIGHT_SLEEP_T and MODE_SLEEP_T
+        delay(10);
+    }
+}
+
 void Michome::StrobeBuildLedError(int counterror, int statusled){
     for(int i = 0; i < counterror; i++)
         StrobeBuildLed(30);
@@ -512,7 +529,7 @@ WIFIConfig Michome::ReadSSIDAndPassword(){
         Serial.println("file open failed");  //  "открыть файл не удалось"
         SPIFFS.end();//денициализация фс
         cf.SSID = "";
-        cf.SSID = "";
+        cf.Password = "";
         return cf;
     }
     else{
@@ -754,6 +771,12 @@ void Michome::yieldM(void){
     yield();
     running();
     yield();
+}
+void Michome::yieldWarn(void){
+    //mdns.update();
+	server.handleClient();
+	ArduinoOTA.handle();
+	dnsServer.processNextRequest();
 }
 Logger Michome::GetLogger()
 {

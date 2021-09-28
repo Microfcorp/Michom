@@ -306,9 +306,9 @@ void LightModules::init(){
       server1.on("/remotepins", [&]() {
         String tmp = RussianHead("Управление выводами");
         for(int i = 0; i < Pins.size(); i++){
-            tmp += (String)"<p>" + i + "(" + String(Pins.get(i).Type == 0 ? "Relay" : "PWM") + ") " + String(Pins.get(i).Type == 0 ? "" : (String)"<input type='number' maxlength='4' min='"+MinimumBrightnes+"' max='"+MaximumBrightnes+"' id='pwm"+(String)i+(String)"' />") + " <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+String(Pins.get(i).Type == 0 ? MaximumBrightnes : "'+pwm"+i+(String)".value+'")+"\', GET, \'\', function(d){}); return false;\">Включить</a> <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+MinimumBrightnes+"\', GET, \'\', function(d){}); return false;\">Выключить</a> "  + "</p>";
+            tmp += (String)"<p>" + i + " (" + String(Pins.get(i).Type == 0 ? "Relay" : "PWM") + ") " + String(Pins.get(i).Type == 0 ? "" : (String)"<input type='number' maxlength='4' min='"+MinimumBrightnes+"' max='"+MaximumBrightnes+"' id='pwm"+(String)(i+1)+(String)"' />") + " <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+String(Pins.get(i).Type == 0 ? MaximumBrightnes : "'+pwm"+(String)(i+1)+(String)".value+'")+"\', GET, \'\', function(d){}); return false;\">Применить значение</a> <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+MinimumBrightnes+"\', GET, \'\', function(d){}); return false;\">Выключить</a> "  + "</p>";
         }
-        server1.send(200, "text/html", AJAXJs + tmp);
+        server1.send(200, "text/html", AJAXJs + tmp + (String)"<br /><a href='/'>Главная</a>");
       });
      
       

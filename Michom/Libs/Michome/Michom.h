@@ -10,6 +10,7 @@
 #define ToCharptr(str) (const_cast<char *>(str.c_str()))
 #define ToCharArray(str) ((const char *)str.c_str())
 #define BuiltLED 2
+#define CountOptionFirmware 5
 
 #define WaitConnectWIFI 30000
 #define PasswordAPWIFi "a12345678"
@@ -18,7 +19,7 @@
 
 #define WIFIMode WIFI_AP_STA //WIFI_AP_STA
 
-#include <config.h>
+#include "config.h"
 #include <ModuleTypes.h>
 extern "C" {
 #include "user_interface.h"
@@ -100,6 +101,8 @@ class Michome
                 void running(void);
                 //Выполнение все критических операций
                 void yieldM(void);
+				//Выполнение стековых операций
+                void yieldWarn(void);				
                 //Моргнуть светодиодом на плате
                 void StrobeBuildLed(byte timeout);
                 //Моргнуть светодиодом на плате информацию об ошибки
@@ -112,6 +115,16 @@ class Michome
                 void SetFormatSettings(int count);
                 //Считать ли настройки
                 bool GetSettingRead();
+				//Задает опцию прошивки
+                void SetOptionFirmware(byte id, bool value){
+					//if(id < 0 || id > CountOptionFirmware) return;
+					OptionsFirmware[id] = value;
+				}
+				//Получает опцию прошивки
+                bool GetOptionFirmware(byte id){
+					//if(id < 0 || id > CountOptionFirmware) return false;
+					return OptionsFirmware[id];
+				}
                 //Получены ли настройки
                 bool IsSettingRead;
                 //Таймаут сервера
@@ -147,5 +160,9 @@ class Michome
             void CreateAP();
             bool IsReadConfig = false;
             long wifi_check;
+			//Установить режим работы WIFI
+			void ChangeWiFiMode(void);
+			String GetMainWeb(void);
+			bool OptionsFirmware[CountOptionFirmware]; //Модуль освещения - Модуль времени - UPD тригеры
 };
 #endif // #ifndef Michom_h

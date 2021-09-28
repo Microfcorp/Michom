@@ -29,18 +29,18 @@ void MichomeUDP::init(){
             UDPTriggers tm = {Types, AT, Data, en};
             Ut.set(ids, tm);
             Save();
-            server1.send(200, "text/html", (String)"<head><meta charset=\"UTF-8\"><meta http-equiv='refresh' content='1;URL=/udptrigger' /></head>Триггер "+ids+" сохранен");
+            server1.send(200, "text/html", (String)"<head><meta charset=\"UTF-8\"><meta http-equiv='refresh' content='1;URL=/udptrigger?type=show' /></head>Триггер "+ids+" сохранен");
         }
         if(server1.arg("type") == "add"){  
             Ut.add({"EAlarm", SendGateway, "Test UDP", false});   
             Save();            
-            server1.send(200, "text/html", (String)"<head><meta charset=\"UTF-8\"><meta http-equiv='refresh' content='1;URL=/udptrigger' /></head>Новый триггер добавлен");
+            server1.send(200, "text/html", (String)"<head><meta charset=\"UTF-8\"><meta http-equiv='refresh' content='1;URL=/udptrigger?type=show' /></head>Новый триггер добавлен");
         }
         if(server1.arg("type") == "remove"){
             int ids = server1.arg("id").toInt();
             Ut.remove(ids);
             Save();
-            server1.send(200, "text/html", (String)"<head><meta charset=\"UTF-8\"><meta http-equiv='refresh' content='1;URL=/udptrigger' /></head>Триггер "+ids+" удален");
+            server1.send(200, "text/html", (String)"<head><meta charset=\"UTF-8\"><meta http-equiv='refresh' content='1;URL=/udptrigger?type=show' /></head>Триггер "+ids+" удален");
         }
     });
 }

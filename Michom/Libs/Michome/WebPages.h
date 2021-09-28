@@ -30,12 +30,14 @@
         else if(rssi >= -85) return F("darkred");
         else if(rssi >= -100) return F("gray");
     }
-    static String WebMain(String type, String id){
+    static String WebMain(String type, String id, bool IsTimers, bool IsUDP){
         int rssi = WiFi.RSSI();
         
         return (("<html> <meta http-equiv='refresh' content='60;URL=/' /> <title> ")+WiFi.localIP().toString()+(" - Общая информация</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><div style='background: linear-gradient(45deg, #10ebf3, #87c7ff);'><p>Тип модуля: <span style='color: red;'>")+type+("</span></p><p>ID модуля: <span style='color: red;'>")+id+("</span></p></div><div><p>Время работы: <span style='color: red;'>")+(String)(millis()/1000)+(" секунд ("+(String)(millis()/1000/60)+") минут</span></p></div><div style='background: linear-gradient(45deg, #10ebf3, #87c7ff);'><p>Подключен к сети: <span style='color: red;'>")+(String)WiFi.SSID()+("</span></p><p>Уровень сигнала: <span style='color: ")+GetColorRssi(rssi)+(";'>")+(String)rssi+(" dBm</span></p></div>")
         + "<div><p><a href='/configurator'>Конфигуратор</a></p>"
-        + (type == StudioLight ? String("<p><a href='/getpins'>Посмотреть выводы</a></p><p><a href='/remotepins'>Управление выводами</a></p><p><a href='/qconfig'>Конфигурация таймеров (если включено в прошивке)</a></p>") : "")
+        + (type == StudioLight ? String("<p><a href='/getpins'>Посмотреть выводы</a></p><p><a href='/remotepins'>Управление выводами</a></p>") : "")
+        + (IsTimers ? String("<p><a href='/qconfig'>Конфигурация таймеров</a></p>") : "")
+        + (IsUDP ? String("<p><a href='/udptrigger?type=show'>Конфигурация UDP триггеров</a></p>") : "")
         + (type == Termometr ? String("<p><a href='/gettemp'>Посмотреть температуру</a></p>") : "")
         + String("</div></html>")); 
     }
