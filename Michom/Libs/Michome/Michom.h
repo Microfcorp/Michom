@@ -9,13 +9,16 @@
 
 #define ToCharptr(str) (const_cast<char *>(str.c_str()))
 #define ToCharArray(str) ((const char *)str.c_str())
+#define GetHost ((String)MainConfig.Geteway + MichomePHPPath)
+
 #define BuiltLED 2
 #define CountOptionFirmware 5
 
-#define WaitConnectWIFI 30000
+#define WaitConnectWIFI 10000
 #define PasswordAPWIFi "a12345678"
 
 #define DNS_PORT 53
+#define MichomePHPPath "/michome/getpost.php"
 
 #define WIFIMode WIFI_AP_STA //WIFI_AP_STA
 
@@ -46,10 +49,12 @@ extern "C" {
 #include <Telnet.h>
 
 
-typedef struct WIFIConfig
+typedef struct WIFIConfig //Настройки WIFI части
 {
-    String SSID;
-    String Password;
+    char SSID[WL_SSID_MAX_LENGTH]; //SSID WIFI сети
+    char Password[WL_WPA_KEY_MAX_LENGTH]; //Пароль WIFI сети
+    char Geteway[WL_SSID_MAX_LENGTH]; //Адрес шлюза
+    bool UseGeteway; //Использовать ли шлюз
 };
 
 class Michome
@@ -61,10 +66,10 @@ class Michome
                 //Объявление класса
                 Michome(){};
                 //Объявление класса
-                Michome(const char* _ssid, const char* _password, const char* _id, const char* _type, const char* _host, const char* _host1);
+                Michome(const char* _ssid, const char* _password, const char* _id, const char* _type, const char* _host1);
                 #ifndef NoFS
                 //Объявление класса
-                    Michome(const char* _id, const char* _type, const char* _host, const char* _host1);
+                    Michome(const char* _id, const char* _type);
                 #endif
                 //Отправить GET запрос
                 String SendDataGET(String gateway, const char* host, int Port);
@@ -84,12 +89,18 @@ class Michome
                 String GetSetting();
                 //Если Файловая система разрешена
                 #ifndef NoFS
-                    //Получить SSID и пароль
-                    WIFIConfig ReadSSIDAndPassword();
+                    //Получить настройки WIFI
+                    WIFIConfig ReadWIFIConfig();
                     //Записать SSID и пароль
-                    void WriteSSIDAndPassword(String ssid, String password);
+                    //void WriteSSIDAndPassword(String ssid, String password, String Geteway, bool UseGeteway);
                     //Записать SSID и пароль
-                    void WriteSSIDAndPassword(String txt);
+                    //void WriteSSIDAndPassword(String txt);
+					//Записать настройки WIFI
+					void WriteWIFIConfig(WIFIConfig conf);
+					//Записать текущие настройки
+					void WriteWIFIConfig(){
+						WriteWIFIConfig(MainConfig);
+					}
                 #endif
                 //Получить класс логгера
                 Logger GetLogger();
@@ -125,6 +136,10 @@ class Michome
 					//if(id < 0 || id > CountOptionFirmware) return false;
 					return OptionsFirmware[id];
 				}
+				//Получить конфигуратор
+				String GetConfigerator(){
+					return WebConfigurator((String)MainConfig.SSID, (String)MainConfig.Password, (String)MainConfig.Geteway, MainConfig.UseGeteway);
+				}
                 //Получены ли настройки
                 bool IsSettingRead;
                 //Таймаут сервера
@@ -149,16 +164,15 @@ class Michome
                     FSFiles DataFile(){return FSFiles("/datalog.txt");};
                 #endif
         private:
-            char ssid[WL_SSID_MAX_LENGTH]; 
-            char password[WL_WPA_KEY_MAX_LENGTH];
+            WIFIConfig MainConfig;
             DNSServer dnsServer;
-            const char* id; const char* type; const char* host; const char* host1;           
+            const char* id; const char* type; const char* host1;           
             MDNSResponder mdns;
             void _init(void);
             String settings;  
             int countsetting = 1;
             void CreateAP();
-            bool IsReadConfig = false;
+            bool IsNeedReadConfig = false;
             long wifi_check;
 			//Установить режим работы WIFI
 			void ChangeWiFiMode(void);

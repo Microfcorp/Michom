@@ -12,10 +12,10 @@
 class Logger
 {
         public:
-                Logger(const char* gateway, const char* host);
+                Logger(String gateway, const char* host);
                 void Log(String text);
 		private:
-				const char* Gateway;
+				String Gateway;
 				const char* Host;
 				String parsejsonlogger(String type, String data);
 };

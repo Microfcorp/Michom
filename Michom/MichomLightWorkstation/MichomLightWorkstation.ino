@@ -10,18 +10,15 @@ const char* id = "LightStudio_Workstation";
 const char* type = StudioLight; //стандартный тип модуля освещения
 /////////настройки//////////////
 
-const char* host = "192.168.1.42/michome/getpost.php";
-const char* host1 = "192.168.1.42";
-
 RTOS rtos(604000); //время опроса до сервера
 
-Michome michome(id, type, host, host1); //инициальзация модуля Michome
-LightModules lm (michome); //Инициализация модуля освещения
+Michome michome(id, type); //инициальзация модуля Michome
+LightModules lm (&michome); //Инициализация модуля освещения
 TimerLightModule tlm(&lm); //Инициализация подсистемы точного времени
 
 ESP8266WebServer& server1 = michome.GetServer(); //Получение объекта веб-сервера
 
-MichomeUDP MUDP(michome); //Созлдание класса UDP кнотроллера
+MichomeUDP MUDP(&michome); //Созлдание класса UDP кнотроллера
 
 GButton butt1(ButtonPin); //Класс кнопки
 byte clicks = 0; //Количетво нажатий
@@ -35,8 +32,8 @@ void setup ( void ) {
   tlm.init(); //Инициализация подсистемы времени
   michome.init(true); //Инициализация модуля Michome
   michome.TimeoutConnection = LightModuleTimeoutConnection; //Таймаут соединения до шлюза
-  michome.SetOptionFirmware(1, true);
-  michome.SetOptionFirmware(2, true);
+  //michome.SetOptionFirmware(1, true);
+  //michome.SetOptionFirmware(2, true);
   
   MUDP.lightModules = &lm; //Ссылка на объект модуля освещения
   MUDP.timerLightModules = &tlm; //Ссылка на объект подсисетмы времени
@@ -74,9 +71,12 @@ void loop ( void ) {
   else clicks = 0;
  
   if (clicks == 2) {
+    lm.StopAllFade();
     lm.SetLightID(0, MinimumBrightnes);
   }
   else if (clicks == 1) {
+    //FadeData l1 = lm.CreateFadeData(Up, 3, 0, MaximumBrightnes, MinimumBrightnes);
+    //lm.StartFade(l1);
     lm.SetLightID(0, MaximumBrightnes);
   }
   if(clicks != 0 && clicks != 1 && clicks != 2) michome.SendData(michome.ParseJson("get_button_press", String(ButtonPin)+"="+String(clicks)));

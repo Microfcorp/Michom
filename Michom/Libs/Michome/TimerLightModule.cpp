@@ -2,7 +2,8 @@
 
 TimerLightModule::TimerLightModule(LightModules *m){
     light = m;
-    gtw = (*light).GetMichome();
+    gtw = &(*light).GetMichome();
+	(*gtw).SetOptionFirmware(1, true);
 }
 
 void TimerLightModule::Save(){
@@ -17,18 +18,18 @@ void TimerLightModule::Save(){
 
 void TimerLightModule::Load(){
     String rd = fstext.ReadFile();
-    int countQ = gtw.Split(rd, '|', 0).toInt();
-    String data = gtw.Split(rd, '|', 1);
+    int countQ = (*gtw).Split(rd, '|', 0).toInt();
+    String data = (*gtw).Split(rd, '|', 1);
     for(int i = 0; i < countQ; i++){
-        String str = gtw.Split(data, '!', i);
-        TimeLightModuleQ qq = {((byte)gtw.Split(str, ';', 0).toInt()), ((byte)gtw.Split(str, ';', 1).toInt()), ((byte)gtw.Split(str, ';', 2).toInt()), ((byte)gtw.Split(str, ';', 3).toInt()), (gtw.Split(str, ';', 4).toInt()), (gtw.Split(str, ';', 5).toInt() == 1)};
+        String str = (*gtw).Split(data, '!', i);
+        TimeLightModuleQ qq = {((byte)(*gtw).Split(str, ';', 0).toInt()), ((byte)(*gtw).Split(str, ';', 1).toInt()), ((byte)(*gtw).Split(str, ';', 2).toInt()), ((byte)(*gtw).Split(str, ';', 3).toInt()), ((*gtw).Split(str, ';', 4).toInt()), ((*gtw).Split(str, ';', 5).toInt() == 1)};
         Qs.add(qq);
     }
     LoadNTP();
 }
 
 void TimerLightModule::init(){
-    ESP8266WebServer& server1 = gtw.GetServer();
+    ESP8266WebServer& server1 = (*gtw).GetServer();
     
     server1.on("/qconfig", [&](){
         String html = ("<head>"+AJAXJs+ChangeTypeJS+"<title>Конфигурация таймеров</title><meta http-equiv='Content-Type' content='text/html; charset=utf-8'><script>function AutoChangeTime(){postAjax('/timemodule', GET, '', function(d){timemod.innerHTML = d;}); window.setTimeout('AutoChangeTime()',1000);} AutoChangeTime();</script></head><body><p>Время на модуле: <span id='timemod'>"+timeClient.getFormattedTime()+"</span></p><p><a href='qsettings'>Настройка системы таймеров</a></p><table><tbody>");
@@ -43,8 +44,8 @@ void TimerLightModule::init(){
         int id = server1.arg("id").toInt();
         byte en = server1.arg("en") == "on"; 
         String times = server1.arg("ctime"); 
-        byte hour = gtw.Split(times, ':', 0).toInt();
-        byte minute = gtw.Split(times, ':', 1).toInt();
+        byte hour = (*gtw).Split(times, ':', 0).toInt();
+        byte minute = (*gtw).Split(times, ':', 1).toInt();
         byte pin = server1.arg("pin").toInt();
         int state = server1.arg("state").toInt();
         bool isdyn = server1.arg("isdyn") == "on";

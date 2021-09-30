@@ -1,7 +1,7 @@
 #ifndef config_h
 #define config_h
 
-#define NoCheckWIFI //Отключить проверку WIFI соеденения
+//#define NoCheckWIFI //Отключить проверку WIFI соеденения
 #define DebugConnection //Выводить в консоль к кому подключаться
 #define NoAutoReconect //Отключить автоматический реконект
 #define WriteDataToFile //Записывать все данные в отдельный файл
@@ -13,5 +13,6 @@
 //#define NoScanWIFi //Не сканировать сети в конфигураторе
 #define StartLED //Светить светодиодам при запуске
 #define UsingFastStart //Использовать быструю загрузку - не отключаться от сети при перезапуске
+//#define NoWaitConnectFromStart //Не ожидать соединение с wifi сетью при старте
 
 #endif

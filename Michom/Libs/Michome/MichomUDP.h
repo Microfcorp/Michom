@@ -27,9 +27,9 @@ class MichomeUDP
             TimerLightModule *timerLightModules;
             bool EAlarm; bool ENightLight; bool EOverCold; bool EOverHot;
             
-            MichomeUDP(Michome gtwa){
-                id = gtwa.GetModule(0);
-                type = gtwa.GetModule(1);
+            MichomeUDP(Michome *gtwa){
+                id = (*gtwa).GetModule(0);
+                type = (*gtwa).GetModule(1);
                 gtw = gtwa;
             }
             
@@ -98,7 +98,7 @@ class MichomeUDP
             FSFiles fstext = FSFiles("/UDP.txt");
             IPAddress broadcast = IPAddress(224, 0, 1, 3); //224.0.1.3
             RTOS Discover;
-            Michome gtw;
+            Michome *gtw;
             LinkedList<UDPTriggers> Ut = LinkedList<UDPTriggers>();
 };
 #endif // #ifndef MichomUDP_h

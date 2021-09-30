@@ -9,7 +9,7 @@ void MichomeUDP::init(){
     //replyPacekt = "Hi there! Got the message :-)";
     
     Load();
-    ESP8266WebServer& server1 = gtw.GetServer();
+    ESP8266WebServer& server1 = (*gtw).GetServer();
     server1.on("/udptrigger", [&](){
         if(server1.arg("type") == "show"){
             String tmp = "";
@@ -57,11 +57,11 @@ void MichomeUDP::Save(void){
 
 void MichomeUDP::Load(void){
     String rd = fstext.ReadFile();
-    int countQ = gtw.Split(rd, '|', 0).toInt();
-    String data = gtw.Split(rd, '|', 1);
+    int countQ = (*gtw).Split(rd, '|', 0).toInt();
+    String data = (*gtw).Split(rd, '|', 1);
     for(int i = 0; i < countQ; i++){
-        String str = gtw.Split(data, '!', i);
-        UDPTriggers qq = {(gtw.Split(str, ';', 0)), ((ActionsType)gtw.Split(str, ';', 1).toInt()), (gtw.Split(str, ';', 2)), (gtw.Split(str, ';', 3).toInt() == 1)};
+        String str = (*gtw).Split(data, '!', i);
+        UDPTriggers qq = {((*gtw).Split(str, ';', 0)), ((ActionsType)(*gtw).Split(str, ';', 1).toInt()), ((*gtw).Split(str, ';', 2)), ((*gtw).Split(str, ';', 3).toInt() == 1)};
         Ut.add(qq);
     }
 }
@@ -123,7 +123,7 @@ void MichomeUDP::running(){
                 else if(Split(reads, '-', 1) == "all"){
                     SendMulticast(GetData_Discover());
                 }
-                else if(Split(reads, '-', 1) == "noconfigured" && !gtw.IsConfigured){
+                else if(Split(reads, '-', 1) == "noconfigured" && !(*gtw).IsConfigured){
                     SendMulticast(GetData_SearchOK());
                 }
             }
@@ -177,7 +177,7 @@ void MichomeUDP::running(){
                         if(tr.Enable && Split(reads, '-', 1) == tr.Type){
                             if(tr.ActionType == (ActionsType)LightData && type == StudioLight){(*lightModules).TelnetRun(tr.Data);}
                             //else if(tr.ActionType == (ActionsType)SendURL){(*lightModules).TelnetRun(tr.Data);}
-                            else if(tr.ActionType == (ActionsType)SendGateway){gtw.SendData(gtw.ParseJson("UDPData", tr.Data));}
+                            else if(tr.ActionType == (ActionsType)SendGateway){(*gtw).SendData((*gtw).ParseJson("UDPData", tr.Data));}
                         }
                     }
                 }

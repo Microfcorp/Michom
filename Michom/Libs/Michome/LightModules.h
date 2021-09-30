@@ -44,9 +44,10 @@ typedef struct FadeData
 };
 
 typedef struct LightPin
-{
+{	
     byte Pin; //пин
     PinType Type; //тип пина
+	int value; //значение яркости
 };
 
 typedef struct BufferData
@@ -60,7 +61,7 @@ class LightModules
 {
         public:
                 //Объявление класса
-                LightModules(Michome m);
+                LightModules(Michome *m);
                 LightModules(){};
                 //Добавить ножку
                 void AddPin(LightPin pin);
@@ -94,6 +95,8 @@ class LightModules
                 bool AddBuferState(byte pin, int brith);
                 //Применить буфер
                 void RunBuffer();
+				//Получить текущую яркость пина
+                int GetBrightness(byte pinid);
                 //Возвращает количетво пинов
                 int CountPins(){
                     return Pins.size();
@@ -111,8 +114,8 @@ class LightModules
                 //Инициализация класса
                 void init();
                 //Возвращает объект на шлюз
-                Michome GetMichome(){
-                    return gtw;
+                Michome& GetMichome(){
+                    return (*gtw);
                 };
                 //Выполнение всех операций
                 void running();
@@ -130,7 +133,7 @@ class LightModules
             bool IsReadConfig = false;
             //LinkedList<LightData> Datas = LinkedList<LightData>();
             LinkedList<LightPin> Pins = LinkedList<LightPin>();
-            Michome gtw;
+            Michome *gtw;
             LinkedList<FadeData> Fades = LinkedList<FadeData>();
             LinkedList<BufferData> Bufers = LinkedList<BufferData>();
             int countfade = 0;

@@ -11,36 +11,33 @@ ESP8266WebServer server(80);
 //
 // конструктор - вызывается всегда при создании экземпляра класса Michome
 //
-Michome::Michome(const char* _ssid, const char* _password, const char* _id, const char* _type, const char* _host, const char* _host1)
+Michome::Michome(const char* _ssid, const char* _password, const char* _id, const char* _type, const char* _host1)
 {
-    String(_ssid).toCharArray(ssid, WL_SSID_MAX_LENGTH);
-    String(_password).toCharArray(password, WL_WPA_KEY_MAX_LENGTH);
+	strncpy(MainConfig.SSID, _ssid, sizeof(MainConfig.SSID));
+	strncpy(MainConfig.Password, _password, sizeof(MainConfig.Password));
     id = _id;
     type = _type;
-    host1 = _host1;
-    host = _host;
+	strncpy(MainConfig.Geteway, _host1, sizeof(MainConfig.Geteway));
     mdns = MDNSResponder();
     //this.server = server;
-    IsReadConfig = false;
+    IsNeedReadConfig = false;
 }
 
 #ifndef NoFS
 //
 // конструктор - вызывается всегда при создании экземпляра класса Michome
 //
-Michome::Michome(const char* _id, const char* _type, const char* _host, const char* _host1)
+Michome::Michome(const char* _id, const char* _type)
 {   
     //ssid = "";
     //password = "";
-    String("").toCharArray(ssid, WL_SSID_MAX_LENGTH);
-    String("").toCharArray(password, WL_WPA_KEY_MAX_LENGTH);
+    //String("").toCharArray(ssid, WL_SSID_MAX_LENGTH);
+    //String("").toCharArray(password, WL_WPA_KEY_MAX_LENGTH);
     id = _id;
     type = _type;
-    host1 = _host1;
-    host = _host;
     mdns = MDNSResponder();
     //this.server = server;
-    IsReadConfig = true;
+    IsNeedReadConfig = true;
 }
 #endif
 
@@ -85,10 +82,10 @@ void Michome::_init(void)
     #endif
     
       //ESP8266WebServer server = server;
-      #ifndef NoSerial
-         Serial.begin ( 115200 );
-         Serial.setDebugOutput(true);
-      #endif  
+    #ifndef NoSerial
+        Serial.begin ( 115200 );
+        Serial.setDebugOutput(false); //Куча логов. Путти нормально их не ест
+    #endif  
       
       Serial.println("");      
       
@@ -142,22 +139,25 @@ void Michome::_init(void)
       });
       ArduinoOTA.begin();      
       
-      if(IsReadConfig){
-           WIFIConfig cfg = ReadSSIDAndPassword();
+      if(IsNeedReadConfig){
+           MainConfig = ReadWIFIConfig();
            
-           (cfg.SSID).toCharArray(ssid, WL_SSID_MAX_LENGTH);                               
-           (cfg.Password).toCharArray(password, WL_WPA_KEY_MAX_LENGTH);
+           //(cfg.SSID).toCharArray(ssid, WL_SSID_MAX_LENGTH);                               
+           //(cfg.Password).toCharArray(password, WL_WPA_KEY_MAX_LENGTH);
                                
            #if defined(DebugConnection)
-            Serial.println("Setting readed " + cfg.SSID + " " + cfg.Password);
+            Serial.println("Setting readed " + (String)MainConfig.SSID + " " + (String)MainConfig.Password);
            #endif
       }         
       
       #if defined(DebugConnection)
-        Serial.println("Connect to " + String(ssid) + " " + String(password));
+        Serial.println("Connect to " + String(MainConfig.SSID) + " " + String(MainConfig.Password));
       #endif
       
       #if defined(UsingFastStart)
+		if(WiFi.SSID() != MainConfig.SSID)
+			WiFi.disconnect(true);
+		
         if(WiFi.status() != WL_CONNECTED){
             ChangeWiFiMode();
         }
@@ -168,34 +168,40 @@ void Michome::_init(void)
 
       WiFi.hostname(id);      
       
-      if(WiFi.status() != WL_CONNECTED && ssid != "")
-		WiFi.begin (ssid, password);
+      if(WiFi.status() != WL_CONNECTED && MainConfig.SSID != "")
+		WiFi.begin (MainConfig.SSID, MainConfig.Password);
+	  else if (MainConfig.SSID == "")
+        Serial.println("Not Connect for null ssid"); 
 	  else
-        Serial.println("Not Connect for null ssid or alredy connection"); 
+        Serial.println("Alredy connection"); 
     
-      if(ssid == "" || password == "") IsConfigured = false;
+      if(MainConfig.SSID == "") IsConfigured = false;
       else IsConfigured = true;
       
-	  if(IsConfigured){
-		  long wifi_try = millis();      
-		  // Wait for connection
-		  while (WiFi.status() != WL_CONNECTED) {		
-			delay ( 500 );
-			Serial.print ( "." );      
-			if (millis() - wifi_try > WaitConnectWIFI) break;
+	  #if defined(NoWaitConnectFromStart)
+		  CreateAP();
+	  #else		
+		  if(IsConfigured){
+			  long wifi_try = millis();      
+			  // Wait for connection
+			  while (WiFi.status() != WL_CONNECTED) {		
+				delay ( 500 );
+				Serial.print ( "." );      
+				if (millis() - wifi_try > WaitConnectWIFI) break;
+			  }
+		  }	  
+      
+		  if(WiFi.status() != WL_CONNECTED){
+			  #ifndef NoFS
+				FSLoger.AddLogFile("Error Connecting to WIFI");
+				FSLoger.AddLogFile("Start AP");
+			  #endif 
+			  StrobeBuildLedError(2, LOW);
+			  CreateAP();
+			  IsConfigured = false;
 		  }
-	  }
-      
-      if(WiFi.status() != WL_CONNECTED){
-          #ifndef NoFS
-            FSLoger.AddLogFile("Error Connecting to WIFI");
-            FSLoger.AddLogFile("Start AP");
-          #endif 
-          StrobeBuildLedError(2, LOW);
-          CreateAP();
-          IsConfigured = false;
-      }
-      
+      #endif
+	  
       #if defined(DebugConnection)
         Serial.println("");
       #endif
@@ -216,7 +222,7 @@ void Michome::_init(void)
       server.on("/", [this](){
        #ifndef NoFs
         if(!IsConfigured){
-            server.send(200, "text/html", WebConfigurator());
+            server.send(200, "text/html", GetConfigerator());
         }
         else{
             server.send(200, "text/html", GetMainWeb());    
@@ -333,14 +339,26 @@ void Michome::_init(void)
     #ifndef NoFS
       
       server.on("/getconfig", [this](){
-        WIFIConfig wf = ReadSSIDAndPassword();
-        server.send(200, "text/html", wf.SSID + "<br />" + wf.Password);
+        server.send(200, "text/html", (String)MainConfig.SSID + "<br />" + (String)MainConfig.Password + "<br />" + (String)MainConfig.Geteway + "<br />" + (String)(MainConfig.UseGeteway ? "true" : "false"));
       });
       
-      server.on("/setconfig", [this](){
+      server.on("/setconfig", [this](){		
         String ss = server.arg("ssid");
         String pw = server.arg("password");
-        WriteSSIDAndPassword(ss, pw);
+        String gt = server.arg("geteway");
+        bool ug = server.hasArg("usegetaway") ? (server.arg("usegetaway") == "on") : false;
+		
+		ss.toCharArray(MainConfig.SSID, WL_SSID_MAX_LENGTH);
+		pw.toCharArray(MainConfig.Password, WL_WPA_KEY_MAX_LENGTH);	
+		gt.toCharArray(MainConfig.Geteway, WL_SSID_MAX_LENGTH);
+		
+		//strncpy(MainConfig.SSID, ss, sizeof(MainConfig.SSID));
+		//strncpy(MainConfig.Password, pw, sizeof(MainConfig.Password));
+		//strncpy(MainConfig.Geteway, gt, sizeof(MainConfig.Geteway));
+		
+		MainConfig.UseGeteway = ug;
+		
+        WriteWIFIConfig();
         
         if(ss == "" && pw == "")
             IsConfigured = false;
@@ -348,24 +366,33 @@ void Michome::_init(void)
             IsConfigured = true;
         
         FSLoger.AddLogFile("Config Saved");
-        WIFIConfig wf = ReadSSIDAndPassword();
-        server.send(200, "text/html", wf.SSID + "<br />" + wf.Password);
+        server.send(200, "text/html", (String)MainConfig.SSID + "<br />" + (String)MainConfig.Password + "<br />" + (String)MainConfig.Geteway + "<br />" + (String)(MainConfig.UseGeteway ? "true" : "false"));
         yieldM();
-        delay(10);
+        delay(100);
         ESP.reset();
       });
       
       server.on("/resetconfig", [this](){
-        WriteSSIDAndPassword("", "");        
+		WIFIConfig cf;		
+		
+        WriteWIFIConfig(cf);        
         IsConfigured = false;
         
         FSLoger.AddLogFile("Config Reset");
         server.send(200, "text/html", "OK");
         ESP.reset();
       });
+	  
+	  server.on("/getoptionfirmware", [this](){
+		  String tmp = "";
+		  for(byte i = 0; i < CountOptionFirmware; i++){
+			  tmp += (String)i + " = " + GetOptionFirmware(i) ? "true" : "false";
+		  }
+        server.send(200, "text/html", tmp);    
+      });
       
       server.on("/configurator", [this](){
-        server.send(200, "text/html", WebConfigurator());    
+        server.send(200, "text/html", GetConfigerator());    
       });
 
       server.on("/getlogs", [this](){
@@ -443,50 +470,46 @@ void Michome::CreateAP(void){
 //
 void Michome::running(void)
 {
-#ifdef UsingWDT
-    ESP.wdtFeed();   // покормить пёсика
-#endif
+	#ifdef UsingWDT
+		ESP.wdtFeed();   // покормить пёсика
+	#endif
     
-#ifndef NoAutoReconect
-  #pragma NoReconnecting
-  if ((WiFi.status() != WL_CONNECTED) && (ssid != "")) {
-    #ifndef NoFS
-        FSLoger.AddLogFile("Reconecting to WIFI");
-    #endif
-	
-    Serial.println("Reconecting to WIFI...");   
-    WiFi.disconnect(true);
-    WiFi.begin(ssid, password);
-	
-    long wifi_try = millis();
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        #ifdef UsingWDT
-            ESP.wdtFeed();   // покормить пёсика
-        #endif
-        Serial.print(".");
-		yieldWarn();
-        if (millis() - wifi_try > 10000) break;
-    }
-    Serial.println("Error Reconecting. Try again");
-  }
-#endif
+	#ifndef NoAutoReconect
+	  #pragma NoReconnecting
+	  if ((WiFi.status() != WL_CONNECTED) && (ssid != "")) {
+		#ifndef NoFS
+			FSLoger.AddLogFile("Reconecting to WIFI");
+		#endif
+		
+		Serial.println("Reconecting to WIFI...");   
+		WiFi.disconnect(true);
+		WiFi.begin(MainConfig.SSID, MainConfig.Password);
+		
+		long wifi_try = millis();
+		while (WiFi.status() != WL_CONNECTED) {
+			delay(500);
+			#ifdef UsingWDT
+				ESP.wdtFeed();   // покормить пёсика
+			#endif
+			Serial.print(".");
+			yieldWarn();
+			if (millis() - wifi_try > 10000) break;
+		}
+		Serial.println("Error Reconecting. Try again");
+	  }
+	#endif
 
-#ifndef NoCheckWIFI
-if((WiFi.status() != WL_CONNECTED) && (millis() - wifi_check > 10000)){
-    wifi_check = millis();
-	
-    #ifdef UsingWDT
-        ESP.wdtFeed();   // покормить пёсика
-    #endif
-	
-    Serial.println("Connection lost");
-	
-    #ifndef NoFS
-          FSLoger.AddLogFile("Connection lost");
-    #endif
-}
-#endif
+	#ifndef NoCheckWIFI
+		if((WiFi.status() != WL_CONNECTED) && (millis() - wifi_check > 10000)){
+			wifi_check = millis();
+			
+			Serial.println("WIFI connection lost");
+			
+			#ifndef NoFS
+				  FSLoger.AddLogFile("WIFI Connection lost");
+			#endif
+		}
+	#endif
 
 	yieldWarn();
 }
@@ -520,30 +543,28 @@ void Michome::StrobeBuildLedError(int counterror, int statusled){
 
 #pragma NoFS
 
-WIFIConfig Michome::ReadSSIDAndPassword(){
+WIFIConfig Michome::ReadWIFIConfig(){
     SPIFFS.begin();//инициальзация фс       
     WIFIConfig cf;
     
-    File f = SPIFFS.open("/config.txt", "r");
+    File f = SPIFFS.open("/config.bin", "r");
     if (!f) {
-        Serial.println("file open failed");  //  "открыть файл не удалось"
+        Serial.println("File config not found");  //  "открыть файл не удалось"
         SPIFFS.end();//денициализация фс
-        cf.SSID = "";
-        cf.Password = "";
+		strncpy(cf.SSID, "", sizeof(cf.SSID));
+		strncpy(cf.Password, "", sizeof(cf.Password));
+        cf.UseGeteway = false;
         return cf;
     }
     else{
-        String cfg = f.readString();
-        SPIFFS.end();//денициализация фс
-        
-        cf.SSID = Split(cfg, '\n', 0);
-        cf.Password = Split(cfg, '\n', 1);
-        
+        f.read((byte *)&cf, sizeof(cf));
+		f.close();
+        SPIFFS.end();//денициализация фс              
         return cf;
     }    
 }
 
-void Michome::WriteSSIDAndPassword(String ssid, String password){
+/*void Michome::WriteSSIDAndPassword(String ssid, String password, String Geteway, bool UseGeteway){
     SPIFFS.begin();//инициальзация фс
     
     
@@ -573,6 +594,24 @@ void Michome::WriteSSIDAndPassword(String txt){
     }
     else{
         f.print(txt);
+        SPIFFS.end();//денициализация фс                     
+        return;
+    }    
+}*/
+
+void Michome::WriteWIFIConfig(WIFIConfig conf){
+    SPIFFS.begin();//инициальзация фс
+    
+    
+    File f = SPIFFS.open("/config.bin", "w");
+    if (!f) {
+        Serial.println("Error open config.bin for write");  //  "открыть файл не удалось"
+        SPIFFS.end();//денициализация фс
+        return;
+    }
+    else{
+        f.write((byte *)&conf, sizeof(conf));
+		f.close();
         SPIFFS.end();//денициализация фс                     
         return;
     }    
@@ -701,15 +740,20 @@ void Michome::SendData(String Data)
           
           if((WiFi.status() != WL_CONNECTED))
               return;
+		  
+		  if(!MainConfig.UseGeteway){
+			  Serial.println("Geteway is off");
+			  return;
+		  }
        
           #if !defined(NoFS) && !defined(NoAddLogSendData) && !defined(NoDataAddLogSendData)
               FSLoger.AddLogFile("Sending data: " + Data);             
           #endif         
-                   
+          		  
           // Use WiFiClient class to create TCP connections
           WiFiClient client;
           const int httpPort = 80;
-          if (!client.connect(host1, httpPort)) {
+          if (!client.connect(MainConfig.Geteway, httpPort)) {
             Serial.println("CF");
             #ifndef NoFS
             FSLoger.AddLogFile("Connection Failed");
@@ -718,8 +762,8 @@ void Michome::SendData(String Data)
           }         
           
           // This will send the request to the server
-          client.print(String("POST ") + "http://" + host + " HTTP/1.1\r\n" +
-                       "Host: " + host1 + "\r\n" + 
+          client.print(String("POST ") + "http://" + GetHost + " HTTP/1.1\r\n" +
+                       "Host: " + MainConfig.Geteway + "\r\n" + 
                        "Content-Length: " + (String)Data.length() + "\r\n" +
                        "Content-Type: application/x-www-form-urlencoded \r\n" +
                        "Connection: close\r\n\r\n" +
@@ -780,7 +824,7 @@ void Michome::yieldWarn(void){
 }
 Logger Michome::GetLogger()
 {
-      return Logger(host, host1);
+      return Logger(GetHost, MainConfig.Geteway);
 }
 String Michome::Split(String data, char separator, int index)
 {

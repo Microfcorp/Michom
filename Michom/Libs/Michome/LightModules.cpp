@@ -5,9 +5,10 @@ Telnet telnLM(23);
 //
 // конструктор - вызывается всегда при создании экземпляра класса LightModules
 //
-LightModules::LightModules(Michome m)
+LightModules::LightModules(Michome *m)
 {
     gtw = m;
+	(*gtw).SetOptionFirmware(0, true);
 }
 
 Telnet& LightModules::GetTelnet(){
@@ -45,6 +46,7 @@ void LightModules::SetLight(byte pin, PinType type, int brith){
 
 void LightModules::SetLightID(byte id, int brith){
     SetLight(Pins.get(id).Pin, Pins.get(id).Type, brith);
+	Pins.get(id).value = brith;
 }
 
 void LightModules::SetLightAll(int brith){    
@@ -60,10 +62,10 @@ void LightModules::Strobo(byte pin, int col, int del){
     SaveState = false;
     for (int i = 0; i < col; i++) {
        SetLightID(pin, MaximumBrightnes);
-       //gtw.yieldM();
+       //(*gtw).yieldM();
        delay(del);
        SetLightID(pin, MinimumBrightnes);
-       //gtw.yieldM();
+       //(*gtw).yieldM();
        delay(del);
     }
     SaveState = stops;
@@ -76,10 +78,10 @@ void LightModules::StroboPro(byte pin, int col, int del, int pdel){
     SaveState = false;    
     for (int i = 0; i < col; i++) {
        SetLightID(pin, MaximumBrightnes);
-       //gtw.yieldM();
+       //(*gtw).yieldM();
        delay(del);
        SetLightID(pin, MinimumBrightnes);
-       //gtw.yieldM();
+       //(*gtw).yieldM();
        delay(pdel);
     }
     SaveState = stops;    
@@ -92,10 +94,10 @@ void LightModules::StroboAll(int col, int del){
     SaveState = false;
     for (int i = 0; i < col; i++) {
        SetLightAll(MaximumBrightnes);
-       //gtw.yieldM();
+       //(*gtw).yieldM();
        delay(del);
        SetLightAll(MinimumBrightnes);
-       //gtw.yieldM();
+       //(*gtw).yieldM();
        delay(del);
     }   
 }
@@ -107,10 +109,10 @@ void LightModules::StroboAllPro(int col, int del, int pdel){
     SaveState = false;
     for (int i = 0; i < col; i++) {
        SetLightAll(MaximumBrightnes);
-       //gtw.yieldM();
+       //(*gtw).yieldM();
        delay(del);
        SetLightAll(MinimumBrightnes);
-       //gtw.yieldM();
+       //(*gtw).yieldM();
        delay(pdel);
     } 
     SaveState = stops;    
@@ -128,7 +130,7 @@ void LightModules::StroboAllPro(int col, int del, int pdel){
         //tmp += root["Params"][i]["name"].as<String>() + "<br />";
         if (root["Params"][i]["name"].as<String>() == "playmusic") {
           //http://192.168.1.42:8080/jsonrpc?request={%22jsonrpc%22:%222.0%22,%22id%22:%221%22,%22method%22:%22Player.Open%22,%22params%22:{%22item%22:{%22file%22:%22'+file+'%22}}}
-          //gtw.SendDataGET("/jsonrpc?request={\"jsonrpc\":\"2.0\",\"id\":\"1\",\"method\":\"Player.Open\",\"params\":{\"item\":{\"file\":\"" + root["Params"][i]["file"].as<String>() + "\"}}}", "192.168.1.42", 8080);
+          //(*gtw).SendDataGET("/jsonrpc?request={\"jsonrpc\":\"2.0\",\"id\":\"1\",\"method\":\"Player.Open\",\"params\":{\"item\":{\"file\":\"" + root["Params"][i]["file"].as<String>() + "\"}}}", "192.168.1.42", 8080);
           delays = 0;
         }
         else if (root["Params"][i]["name"].as<String>() == "setlight") {
@@ -219,6 +221,10 @@ void LightModules::RunBuffer(){
     }
 }
 
+int LightModules::GetBrightness(byte pinid){
+    return Pins.get(pinid).value;
+}
+
 void LightModules::init(){
     bool stops = SaveState;    
     SaveState = false;
@@ -231,14 +237,14 @@ void LightModules::init(){
         for(int i = 0; i < Pins.size(); i++){
             FSFiles pinstext = FSFiles("/lm"+(String)Pins.get(i).Pin+".txt");
             String rdd = pinstext.ReadFile();
-            int typepin = gtw.Split(rdd, '=', 1).toInt();
-            int br = gtw.Split(rdd, '=', 2).toInt();
+            int typepin = (*gtw).Split(rdd, '=', 1).toInt();
+            int br = (*gtw).Split(rdd, '=', 2).toInt();
             SetLight(Pins.get(i).Pin, (PinType)typepin, br);
         }
     } 
     SaveState = stops;    
     
-    ESP8266WebServer& server1 = gtw.GetServer();
+    ESP8266WebServer& server1 = (*gtw).GetServer();
     
       /*server1.on("/jsonget", [&]() {
          JSONParse(server1.arg(0));
@@ -306,7 +312,7 @@ void LightModules::init(){
       server1.on("/remotepins", [&]() {
         String tmp = RussianHead("Управление выводами");
         for(int i = 0; i < Pins.size(); i++){
-            tmp += (String)"<p>" + i + " (" + String(Pins.get(i).Type == 0 ? "Relay" : "PWM") + ") " + String(Pins.get(i).Type == 0 ? "" : (String)"<input type='number' maxlength='4' min='"+MinimumBrightnes+"' max='"+MaximumBrightnes+"' id='pwm"+(String)(i+1)+(String)"' />") + " <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+String(Pins.get(i).Type == 0 ? MaximumBrightnes : "'+pwm"+(String)(i+1)+(String)".value+'")+"\', GET, \'\', function(d){}); return false;\">Применить значение</a> <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+MinimumBrightnes+"\', GET, \'\', function(d){}); return false;\">Выключить</a> "  + "</p>";
+            tmp += (String)"<p>" + i + " (" + String(Pins.get(i).Type == 0 ? "Relay" : "PWM") + ") " + String(Pins.get(i).Type == 0 ? "" : (String)"<input type='number' value=\""+(String)GetBrightness(i)+"\" maxlength='4' min='"+MinimumBrightnes+"' max='"+MaximumBrightnes+"' id='pwm"+(String)(i+1)+(String)"' />") + " <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+String(Pins.get(i).Type == 0 ? MaximumBrightnes : "'+pwm"+(String)(i+1)+(String)".value+'")+"\', GET, \'\', function(d){}); return false;\">Применить значение</a> <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+MinimumBrightnes+"\', GET, \'\', function(d){}); return false;\">Выключить</a> "  + "</p>";
         }
         server1.send(200, "text/html", AJAXJs + tmp + (String)"<br /><a href='/'>Главная</a>");
       });
@@ -318,37 +324,37 @@ void LightModules::init(){
 }
 
 void LightModules::TelnetRun(String telnd){
-    String type = gtw.Split(telnd, ';', 0);
+    String type = (*gtw).Split(telnd, ';', 0);
         if (type == "setlight") { //setlight;0;1023 pin;val
-          SetLightID((gtw.Split(telnd, ';', 1).toInt()), gtw.Split(telnd, ';', 2).toInt());
+          SetLightID(((*gtw).Split(telnd, ';', 1).toInt()), (*gtw).Split(telnd, ';', 2).toInt());
         }
         else if (type == "setlightall") { //setlightall;1023 val
-          SetLightAll(gtw.Split(telnd, ';', 1).toInt());
+          SetLightAll((*gtw).Split(telnd, ';', 1).toInt());
         }
         else if (type == "strobo") { //strobo;2;4;100 pin;col;sleep
-          int col = gtw.Split(telnd, ';', 2).toInt();
-          Strobo(Pins.get(gtw.Split(telnd, ';', 1).toInt()).Pin, col, gtw.Split(telnd, ';', 3).toInt());
+          int col = (*gtw).Split(telnd, ';', 2).toInt();
+          Strobo(Pins.get((*gtw).Split(telnd, ';', 1).toInt()).Pin, col, (*gtw).Split(telnd, ';', 3).toInt());
         }
         else if (type == "strobopro") { //strobopro;10;0;100;50 col;pin;sleep;sleep2
-          int col = gtw.Split(telnd, ';', 1).toInt();
-          StroboPro(Pins.get(gtw.Split(telnd, ';', 1).toInt()).Pin, col, gtw.Split(telnd, ';', 3).toInt(), gtw.Split(telnd, ';', 4).toInt());
+          int col = (*gtw).Split(telnd, ';', 1).toInt();
+          StroboPro(Pins.get((*gtw).Split(telnd, ';', 1).toInt()).Pin, col, (*gtw).Split(telnd, ';', 3).toInt(), (*gtw).Split(telnd, ';', 4).toInt());
         }
         else if (type == "stroboall") { //stroboall;10;100 col;sleep
-          int col = gtw.Split(telnd, ';', 1).toInt();
-          StroboAll(col, gtw.Split(telnd, ';', 2).toInt());
+          int col = (*gtw).Split(telnd, ';', 1).toInt();
+          StroboAll(col, (*gtw).Split(telnd, ';', 2).toInt());
         }
         else if (type == "stroboallpro") { //stroboallpro;10;100;50 col;sleep;sleep2
-          int col = gtw.Split(telnd, ';', 1).toInt();
-          StroboAllPro(col, gtw.Split(telnd, ';', 2).toInt(), gtw.Split(telnd, ';', 3).toInt());
+          int col = (*gtw).Split(telnd, ';', 1).toInt();
+          StroboAllPro(col, (*gtw).Split(telnd, ';', 2).toInt(), (*gtw).Split(telnd, ';', 3).toInt());
         }
         else if (type == "fadestart") { //fadestart;10;100;50 col;sleep;sleep2
-          int col = gtw.Split(telnd, ';', 1).toInt();
-          FadeData l1 = CreateFadeData((FadeType)gtw.Split(telnd, ';', 2).toInt(), gtw.Split(telnd, ';', 3).toInt(), gtw.Split(telnd, ';', 4).toInt(), gtw.Split(telnd, ';', 5).toInt(), gtw.Split(telnd, ';', 6).toInt());
+          int col = (*gtw).Split(telnd, ';', 1).toInt();
+          FadeData l1 = CreateFadeData((FadeType)(*gtw).Split(telnd, ';', 2).toInt(), (*gtw).Split(telnd, ';', 3).toInt(), (*gtw).Split(telnd, ';', 4).toInt(), (*gtw).Split(telnd, ';', 5).toInt(), (*gtw).Split(telnd, ';', 6).toInt());
           StartFade(l1);
         }
         else if (type == "fadestop") { //fadedown;10;100;50 col;sleep;sleep2
-          int col = gtw.Split(telnd, ';', 1).toInt();
-          StopFade(gtw.Split(telnd, ';', 2).toInt());
+          int col = (*gtw).Split(telnd, ';', 1).toInt();
+          StopFade((*gtw).Split(telnd, ';', 2).toInt());
         }
         else if (type == "stopallfade") { //fadestop;
           StopAllFade();
@@ -384,7 +390,7 @@ void LightModules::running(){
                SaveState = stops;
                if(fd.CurV == fd.MaxV) fd.IsRun = false;              
                //delay(1);
-               gtw.yieldM();
+               (*gtw).yieldM();
             }     
         }
         SetFade(i, fd);        

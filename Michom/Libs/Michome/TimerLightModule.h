@@ -49,8 +49,8 @@ class TimerLightModule
                 //
                 void LoadNTP(){
                     String rs = settings.ReadFile();
-                    String ntps = gtw.Split(rs, ';', 0);
-                    int utctime = gtw.Split(rs, ';', 1).toInt();
+                    String ntps = (*gtw).Split(rs, ';', 0);
+                    int utctime = (*gtw).Split(rs, ';', 1).toInt();
                     if(ntps == "") ntps = NTPServer;
                     if(utctime == 0) utctime = UTC3;
                     ntps.toCharArray(_NTPServer, NTPServerMaxLenght);
@@ -58,7 +58,7 @@ class TimerLightModule
                     SetNTP();
                 }
         private:                       
-            Michome gtw;          
+            Michome *gtw;          
             LinkedList<TimeLightModuleQ> Qs = LinkedList<TimeLightModuleQ>();
             WiFiUDP ntpUDP;
             LightModules *light; 

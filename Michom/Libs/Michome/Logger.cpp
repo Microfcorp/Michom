@@ -3,7 +3,7 @@
 //
 // конструктор - вызывается всегда при создании экземпляра класса Logger
 //
-Logger::Logger(const char* gateway, const char* host)
+Logger::Logger(String gateway, const char* host)
 {
         Serial.begin(115200);
 		Gateway = gateway;
@@ -27,7 +27,7 @@ void Logger::Log(String text)
 		  String lengt = (String)dataaaa.length(); 
 		  
 		  // This will send the request to the server
-		  client.print(String("POST ") + "http://" + (String)Gateway + " HTTP/1.1\r\n" +
+		  client.print(String("POST ") + "http://" + Gateway + " HTTP/1.1\r\n" +
 					   "Host: " + "192.168.1.42" + "\r\n" + 
 					   "Content-Length: " + lengt + "\r\n" +
 					   "Content-Type: application/x-www-form-urlencoded \r\n" +
