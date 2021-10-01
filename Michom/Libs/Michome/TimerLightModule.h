@@ -17,9 +17,6 @@
 #define NTPTimer 60000
 #define MaximumTimers 15
 
-#define StateOn 1023
-#define StateOff 0
-
 typedef struct TimeLightModuleQ
 {
     byte Hour;

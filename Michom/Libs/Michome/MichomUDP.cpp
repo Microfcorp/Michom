@@ -11,7 +11,7 @@ void MichomeUDP::init(){
     Load();
     ESP8266WebServer& server1 = (*gtw).GetServer();
     server1.on("/udptrigger", [&](){
-        if(server1.arg("type") == "show"){
+        if(server1.arg("type") == "show" || !server1.hasArg("type")){
             String tmp = "";
             for(int i = 0; i < Ut.size(); i++){
                 UDPTriggers tr = Ut.get(i);

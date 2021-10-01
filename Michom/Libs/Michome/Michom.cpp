@@ -2,8 +2,11 @@
 #include "config.h"
 
 #ifndef config_h
-    //#pragma ErrorCompilation
-    #error "Error Read ConfigFiles";     
+    #error "Error Read Config Files";     
+#endif
+
+#ifndef GetewayData_h
+    #error "Error Read Geteway Data File";     
 #endif
 
 ESP8266WebServer server(80);
@@ -352,10 +355,6 @@ void Michome::_init(void)
 		pw.toCharArray(MainConfig.Password, WL_WPA_KEY_MAX_LENGTH);	
 		gt.toCharArray(MainConfig.Geteway, WL_SSID_MAX_LENGTH);
 		
-		//strncpy(MainConfig.SSID, ss, sizeof(MainConfig.SSID));
-		//strncpy(MainConfig.Password, pw, sizeof(MainConfig.Password));
-		//strncpy(MainConfig.Geteway, gt, sizeof(MainConfig.Geteway));
-		
 		MainConfig.UseGeteway = ug;
 		
         WriteWIFIConfig();
@@ -386,7 +385,7 @@ void Michome::_init(void)
 	  server.on("/getoptionfirmware", [this](){
 		  String tmp = "";
 		  for(byte i = 0; i < CountOptionFirmware; i++){
-			  tmp += (String)i + " = " + GetOptionFirmware(i) ? "true" : "false";
+			  tmp += (String)i + " = " + (GetOptionFirmware(i) ? "true" : "false") + "<br />";
 		  }
         server.send(200, "text/html", tmp);    
       });
@@ -521,7 +520,7 @@ void Michome::StrobeBuildLed(byte timeout){
 }
 
 String Michome::GetMainWeb(){
-    return WebMain(type, id, GetOptionFirmware(1), GetOptionFirmware(2));
+    return WebMain(type, id, GetOptionFirmware(TimerLightModules), GetOptionFirmware(UDPTrigger), MainConfig.UseGeteway);
 }
 
 void Michome::ChangeWiFiMode(){
@@ -734,7 +733,7 @@ void Michome::SendData()
 }
 void Michome::SendData(String Data)
 {  
-          #ifdef TimeSending
+          #ifdef DurationLog
             unsigned long starttime = millis();
           #endif
           
@@ -771,36 +770,13 @@ void Michome::SendData(String Data)
                        
           
           client.stop();
-          /*
-          //while (client.available() == 0) {
-            if (millis() - timeout > TimeoutConnection) {
-              //Serial.println("Error");
-              #if !defined(NoFS) && defined(NoAddLogSendData)
-              FSLoger.AddLogFile("Send data failed");
-              #endif
-              client.stop();
-              return;
-            }
-          //}
-          */
-          
-          /*delay(1000);
-          // Read all the lines of the reply from server and print them to Serial
-          String line = "";
-          while(client.available()){
-            line = client.readStringUntil('\r');
-          }*/
-          
-          //Serial.println();
           
           Serial.println("Data sending");
           #if !defined(NoFS) && !defined(NoAddLogSendData)
-          FSLoger.AddLogFile("Send data OK");
+			FSLoger.AddLogFile("Send data OK");
           #endif
 
-          //return line; 
-
-          #ifdef TimeSending
+          #ifdef DurationLog
               unsigned long endtime = millis();                  
               FSLoger.AddLogFile("Time Sending: " + String(endtime - starttime));
           #endif
@@ -844,7 +820,7 @@ String Michome::Split(String data, char separator, int index)
 }
 String Michome::ParseJson(String type, String data){
       #if defined(WriteDataToFile) && !defined(NoFS)
-        DataFile().AddTextToFile("Sending data: " + data);
+        DataFile().AddTextToFile("Sending data ("+type+"): " + (data == "" ? "none parsing data" : data));
       #endif
               
       String temp = "";
@@ -853,9 +829,12 @@ String Michome::ParseJson(String type, String data){
       temp += "\"rssi\":\"" + String(WiFi.RSSI()) + "\",";
       temp += "\"secretkey\":\"" + sha1(String("MICHoMeMoDuLe")) + "\",";
       temp += "\"secret\":\"" + String("MICHoMeMoDuLeORIGINALFIRMWARE") + "\",";
+	  #ifdef TimeSending
+            temp += "\"runningtime\":\"" + String(millis()) + "\",";
+      #endif     
       temp += "\"type\":";
       temp += "\"" + type + "\",";
-      if(type == "StudioLight"){    
+      if(type == StudioLight){    
           temp += "\"data\":{";
           temp += "\"status\": \"" + String("OK") + "\"}";
       }
@@ -863,24 +842,24 @@ String Michome::ParseJson(String type, String data){
           temp += "\"data\":{";
           temp += "\"status\": \"" + String("OK") + "\"}";
       }
-      else if(type == "Informetr"){    
+      else if(type == Informetr){    
           temp += "\"data\":{";
           temp += "\"data\": \"" + String("GetData") + "\"}";
       }
-      else if(type == "Log"){    
+      else if(type == Logs){    
           temp += "\"data\":{";
           temp += "\"log\": \"" + String("On Running") + "\"}";
       }
-      else if(type == "hdc1080"){    
+      else if(type == HDC1080){    
           temp += "\"data\":{";
           temp += "\"temper\": \"" + Split(data, ';', 0) + "\",";
           temp += "\"humm\": \"" + Split(data, ';', 1) + "\"}";
       }
-      else if(type == "termometr"){    
+      else if(type == Termometr){    
           temp += "\"data\":{";
           temp += "\"temper\": \"" + data + "\"}";
       }
-      else if(type == "msinfoo"){    
+      else if(type == Msinfoo){    
           temp += "\"data\":{";
           temp += "\"davlen\": \"" + Split(data, ';', 0) + "\",";
           temp += "\"temperbmp\": \"" + Split(data, ';', 1) + "\",";
@@ -888,12 +867,12 @@ String Michome::ParseJson(String type, String data){
           temp += "\"temper\": \"" + Split(data, ';', 3) + "\",";
           temp += "\"humm\": \"" + Split(data, ';', 4) + "\" }";
       }
-      else if(type == "init"){    
+      else if(type == Initialization){    
           temp += "\"data\":{";
           temp += "\"type\": \"" + String(Michome::type) + "\",";
           temp += "\"id\": \"" + String(Michome::id) + "\" }";
       }
-      else if(type == "get_button_press"){    
+      else if(type == ButtonData){    
           temp += "\"data\":{";
           temp += "\"status\": \"" + data + "\" }";
       }

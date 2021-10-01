@@ -5,5 +5,6 @@
 #define Termometr "termometr"
 #define Informetr "Informetr"
 #define Msinfoo "msinfoo"
+#define HDC1080 "hdc1080"
 
 #endif

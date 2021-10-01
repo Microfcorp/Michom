@@ -8,7 +8,7 @@ Telnet telnLM(23);
 LightModules::LightModules(Michome *m)
 {
     gtw = m;
-	(*gtw).SetOptionFirmware(0, true);
+	(*gtw).SetOptionFirmware(LightModule, true);
 }
 
 Telnet& LightModules::GetTelnet(){
@@ -46,7 +46,9 @@ void LightModules::SetLight(byte pin, PinType type, int brith){
 
 void LightModules::SetLightID(byte id, int brith){
     SetLight(Pins.get(id).Pin, Pins.get(id).Type, brith);
-	Pins.get(id).value = brith;
+	LightPin lp = Pins.get(id);
+	lp.value = brith;
+	Pins.set(id, lp);
 }
 
 void LightModules::SetLightAll(int brith){    
@@ -239,7 +241,7 @@ void LightModules::init(){
             String rdd = pinstext.ReadFile();
             int typepin = (*gtw).Split(rdd, '=', 1).toInt();
             int br = (*gtw).Split(rdd, '=', 2).toInt();
-            SetLight(Pins.get(i).Pin, (PinType)typepin, br);
+            SetLightID(i, br);
         }
     } 
     SaveState = stops;    

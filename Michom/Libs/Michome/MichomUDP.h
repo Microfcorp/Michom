@@ -31,6 +31,7 @@ class MichomeUDP
                 id = (*gtwa).GetModule(0);
                 type = (*gtwa).GetModule(1);
                 gtw = gtwa;
+				(*gtwa).SetOptionFirmware(UDPTrigger, true);
             }
             
             void init();
@@ -82,7 +83,7 @@ class MichomeUDP
             
             String GetHTMLOptions(int t){
                 String tmp = "";
-                tmp += (type == StudioLight ? (String)"<option "+(t == 0 ? "selected":"")+" value='LightData'>Данные освещения</option>" : "");
+                tmp += (type == StudioLight ? (String)"<option "+(t == 0 ? "selected":"")+" value='LightData'>Telnet формат модуля освещения</option>" : "");
                 tmp += (String)"<option "+(t == 1 ? "selected":"")+" value='SendURL'>Отпрвить URL</option>";
                 tmp += (String)"<option "+(t == 2 ? "selected":"")+" value='SendGateway'>Отправить данные на шлюз</option>";
                 return tmp;

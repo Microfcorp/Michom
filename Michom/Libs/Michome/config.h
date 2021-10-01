@@ -8,7 +8,8 @@
 //#define ADCV //Включить измерение напряжения
 #define NoAddLogSendData //Не записываль в лог о том, что передаем информацию
 #define NoDataAddLogSendData //Не записывать в лог передаваемую информацию
-#define TimeSending //Записывать в лог время передачи данных
+#define TimeSending //Отправлять на шлюз время работы модуля
+#define DurationLog //Записывать в лог время передачи пакета
 //#define UsingWDT //Использовать сторожевой таймер
 //#define NoScanWIFi //Не сканировать сети в конфигураторе
 #define StartLED //Светить светодиодам при запуске

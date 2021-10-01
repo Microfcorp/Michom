@@ -23,6 +23,7 @@
 #define WIFIMode WIFI_AP_STA //WIFI_AP_STA
 
 #include "config.h"
+#include "GetewayData.h"
 #include <ModuleTypes.h>
 extern "C" {
 #include "user_interface.h"
@@ -48,6 +49,7 @@ extern "C" {
 #include <WebPages.h>
 #include <Telnet.h>
 
+typedef enum OptionsFirmware{LightModule, TimerLightModules, UDPTrigger};
 
 typedef struct WIFIConfig //Настройки WIFI части
 {
@@ -128,12 +130,12 @@ class Michome
                 bool GetSettingRead();
 				//Задает опцию прошивки
                 void SetOptionFirmware(byte id, bool value){
-					//if(id < 0 || id > CountOptionFirmware) return;
+					if(id < 0 || id > CountOptionFirmware) return;
 					OptionsFirmware[id] = value;
 				}
 				//Получает опцию прошивки
                 bool GetOptionFirmware(byte id){
-					//if(id < 0 || id > CountOptionFirmware) return false;
+					if(id < 0 || id > CountOptionFirmware) return false;
 					return OptionsFirmware[id];
 				}
 				//Получить конфигуратор

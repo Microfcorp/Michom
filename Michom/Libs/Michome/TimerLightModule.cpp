@@ -3,7 +3,7 @@
 TimerLightModule::TimerLightModule(LightModules *m){
     light = m;
     gtw = &(*light).GetMichome();
-	(*gtw).SetOptionFirmware(1, true);
+	(*gtw).SetOptionFirmware(TimerLightModules, true);
 }
 
 void TimerLightModule::Save(){
@@ -61,7 +61,7 @@ void TimerLightModule::init(){
             server1.send(200, "text/html", "<head><meta charset=\"UTF-8\"><meta http-equiv='refresh' content='1;URL=/qconfig' /></head>ОШИБКА! Превышено максимальное число таймеров (" + (String)MaximumTimers + ")");
         }
         else{
-            TimeLightModuleQ tm = {20, 02, 0, 0, StateOn, false};
+            TimeLightModuleQ tm = {20, 02, 0, 0, MaximumBrightnes, false};
             Add(tm);
             server1.send(200, "text/html", "<head><meta charset=\"UTF-8\"><meta http-equiv='refresh' content='1;URL=/qconfig' /></head>Новый таймер добавлен");
         }
