@@ -32,8 +32,7 @@ void setup ( void ) {
   tlm.init(); //Инициализация подсистемы времени
   michome.init(true); //Инициализация модуля Michome
   michome.TimeoutConnection = LightModuleTimeoutConnection; //Таймаут соединения до шлюза
-  //michome.SetOptionFirmware(1, true);
-  //michome.SetOptionFirmware(2, true);
+  
   
   MUDP.lightModules = &lm; //Ссылка на объект модуля освещения
   MUDP.timerLightModules = &tlm; //Ссылка на объект подсисетмы времени
@@ -69,8 +68,11 @@ void loop ( void ) {
 
   if (butt1.hasClicks()){clicks = butt1.getClicks(); Serial.println("Clicks="+String(clicks));}
   else clicks = 0;
- 
-  if (clicks == 2) {
+
+  if (clicks == 3) {
+    lm.SetLightID(0, MaximumBrightnes/2);
+  }
+  else if (clicks == 2) {
     lm.StopAllFade();
     lm.SetLightID(0, MinimumBrightnes);
   }
