@@ -32,7 +32,7 @@ void setup ( void ) {
   tlm.init(); //Инициализация подсистемы времени
   michome.init(true); //Инициализация модуля Michome
   michome.TimeoutConnection = LightModuleTimeoutConnection; //Таймаут соединения до шлюза
-  
+  butt1.setClickTimeout(200);
   
   MUDP.lightModules = &lm; //Ссылка на объект модуля освещения
   MUDP.timerLightModules = &tlm; //Ссылка на объект подсисетмы времени
@@ -69,6 +69,9 @@ void loop ( void ) {
   if (butt1.hasClicks()){clicks = butt1.getClicks(); Serial.println("Clicks="+String(clicks));}
   else clicks = 0;
 
+  if (clicks == 4 || clicks == 5) {
+    MUDP.SendTrigger("WorkstationButton", clicks == 4 ? "1" : "0");
+  }
   if (clicks == 3) {
     lm.SetLightID(0, MaximumBrightnes/2);
   }
@@ -81,5 +84,8 @@ void loop ( void ) {
     //lm.StartFade(l1);
     lm.SetLightID(0, MaximumBrightnes);
   }
-  if(clicks != 0 && clicks != 1 && clicks != 2) michome.SendData(michome.ParseJson("get_button_press", String(ButtonPin)+"="+String(clicks)));
+  if(clicks != 0 && clicks != 1 && clicks != 2)
+  {    
+    michome.SendData(michome.ParseJson("get_button_press", String(ButtonPin)+"="+String(clicks)));
+  }
 }

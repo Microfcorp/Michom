@@ -4,23 +4,18 @@
 #include <TimerLightModule.h>
 #include <MichomUDP.h>
 
-//const char *ssid = "10-KORPUSMG";
-//const char *password = "10707707";
-
 const char* id = "LightStudio_Elka";
 const char* type = StudioLight;
 /////////настройки//////////////
 
-const char* host = "192.168.1.42/michome/getpost.php";
-const char* host1 = "192.168.1.42";
-
 RTOS rtos(604000);
 
-Michome michome(id, type, host, host1);
-LightModules lm (michome);
+Michome michome(id, type);
+LightModules lm (&michome);
 TimerLightModule tlm(&lm);
+
 ESP8266WebServer& server1 = michome.GetServer();
-MichomeUDP MUDP(michome);
+MichomeUDP MUDP(&michome);
 
 //const int Keys[] = {9,10,4,5};
 

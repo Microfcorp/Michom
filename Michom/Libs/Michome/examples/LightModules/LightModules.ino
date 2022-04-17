@@ -7,18 +7,15 @@ const char* id = "LightStudio_Elka";
 const char* type = StudioLight; //стандартный тип модуля освещения
 /////////настройки//////////////
 
-const char* host = "192.168.1.42/michome/getpost.php";
-const char* host1 = "192.168.1.42";
-
 RTOS rtos(604000); //время опроса до сервера
 
-Michome michome(id, type, host, host1); //инициальзация модуля Michome
-LightModules lm (michome); //Инициализация модуля освещения
+Michome michome(id, type); //инициальзация модуля Michome
+LightModules lm (&michome); //Инициализация модуля освещения
 TimerLightModule tlm(&lm); //Инициализация подсистемы точного времени
 
 ESP8266WebServer& server1 = michome.GetServer(); //Получение объекта веб-сервера
 
-MichomeUDP MUDP(michome); //Создание класса UDP кнотроллера
+MichomeUDP MUDP(&michome); //Создание класса UDP кнотроллера
 
 //const int Keys[] = {9,10,4,5};
 

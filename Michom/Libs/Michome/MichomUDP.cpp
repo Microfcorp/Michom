@@ -15,14 +15,14 @@ void MichomeUDP::init(){
             String tmp = "";
             for(int i = 0; i < Ut.size(); i++){
                 UDPTriggers tr = Ut.get(i);
-                tmp += (String)"<tr><form action='/udptrigger?type=save'><input name='id' type='hidden' value='"+i+"' /><td>Состояние: <input type='checkbox' " + (tr.Enable == 1 ? "checked": "") +" name='en' /></td><td>Тип триггера <input name='Type' value='"+tr.Type+"' /></td><td>Действие <select name='ActionType'>"+GetHTMLOptions((int)tr.ActionType)+"</select></td><td>Данные действия <input name='Data' value='"+tr.Data+"' /></td><td><input type='submit' value='Сохранить' /></td><td><a href='/udptrigger?type=remove&id="+i+"'>Удалить</a></td></form></tr>";
+                tmp += (String)"<tr><form action='/udptrigger'><input name='type' type='hidden' value='save' /><input name='id' type='hidden' value='"+i+"' /><td>Состояние: <input type='checkbox' " + (tr.Enable == 1 ? "checked": "") +" name='en' /></td><td>Тип триггера <input name='TypeTrigger' value='"+tr.Type+"' /></td><td>Действие <select name='ActionType'>"+GetHTMLOptions((int)tr.ActionType)+"</select></td><td>Данные действия <input name='Data' value='"+tr.Data+"' /></td><td><input type='submit' value='Сохранить' /></td><td><a href='/udptrigger?type=remove&id="+i+"'>Удалить</a></td></form></tr>";
             }
             server1.send(200, "text/html", RussianHead("Настройка UDP триггеров") + "<table>"+tmp+"</table><br /><a href='udptrigger?type=add'>Добавить</a>");
         }
         if(server1.arg("type") == "save"){
             int ids = server1.arg("id").toInt();
             byte en = server1.arg("en") == "on"; 
-            String Types = server1.arg("Type"); 
+            String Types = server1.arg("TypeTrigger"); 
             ActionsType AT = (ActionsType)server1.arg("ActionType").toInt();
             String Data = server1.arg("Data");
             
@@ -50,7 +50,7 @@ void MichomeUDP::Save(void){
     String sb = ((String)countQ) + "|";
     for(int i = 0; i < countQ; i++){
         UDPTriggers em = Ut.get(i);
-        sb += String(em.Type) + ";" + String(em.ActionType) + ";" + String(em.Data) + ";" + String(em.Enable ? "1" : "0") + "!";
+        sb += String(em.Type) + "~" + String(em.ActionType) + "~" + String(em.Data) + "~" + String(em.Enable ? "1" : "0") + "!";
     }                   
     fstext.WriteFile(sb);
 }
@@ -61,7 +61,7 @@ void MichomeUDP::Load(void){
     String data = (*gtw).Split(rd, '|', 1);
     for(int i = 0; i < countQ; i++){
         String str = (*gtw).Split(data, '!', i);
-        UDPTriggers qq = {((*gtw).Split(str, ';', 0)), ((ActionsType)(*gtw).Split(str, ';', 1).toInt()), ((*gtw).Split(str, ';', 2)), ((*gtw).Split(str, ';', 3).toInt() == 1)};
+        UDPTriggers qq = {((*gtw).Split(str, '~', 0)), ((ActionsType)(*gtw).Split(str, '~', 1).toInt()), ((*gtw).Split(str, '~', 2)), ((*gtw).Split(str, '~', 3).toInt() == 1)};
         Ut.add(qq);
     }
 }
@@ -127,7 +127,7 @@ void MichomeUDP::running(){
                     SendMulticast(GetData_SearchOK());
                 }
             }
-            if(Split(reads, '-', 0) == StudioLight && type == StudioLight){
+            if(Split(reads, '-', 0) == StudioLight && IsStr(type, StudioLight)){
                 if(Split(reads, '-', 1) == "lightchange"){
                     (*lightModules).SetLightAll(Split(reads, '-', 2).toInt());
                     SendMulticast(GetData_OK());
@@ -159,7 +159,7 @@ void MichomeUDP::running(){
                 else {
                     SendMulticast(GetData_Event_OK(Split(reads, '-', 1)));                    
                     if(Split(reads, '-', 1) == "EAlarm" && EAlarm){
-                        if(type == StudioLight){
+                        if(IsStr(type, StudioLight)){
                             (*lightModules).StroboAll(5, 400);
                         }
                     }
@@ -175,9 +175,12 @@ void MichomeUDP::running(){
                     for(int i = 0; i < Ut.size(); i++){
                         UDPTriggers tr = Ut.get(i);
                         if(tr.Enable && Split(reads, '-', 1) == tr.Type){
-                            if(tr.ActionType == (ActionsType)LightData && type == StudioLight){(*lightModules).TelnetRun(tr.Data);}
-                            //else if(tr.ActionType == (ActionsType)SendURL){(*lightModules).TelnetRun(tr.Data);}
-                            else if(tr.ActionType == (ActionsType)SendGateway){(*gtw).SendData((*gtw).ParseJson("UDPData", tr.Data));}
+							String EVData = tr.Data;
+							EVData.replace("%1", Split(reads, '-', 2));
+                            if(tr.ActionType == (ActionsType)LightData && IsStr(type, StudioLight)){(*lightModules).TelnetRun(EVData);}
+                            //else if(tr.ActionType == (ActionsType)SendURL){(*gtw).TelnetRun(tr.Data);}
+                            else if(tr.ActionType == (ActionsType)SendGateway){(*gtw).SendData((*gtw).ParseJson("UDPData", EVData));}
+                            else if(tr.ActionType == (ActionsType)SendsUDP){SendMulticast(EVData);}
                         }
                     }
                 }

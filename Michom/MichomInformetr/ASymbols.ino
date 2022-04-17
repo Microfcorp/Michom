@@ -127,4 +127,3 @@ void ToPrognoz(){
   lcd.createChar(4, sneg);
   lcd.createChar(5, gradus);
 }
-

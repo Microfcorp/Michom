@@ -6,6 +6,8 @@
   #include "WProgram.h"
 #endif 
 #include <FS.h>
+#include <LittleFS.h>
+#include <ESP8266WebServer.h>
 
 #define LogFileName "/logfile.txt"
 
@@ -14,35 +16,46 @@ class FSLoging
 {
         public:
             void AddLogFile(String textadd){
-                String rd = ReadLogFile();
-                rd += textadd + "<br />";
-                WriteLogFile(rd);
-            }
-            String ReadLogFile(){
-                SPIFFS.begin();//инициальзация фс       
-                File f = SPIFFS.open(LogFileName, "r");
+                File f = LittleFS.open(LogFileName, "a");
                 if (!f) {
-                    Serial.println("file open failed");  //  "открыть файл не удалось"
-                    SPIFFS.end();//денициализация фс
+                    Serial.println("LOG open failed");  //  "открыть файл не удалось"
+                }
+                else{
+                    if (f.print(textadd + " <br /> ")) {} 
+					else {
+						Serial.println("LOG append failed");
+					}
+					f.close();
+                }
+            }
+            String ReadLogFile(){      
+                File f = LittleFS.open(LogFileName, "r");
+                if (!f) {
+                    Serial.println("LOG file open failed");  //  "открыть файл не удалось"
                     return "";
                 }
                 else{
                     String cfg = f.readString();
-                    SPIFFS.end();//денициализация фс                        
+                    f.close();//денициализация фс                        
                     return cfg;
                 }    
             }
+			void ReadLogFileToServer(ESP8266WebServer *server){				
+				File f = LittleFS.open(LogFileName, "r");
+				if ((*server).streamFile(f, F("text/html")) != f.size()) {
+				  Serial.println("Sent less data than expected!");
+				}
+				f.close();								    
+            }
             void WriteLogFile(String text){
-                SPIFFS.begin();//инициальзация фс
-                File f = SPIFFS.open(LogFileName, "w");
+                File f = LittleFS.open(LogFileName, "w");
                 if (!f) {
-                    Serial.println("file open failed");  //  "открыть файл не удалось"
-                    SPIFFS.end();//денициализация фс
+                    Serial.println("LOG file open failed");  //  "открыть файл не удалось"
                     return;
                 }
                 else{
                     f.print(text);
-                    SPIFFS.end();//денициализация фс                     
+                    f.close();//денициализация фс                     
                     return;
                 }
             }

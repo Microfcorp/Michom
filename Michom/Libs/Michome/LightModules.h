@@ -1,4 +1,3 @@
-//Если используется данная библиотека, то Telnet брать из нее, а не инициализировать заново
 #ifndef LightModules_h
 #define LightModules_h
 
@@ -124,9 +123,7 @@ class LightModules
                 //Получить строку со всеми пинами
                 String GetPins();
                 //Включение Telnet сервера
-                bool TelnetEnable = false; 
-                //Получение Telnet класса
-                Telnet& GetTelnet();   
+                bool TelnetEnable = false;  
                 //Сохранять состояние выходов при перезапуске
                 bool SaveState = false;
         private:
@@ -134,6 +131,7 @@ class LightModules
             //LinkedList<LightData> Datas = LinkedList<LightData>();
             LinkedList<LightPin> Pins = LinkedList<LightPin>();
             Michome *gtw;
+			Telnet *telnLM;
             LinkedList<FadeData> Fades = LinkedList<FadeData>();
             LinkedList<BufferData> Bufers = LinkedList<BufferData>();
             int countfade = 0;

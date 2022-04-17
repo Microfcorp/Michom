@@ -18,6 +18,7 @@ TimerLightModule	KEYWORD1
 TimerLightModuleQ	KEYWORD1
 MichomeUDP	KEYWORD1
 MichomUDP	KEYWORD1
+WS28	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -78,6 +79,9 @@ TelnetEnable	LITERAL1
 LightModuleTimeoutConnection	LITERAL1
 IsBlinkOTA	LITERAL1
 StudioLight	LITERAL1
+HDC1080md	LITERAL1
+WS28Module	LITERAL1
+MeteoRequest	LITERAL1
 Termometr	LITERAL1
 Informetr	LITERAL1
 Msinfoo	LITERAL1

@@ -38,6 +38,11 @@ void RTOS::Start()
     running = true;
 }
 
+void RTOS::Zero()
+{
+    _previousMillis = millis();   // запоминаем текущее время
+}
+
 bool RTOS::IsTick()
 {
     if(!running)

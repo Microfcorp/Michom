@@ -1,15 +1,21 @@
 #ifndef WebPages_h
 #define WebPages_h
     static const String XNR = " function createXMLHttp() {if (typeof XMLHttpRequest != \"undefined\") {return new XMLHttpRequest();} else if (window.ActiveXObject) { var aVersions = [\"MSXML2.XMLHttp.5.0\",\"MSXML2.XMLHttp.4.0\",\"MSXML2.XMLHttp.3.0\",\"MSXML2.XMLHttp\",\"Microsoft.XMLHttp\"];for (var i = 0; i < aVersions.length; i++) {try {var oXmlHttp = new ActiveXObject(aVersions[i]);return oXmlHttp;} catch (oError) {}}throw new Error(\"Невозможно создать объект XMLHttp.\");}}; ";
+    static const String ColorMan = ("<script>function convertColor(color) {if(color.substring(0,1) == '#') {color = color.substring(1);}var rgbColor = {};rgbColor.r = parseInt(color.substring(0,2),16);rgbColor.g = parseInt(color.substring(2,4),16);rgbColor.b = parseInt(color.substring(4),16);return rgbColor;}</script>");
     static const String AJAXJs = "<script>var GET = 'GET'; var POST = 'POST'; var HEAD = 'HEAD'; "+XNR+" function postAjax(url, type, data, callback) { var oXmlHttp = createXMLHttp();var sBody = data;oXmlHttp.open(type, url, true);oXmlHttp.setRequestHeader(\"Content-Type\", \"application/x-www-form-urlencoded\");oXmlHttp.onreadystatechange = function() {if (oXmlHttp.readyState == 4) {callback(oXmlHttp.responseText);}};oXmlHttp.send(sBody);}</script>";
-    static const String ChangeTypeJS = "<script>var isrel = false; function changepin(id, iq){postAjax('/getpins', GET, '', function(d){var lines = d.split('<br />'); for(var i = 0; i < lines.length; i++){var ids = parseInt(lines[i][0]); if(ids == id){if(lines[i].split('-')[1].substring(1).trim() == 'Relay'){document.getElementById('valuepin'+iq).innerHTML = 'Значение'+(isrel ? '(Релейный)' : '(PWM)')+':';}}}})}</script>";
+    static const String ChangeTypeJS = ("<script>var isrel = false; function changepin(id, iq){postAjax('/getpins', GET, '', function(d){var lines = d.split('<br />'); for(var i = 0; i < lines.length; i++){var ids = parseInt(lines[i][0]); if(ids == id){if(lines[i].split('-')[1].substring(1).trim() == 'Relay'){document.getElementById('valuepin'+iq).innerHTML = 'Значение'+(isrel ? '(Релейный)' : '(PWM)')+':';}}}})}</script>");
 	    //static const String ChangeTypeJS = isrelayJS + "<script>function changepin(id, i){isrelay(id); document.getElementById('valuepin'+i).innerHTML = 'Значение'+(isrel ? '(Релейный)' : '(PWM)')+':';}</script>";
-    static String RussianHead(String title){
-        return ("<head><title>"+title+"</title><meta charset=\"UTF-8\"></head>");
+    static const String AutoChangeTime = ("<script>function AutoChangeTime(){postAjax('/timemodule', GET, '', function(d){timemod.innerHTML = d;}); window.setTimeout('AutoChangeTime()',1000);} AutoChangeTime();</script>");
+	
+	static String RussianHead(String title, String Insering = ""){
+        return ("<head><title>"+title+"</title><meta charset=\"UTF-8\">"+Insering+"</head>");
+    }
+	static String MetaRefresh(String point = "/", int time = 1){
+        return ("<meta http-equiv='refresh' content='"+String(time)+";URL="+point+"'/>");
     }
 	static String GetColorRssi(int rssi){
         if(rssi >= -50) return F("green");
-        else if(rssi >= -65) return F("lightgreen");
+        else if(rssi >= -68) return F("#358735");
         else if(rssi >= -75) return F("yellow");
         else if(rssi >= -85) return F("darkred");
         else if(rssi >= -100) return F("gray");
@@ -23,15 +29,41 @@
 		tmp += F("</g></svg>");
 		return tmp;
 	}
+	static String formatFileSize(int size)
+    {
+        String a[] = { "KB", "MB", "GB", "TB", "PB" };
+        int pos = 0;
+        while (size >= 1024)
+        {
+            size /= 1024;
+            pos++;
+        }
+        return (String)round(size) + " " + a[pos];
+    }
+	static String millisToTime(long mills){
+		unsigned long rawTime = mills/1000;
+		unsigned long hours = (rawTime % 86400L) / 3600;
+		String hoursStr = hours < 10 ? "0" + String(hours) : String(hours);
+		
+		unsigned long minutes = (rawTime % 3600) / 60;
+		String minuteStr = minutes < 10 ? "0" + String(minutes) : String(minutes);
+
+		unsigned long seconds = rawTime % 60;
+		String secondStr = seconds < 10 ? "0" + String(seconds) : String(seconds);
+
+		unsigned int days = (rawTime / 86400L);
+		
+		return (days > 0 ? String(days) + F(" дней ") : "") + hoursStr + ":" + minuteStr + ":" + secondStr;
+	}
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
-    static String WebConfigurator(String SSID, String Password, String Gateway, bool UseGetaway){
+    static String WebConfigurator(String SSID0, String Password0, String SSID1, String Password1, String SSID2, String Password2, String Gateway, bool UseGetaway){
         String div = RussianHead("Сетевые настройки модуля");
         #ifndef NoScanWIFi
-		  div += "<h3>Доступные WIFI сети</h3>";
-          int n = WiFi.scanNetworks();
-          if(n != 0)
+		  div += F("<h3>Доступные WIFI сети</h3>");
+          int n = WiFi.scanComplete();
+          if(n > 0)
           {
             for (int i = 0; i < n; ++i)
             {
@@ -39,23 +71,98 @@
               div += "<a href=\"#\" onclick=\"Change('"+String(WiFi.SSID(i))+"'); return false;\">"+String(WiFi.SSID(i))+""+SVGRSSI(WiFi.RSSI(i))+"</a>";
               div += "</p>";              
             }
-          }  
+			WiFi.scanDelete();
+			WiFi.scanNetworks(true);
+          }
+		  else if(n == 0){
+			div += "<p>Сети WIFI не найдены</p>";
+			WiFi.scanDelete();
+			WiFi.scanNetworks(true);
+		  }			
+		  else if(n == WIFI_SCAN_RUNNING)
+			div += "<p>Сканирование не завершено, обновите страницу позже</p>"; 
+		  else{
+			WiFi.scanNetworks(true);
+			div += "<p>Обновите страницу еще раз</p>";
+		  }
         #endif
-        return ("<!Doctype html><html><head><title>Конфигурация модуля</title><meta charset=\"UTF-8\"><script>function Change(d){ssid.value = d;}</script></head><body><div>"+div+"<div><br /><form action=\"/setconfig\" method=\"get\"><p>SSID: <input type=\"text\" value=\""+SSID+"\" id=\"ssid\" name=\"ssid\"></p><p>Пароль: <input value=\""+Password+"\" type=\"text\" name=\"password\"></p><p>Адрес шлюза: <input type=\"text\" value=\""+Gateway+"\" name=\"geteway\"></p><p>Использовать шлюз: <input type=\"checkbox\" "+(UseGetaway ? "checked" : "")+" name=\"usegetaway\"></p><p><input type=\"submit\" value=\"Сохранить и перезагрузить\"></p></form></body></html>");
+        return ("<!Doctype html><html><head><title>Конфигурация модуля</title><meta charset=\"UTF-8\"><script>function Change(d){if (window.getSelection) window.getSelection().anchorNode.children[0].value = d;}</script></head><body><div>"+div+"<div><br /><form action=\"/setconfig\" method=\"get\"><table>\
+		<tr><td><p>SSID 1 сети: <input type=\"text\" value=\""+SSID0+"\" id=\"ssid0\" name=\"ssid0\"></p></td><td><p>Пароль 1 сети: <input value=\""+Password0+"\" type=\"password\" name=\"password0\"></p></td></tr>\
+		<tr><td><p>SSID 2 сети: <input type=\"text\" value=\""+SSID1+"\" id=\"ssid1\" name=\"ssid1\"></p></td><td><p>Пароль 2 сети: <input value=\""+Password1+"\" type=\"password\" name=\"password1\"></p></td></tr>\
+		<tr><td><p>SSID 3 сети: <input type=\"text\" value=\""+SSID2+"\" id=\"ssid2\" name=\"ssid2\"></p></td><td><p>Пароль 3 сети: <input value=\""+Password2+"\" type=\"password\" name=\"password2\"></p></td></tr>\
+		</table><p>Адрес шлюза: <input type=\"text\" value=\""+Gateway+"\" name=\"geteway\"></p><p>Использовать шлюз: <input type=\"checkbox\" "+(UseGetaway ? "checked" : "")+" name=\"usegetaway\"></p><p><input type=\"submit\" value=\"Сохранить и перезагрузить\"></p></form>\
+		<p><a href='/updatemanager'>Обновление ПО модуля</a></p></body></html>");
     }
-    static String WebMain(String type, String id, bool IsTimers, bool IsUDP, bool SendGetaway){
+    static void WebMain(ESP8266WebServer *server, String type, String id, String Times, bool IsTimers, bool IsUDP, bool SendGetaway){
         int rssi = WiFi.RSSI();
+		//id.replace("|", " ");
         
-        return (("<html> <meta http-equiv='refresh' content='60;URL=/' /> <title> ")+WiFi.localIP().toString()+(" - Общая информация</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><div style='background: linear-gradient(45deg, #10ebf3, #87c7ff);'><p>Тип модуля: <span style='color: red;'>")+type+("</span></p><p>ID модуля: <span style='color: red;'>")+id+("</span></p></div><div><p>Время работы: <span style='color: red;'>")+ (String)(millis()/1000/60/60)+" часов "+(String)(millis()/1000/60)+" минут "+(String)(millis()/1000)+" секунд</span></p></div><div style='background: linear-gradient(45deg, #10ebf3, #87c7ff);'><p>"+(WiFi.status() != WL_CONNECTED ? "Ошибка подключения к" : "Подключен к сети:")+" <span style='color: red;'>"+(String)WiFi.SSID()+("</span></p><p>Уровень сигнала: <span style='color: ")+GetColorRssi(rssi)+(";'>")+(String)rssi+(" dBm</span> "+SVGRSSI(rssi)+"</p></div>")
-        + "<div><p><a href='/configurator'>Настройки модуля</a></p>"
-        + "<div><p><a href='/getlogs'>Системные логи</a></p>"
+		if (!(*server).chunkedResponseModeStart(200, "text/html")) {
+			(*server).send(505, F("text/html"), F("HTTP1.1 required"));
+			return;
+		}
+		
+		//Шапка
+		(*server).sendContent("<html><head><meta http-equiv='refresh' content='60;URL=/'/><title>"+id+" - Общая информация</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">"+AJAXJs+AutoChangeTime+"</head>");
+		(*server).sendContent("<div style='background: linear-gradient(45deg, #10ebf3, #87c7ff);'>");
+		(*server).sendContent("<p>Тип модуля: <span style='color: red;'>"+type+"</span></p>");
+		(*server).sendContent("<p>ID модуля: <span style='color: red;'>"+id+"</span></p></div><div>");
+		(*server).sendContent("<p>Время работы: <span style='color: red;'>"+millisToTime(millis())+"</span></p>");
+		(*server).sendContent("<p>Время на модуле: <span id='timemod' style='color: red;'>"+Times+"</span></p></div>");
+		(*server).sendContent("<div style='background: linear-gradient(45deg, #10ebf3, #87c7ff);'>");
+		(*server).sendContent((String)"<p>"+(String)(WiFi.status() != WL_CONNECTED ? "Ошибка подключения к" : "Подключен к сети:")+(String)" <span style='color: red;'>"+WiFi.SSID()+(String)"</span></p>");
+		(*server).sendContent("<p>IP адрес модуля: <span style='color: red;'>"+(String)(WiFi.status() != WL_CONNECTED ? "192.168.4.1" : WiFi.localIP().toString())+"</span></p>");
+		(*server).sendContent("<p>Уровень сигнала: <span style='color: "+GetColorRssi(rssi)+(";'>")+String(rssi)+" dBm</span> "+SVGRSSI(rssi)+"</p>");
+		(*server).sendContent("</div>");
+		//Конец Шапки
+		//Начало кнопок
+		(*server).sendContent(F("<div><p><a href='/configurator'>Настройки модуля</a></p>"));
+		(*server).sendContent(F("<div><p><a href='/qsettings'>Настройка подсистемы времени</a></p>"));
+		(*server).sendContent(F("<div><p><a href='/getlogs'>Системные логи</a></p>"));
 		#ifdef WriteDataToFile
-			+ (SendGetaway ? "<div><p><a href='/getdatalogs'>Журнал передаваемых на шлюз данных</a></p>" : "")
+			if(SendGetaway) (*server).sendContent(F("<div><p><a href='/getdatalogs'>Журнал передаваемых на шлюз данных</a></p>"));
 		#endif
-        + (type == StudioLight ? String("<p><a href='/getpins'>Просмотреть доступные выводы</a></p><p><a href='/remotepins'>Управление выводами</a></p>") : "")
+		#ifdef ADCV
+			(*server).sendContent(F("<div><p><a href='/getvcc'>Напряжение питания модуля</a></p>"));
+		#endif
+		if(IsStr(type, StudioLight)) (*server).sendContent(F("<p><a href='/getpins'>Просмотреть доступные выводы</a></p><p><a href='/remotepins'>Управление выводами</a></p>"));
+		if(IsTimers) (*server).sendContent(F("<p><a href='/qconfig'>Конфигурация таймеров</a></p>"));
+		if(IsUDP) (*server).sendContent(F("<p><a href='/udptrigger?type=show'>Конфигурация UDP триггеров</a></p>"));
+		if(IsStr(type, Termometr)) (*server).sendContent(F("<p><a href='/gettemp'>Посмотреть температуру</a></p>"));
+		if(IsStr(type, WS28Module)) (*server).sendContent(F("<p><a href='/remotepins'>Управление адресной лентой</a></p>"));
+		if(IsStr(type, HDC1080md)) (*server).sendContent(F("<p><a href='/meteo'>Посмотреть температуру и влажность</a></p>"));
+		if(IsStr(type, Informetr)) (*server).sendContent(F("<p><a href='/test'>Проверка экрана информетра</a></p>"));
+		//Конец Страницы
+		(*server).sendContent(F("</div></html>"));
+		(*server).chunkedResponseFinalize();
+		
+        /*return ("<html><head><meta http-equiv='refresh' content='60;URL=/'/><title>"+id+(" - Общая информация</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">"+AJAXJs+AutoChangeTime+"</head>\
+		<div style='background: linear-gradient(45deg, #10ebf3, #87c7ff);'>\
+		<p>Тип модуля: <span style='color: red;'>")+type+("</span></p>\
+		<p>ID модуля: <span style='color: red;'>")+id+("</span></p></div><div>\
+		<p>Время работы: <span style='color: red;'>")+millisToTime(millis())+"</span></p>\
+		<p>Время на модуле: <span id='timemod' style='color: red;'>"+Times+"</span></p></div>\
+		<div style='background: linear-gradient(45deg, #10ebf3, #87c7ff);'>\
+		<p>"+(WiFi.status() != WL_CONNECTED ? "Ошибка подключения к" : "Подключен к сети:")+" <span style='color: red;'>"+WiFi.SSID()+("</span></p>\
+		<p>Уровень сигнала: <span style='color: ")+GetColorRssi(rssi)+(";'>")+String(rssi)+(" dBm</span> "+SVGRSSI(rssi)+"</p>\
+		</div>")
+        + F("<div><p><a href='/configurator'>Настройки модуля</a></p>")
+        + F("<div><p><a href='/qsettings'>Настройка подсистемы времени</a></p>")
+        + F("<div><p><a href='/getlogs'>Системные логи</a></p>")
+		#ifdef WriteDataToFile
+			+ (SendGetaway ? ("<div><p><a href='/getdatalogs'>Журнал передаваемых на шлюз данных</a></p>") : "")
+		#endif
+		#ifdef ADCV
+			+ F("<div><p><a href='/getvcc'>Напряжение питания модуля</a></p>");
+		#endif
+        + ((type.indexOf(StudioLight) != -1) ? String("<p><a href='/getpins'>Просмотреть доступные выводы</a></p><p><a href='/remotepins'>Управление выводами</a></p>") : "")
         + (IsTimers ? String("<p><a href='/qconfig'>Конфигурация таймеров</a></p>") : "")
         + (IsUDP ? String("<p><a href='/udptrigger?type=show'>Конфигурация UDP триггеров</a></p>") : "")
-        + (type == Termometr ? String("<p><a href='/gettemp'>Посмотреть температуру</a></p>") : "")
-        + String("</div></html>")); 
+        + ((type.indexOf(Termometr) != -1) ? String("<p><a href='/gettemp'>Посмотреть температуру</a></p>") : "")
+        + ((type.indexOf(WS28Module) != -1) ? String("<p><a href='/remotepins'>Управление адресной лентой</a></p>") : "")
+        + ((type.indexOf(HDC1080md) != -1) ? String("<p><a href='/meteo'>Посмотреть температуру и влажность</a></p>") : "")
+        + ((type.indexOf(Informetr) != -1) ? String("<p><a href='/test'>Проверка экрана информетра</a></p>") : "")
+        + F("</div></html>")); */
+		return;
     }
 #endif // #ifndef WebPages_h

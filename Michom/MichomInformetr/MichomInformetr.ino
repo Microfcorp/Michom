@@ -1,3 +1,5 @@
+#define IsLCDI2C
+
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <ArduinoJson.h>
@@ -9,20 +11,25 @@
 //const char *password = "10707707";
 
 const char* id = "Informetr_Pogoda";
-const char* type = "Informetr";
-/////////настройки//////////////
+const char* type = Informetr;
 
-const char* host = "192.168.1.42/michome/getpost.php";
-const char* host1 = "192.168.1.42";
+#define LightPin 12
+#define ModePin 14
+#define ButtonPin 16
+#define LEDPin 10
+
+/////////настройки//////////////
 
 RTOS rtos(600000);//Запрос данных
 RTOS rtos1(10000);//Время переключения экранов
 RTOS rtos2(8200);//Врея показа дня
 RTOS Button14(500);//Опрос кнопки режимов
+RTOS LightOff(600000);//Опрос кнопки режимов
+RTOS UpdateLight(100);//Включение подсветки
 
 //13
 //10
-GButton button14(13);//Кнопка смены режимов
+GButton button14(ModePin);//Кнопка смены режимов
 
 long pogr = 1800; //Отсчет до времени показа дня
 
@@ -31,19 +38,23 @@ long Attempted = 0; //попытка соеденения
 
 bool PokazType = true; //тип экрана (прогноз (сменный)) или домашний (статичный)
 
-bool pause = false; // пауза обновления
+bool pause = false; // пауза обновления,
 
-Michome michome(id, type, host, host1);
+bool IsRunLight = false; //Принудительное включение подсветки
+
+Michome michome(id, type);
 LiquidCrystal_I2C lcd(0x3F, 16, 2);
 ESP8266WebServer& server1 = michome.GetServer();
-MichomeUDP MUDP(michome);
+MichomeUDP MUDP(&michome);
 
 String date[4][13] = {};
 
 void setup ( void ) {
 
-  pinMode(12, INPUT_PULLUP);
-  pinMode(14, INPUT_PULLUP);
+  pinMode(LightPin, INPUT_PULLUP); //Свет
+  pinMode(ModePin, INPUT_PULLUP); //Кнопка
+  pinMode(ButtonPin, INPUT_PULLUP); //Кнопка 2
+  pinMode(LEDPin, OUTPUT); //лампоча
 
   lcd.init();
   delay(10);
@@ -51,11 +62,14 @@ void setup ( void ) {
   lcd.print("Informetr");
 
   server1.on("/onlight", []() {
+    IsRunLight = true;
+    LightOff.Start();
     lcd.backlight();
     server1.send(200, "text/html", String("OK"));
   });
 
   server1.on("/offlight", []() {
+    IsRunLight = false;
     lcd.noBacklight();
     server1.send(200, "text/html", String("OK"));
   });
@@ -63,6 +77,14 @@ void setup ( void ) {
   server1.on("/refresh", []() {
     server1.send(200, "text/html", "OK");
     michome.SendData();
+  });
+
+  server1.on("/pause", []() {
+    if(server1.arg(0) == "stop")
+      pause = true;
+    else if(server1.arg(0) == "run")
+      pause = false;  
+    server1.send(200, "text/html", "OK");
   });
 
   server1.on("/print", []() {
@@ -88,7 +110,7 @@ void setup ( void ) {
     lcd.write(4);
     lcd.write(5);
 
-    server1.send(200, "text/html", "Pin mode: " + String(digitalRead(12)) + "<br />Pin button1: " + String(digitalRead(14)) + "<br />System OK");
+    server1.send(200, "text/html", "Button mode: " + String(digitalRead(ModePin)) + "<br />Button User: " + String(digitalRead(ButtonPin)) + "<br />Light: " + String(digitalRead(LightPin)) + "<br />System OK");
   });
 
   server1.on("/setdata", []() {
@@ -153,12 +175,17 @@ void setup ( void ) {
       lcd.setCursor(0, 0);
       lcd.print("Updating...");
     }
-    pause = false;
+    //pause = false;
     server1.send(200, "text/html", String("OK"));
   });
 
   michome.init(true);
+  // michome.TimeoutConnection = LightModuleTimeoutConnection; //Таймаут соединения до шлюза
+  MUDP.init();
+  
+  UpdateLight.Start(); //Обновление света начать
 }
+
 bool st = true;
 int day = 0;
 void plusday() {
@@ -167,6 +194,7 @@ void plusday() {
     day = 0;
   }
 }
+
 void loop ( void ) {
 
   michome.running();
@@ -188,21 +216,30 @@ void loop ( void ) {
     }
   }
 
-  if(!pause){
-    if (rtos.IsTick())
+  if (rtos.IsTick()) //На обновление
       michome.SendData();
-  
-    if (rtos2.IsTick())
+
+  if(!pause){ // НЕ на паузе    
+    if (rtos2.IsTick()) //На показ даты
       i2();
   
-    if (rtos1.IsTick())
+    if (rtos1.IsTick()) //На показ погоды
       i1();
   }
 
 
-  button14.tick();
+  if (LightOff.IsTick()) //На таймаут и отключение света
+      IsRunLight = false;
 
-  if(button14.isSingle()){
+  if (UpdateLight.IsTick()) //На опрос кнопки
+      if (date[0][0].toInt() == 1 || digitalRead(LightPin) == LOW || IsRunLight)  //Включаем свет
+        lcd.backlight();
+      else lcd.noBacklight(); //Выключаем свет
+
+
+  button14.tick(); //Кнопка режимов
+
+  if(button14.isSingle()){ //Если одна - меняем показ экрана
     PokazType =! PokazType;
     if(PokazType)
       ToPrognoz();
@@ -210,7 +247,7 @@ void loop ( void ) {
       ToHomes();
     i1();  
   }
-  else if(button14.isDouble()){
+  else if(button14.isDouble()){ //Если 2 ставим на паузу
     pause = !pause;
     if(pause){
       lcd.setCursor(0, 1);
@@ -223,7 +260,7 @@ void loop ( void ) {
       lcd.noBlink();
     }
   }
-  else if(button14.isTriple()){
+  else if(button14.isTriple()){ //Если 3 - обновляем данные
     pause = true;
     lcd.clear();
     lcd.home();
@@ -257,14 +294,7 @@ void PrintETError() {
 
 void i1() {
   lcd.noBlink();
-  if (!EtherFail) {    
-    if (date[0][0].toInt() == 1 || digitalRead(12) == LOW) {
-      lcd.backlight();
-    }
-    else {
-      lcd.noBacklight();
-    }
-
+  if (!EtherFail) {  //При успешном соединении      
     lcd.clear();
     lcd.home();
     
@@ -326,4 +356,3 @@ void i2() {
     PrintETError();
   }
 }
-

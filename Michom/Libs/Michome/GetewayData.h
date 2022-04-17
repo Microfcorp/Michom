@@ -5,4 +5,6 @@
 #define Initialization "Init"
 #define ButtonData "get_button_press"
 
+#define MeteoRequest "/meteo"
+
 #endif // #ifndef GetewayData_h

@@ -1,83 +1,63 @@
-#define DebugConnection 1
 #include <Michom.h>
 #include <ClosedCube_HDC1080.h>
 #include <LightModules.h>
 #include <TimerLightModule.h>
+#include <MichomUDP.h>
 
-ClosedCube_HDC1080 hdc1080; 
+ClosedCube_HDC1080 hdc1080ax; 
 
-//const char *ssid = "10-KORPUSMG";
-//const char *password = "10707707";
-
-const char* id = "hdc1080_garadze";
-const char* type = "hdc1080";
+const char* id = "Garland_Controller";
+const char* type = "StudioLight|hdc1080mx"; //GenerateTypes(new String[2]{String(StudioLight), String(HDC1080md)}, 2);
 /////////настройки//////////////
-
-const char* host = "192.168.1.42/michome/getpost.php";
-const char* host1 = "192.168.1.42";
 
 RTOS rtos(604000);
 
-Michome michome(id, type, host, host1);
+Michome michome(id, type);
 
 ESP8266WebServer& server1 = michome.GetServer();
-LightModules lm (michome);
-Telnet& telnet = lm.GetTelnet();
+LightModules lm (&michome);
 TimerLightModule tlm(&lm);
-
-bool IsRunRele = false;
-bool AutoRun = true;
+MichomeUDP MUDP(&michome); //Созлдание класса UDP кнотроллера
 
 void setup ( void ) {
-  lm.AddPin(10);
+  lm.AddPin({10, Relay});
   
   lm.TelnetEnable = true;
+  lm.SaveState = true; //Включено сохранение статуса выводов при перезапуске
   lm.init();
   tlm.init();
-  michome.SetFormatSettings(1);
   michome.init(false);
-  michome.TimeoutConnection = 500;
-  hdc1080.begin(0x40);
+  michome.TimeoutConnection = LightModuleTimeoutConnection;
+  
+  hdc1080ax.begin(0x40);
+
+  MUDP.lightModules = &lm; //Ссылка на объект модуля освещения
+  MUDP.timerLightModules = &tlm; //Ссылка на объект подсисетмы времени
+  //MUDP.EAlarm = true; //Включено событие EAlarm
+  MUDP.init(); //Инициализация модуля UDP
   
   server1.on("/refresh", [](){ 
     server1.send(200, "text/html", "OK");
     SendData();
   });
 
-  server1.on("/meteo", [](){ 
+  server1.on(MeteoRequest, [](){ 
     String tmp = "<html><head><title>Метеоданные</title><meta charset=\"UTF-8\"></head><body><table><tbody>";
-    tmp += "<tr><td>Температура: "+String(hdc1080.readTemperature())+"<td></tr>";
-    tmp += "<tr><td>Влажность: "+String(hdc1080.readHumidity())+"<td></tr>";
+    tmp += "<tr><td>Температура: "+String(hdc1080ax.readTemperature())+"<td></tr>";
+    tmp += "<tr><td>Влажность: "+String(hdc1080ax.readHumidity())+"<td></tr>";
     tmp += "</tbody></table></body><html>";
     server1.send(200, "text/html", tmp);
     SendData();
   });
-
-  /*server1.on("/setlight", []() {
-    bool HasChange = false; //можно ли изменить
-    
-    if(server1.hasArg("m")) //если не руками
-      if(server1.arg("m") == "cron" && AutoRun){ HasChange = true;} //Если крон и можно менять, то ставим флаг на смену
-      else if(server1.arg("m") == "cron" && !AutoRun){ HasChange = false;} //Если крон и нельзя менять, то не ставим флаг на смену
-      else{ HasChange = true;} //Если не руками и не кроном, то ставим флаг на смену
-    else{ HasChange = true;} //Если руками, то ставим флаг на смену
-
-    if(!server1.hasArg("m") && server1.arg(0).toInt() == 0) AutoRun = true; //Если руками и выключаем, то разрешаем менять
-    if(!server1.hasArg("m") && server1.arg(0).toInt() == 1) AutoRun = false; //Если руками и включаем, то запрещаем менять
-
-    if(HasChange){
-      digitalWrite(10, server1.arg(0).toInt());
-      server1.send(200, "text/html", String(server1.arg(0).toInt()));
-      IsRunRele = (server1.arg(0).toInt() == 1 ? true : false);
-    }         
-  });*/   
   
   SendData();
 }
 
 void loop ( void ) {
-  michome.running();
-  tlm.running();
+  michome.running(); //Цикличная функция работы
+  lm.running(); //Цикличная функция работы
+  tlm.running(); //Цикличная функция работы
+  MUDP.running(); //Цикличная функция работы
 
   if(michome.GetSettingRead()){
     rtos.ChangeTime(michome.GetSettingToInt("update"));
@@ -88,7 +68,5 @@ void loop ( void ) {
 }
 
 void SendData(){
-  michome.SendData(michome.ParseJson(String(type), String(hdc1080.readTemperature())+";"+String(hdc1080.readHumidity())));
+  michome.SendData(michome.ParseJson(String(type), String(hdc1080ax.readTemperature())+";"+String(hdc1080ax.readHumidity())));
 }
-
-

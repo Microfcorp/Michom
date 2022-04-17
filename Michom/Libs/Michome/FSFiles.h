@@ -6,6 +6,8 @@
   #include "WProgram.h"
 #endif 
 #include <FS.h>
+#include <LittleFS.h>
+#include <ESP8266WebServer.h>
 
 #ifndef NoFS
 class FSFiles
@@ -16,35 +18,48 @@ class FSFiles
             }
             
             void AddTextToFile(String textadd){
-                String rd = ReadFile();
-                rd += textadd + "<br />";
-                WriteFile(rd);
+                File f = LittleFS.open(FilePath, "a");
+                if (!f) {
+                    Serial.println("file "+FilePath+" append-mode open failed");  //  "открыть файл не удалось"
+                }
+                else{
+                    if (f.print(textadd + " <br /> ")) {} 
+					else {
+						Serial.println("Append to "+FilePath+" failed");
+					}
+					delay(500);
+					f.close();
+                }
             }
             String ReadFile(){
-                SPIFFS.begin();//инициальзация фс       
-                File f = SPIFFS.open(FilePath, "r");
+                File f = LittleFS.open(FilePath, "r");
                 if (!f) {
-                    Serial.println("file open failed");  //  "открыть файл не удалось"
-                    SPIFFS.end();//денициализация фс
+                    Serial.println("file "+FilePath+" from read-mode open failed");  //  "открыть файл не удалось"
                     return "";
                 }
                 else{
                     String cfg = f.readString();
-                    SPIFFS.end();//денициализация фс                        
+					f.close();
                     return cfg;
                 }    
             }
+			void ReadFileToServer(ESP8266WebServer *server){				
+				File f = LittleFS.open(FilePath, "r");
+				if ((*server).streamFile(f, F("text/html")) != f.size()) {
+				  Serial.println("Sent less data than expected!");
+				}
+				f.close();								    
+            }
             void WriteFile(String text){
-                SPIFFS.begin();//инициальзация фс
-                File f = SPIFFS.open(FilePath, "w");
+                File f = LittleFS.open(FilePath, "w");
                 if (!f) {
-                    Serial.println("file open failed");  //  "открыть файл не удалось"
-                    SPIFFS.end();//денициализация фс
+                    Serial.println("file "+FilePath+" write-mode open failed");  //  "открыть файл не удалось"
                     return;
                 }
                 else{
-                    f.print(text);
-                    SPIFFS.end();//денициализация фс                     
+                    f.print(text); 
+					delay(500); // Make sure the CREATE and LASTWRITE times are different					
+					f.close();
                     return;
                 }
             }

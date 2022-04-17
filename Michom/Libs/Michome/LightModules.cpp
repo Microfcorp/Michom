@@ -1,7 +1,5 @@
 #include "LightModules.h"
 
-Telnet telnLM(23);
-
 //
 // конструктор - вызывается всегда при создании экземпляра класса LightModules
 //
@@ -9,10 +7,7 @@ LightModules::LightModules(Michome *m)
 {
     gtw = m;
 	(*gtw).SetOptionFirmware(LightModule, true);
-}
-
-Telnet& LightModules::GetTelnet(){
-    return telnLM;
+	telnLM = &(*gtw).GetTelnet();
 }
 
 void LightModules::AddPin(LightPin Pin){
@@ -221,6 +216,7 @@ void LightModules::RunBuffer(){
         BufferData bf = Bufers.get(i); 
         SetLightID(bf.Pin, bf.Brig);
     }
+	Bufers.clear();
 }
 
 int LightModules::GetBrightness(byte pinid){
@@ -228,6 +224,8 @@ int LightModules::GetBrightness(byte pinid){
 }
 
 void LightModules::init(){
+	(*gtw).preInit();
+	
     bool stops = SaveState;    
     SaveState = false;
     for(int i = 0; i < Pins.size(); i++){
@@ -252,7 +250,7 @@ void LightModules::init(){
          JSONParse(server1.arg(0));
         server1.send(200, "text/html", "OK");
       });*/
-
+	  
       server1.on("/setlight", [&]() {
         SetLightID(server1.arg(0).toInt(), server1.arg(1).toInt());
         server1.send(200, "text/html", String(server1.arg(0).toInt()) + " as " + String(server1.arg(1).toInt()));
@@ -307,68 +305,80 @@ void LightModules::init(){
         server1.send(200, "text/html", String(GetPins()));
       });
       
-      server1.on("/calculatetimesum", [&]() {
+      /*server1.on("/calculatetimesum", [&]() {
         server1.send(200, "text/html", String((server1.arg(1).toInt()*server1.arg(0).toInt())/1000) + " seconds");
-      });
+      });*/
            
       server1.on("/remotepins", [&]() {
         String tmp = RussianHead("Управление выводами");
         for(int i = 0; i < Pins.size(); i++){
-            tmp += (String)"<p>" + i + " (" + String(Pins.get(i).Type == 0 ? "Relay" : "PWM") + ") " + String(Pins.get(i).Type == 0 ? "" : (String)"<input type='number' value=\""+(String)GetBrightness(i)+"\" maxlength='4' min='"+MinimumBrightnes+"' max='"+MaximumBrightnes+"' id='pwm"+(String)(i+1)+(String)"' />") + " <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+String(Pins.get(i).Type == 0 ? MaximumBrightnes : "'+pwm"+(String)(i+1)+(String)".value+'")+"\', GET, \'\', function(d){}); return false;\">Применить значение</a> <a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+MinimumBrightnes+"\', GET, \'\', function(d){}); return false;\">Выключить</a> "  + "</p>";
+            tmp += (String)"<p>" + i + " (" + String(Pins.get(i).Type == 0 ? "Relay" : "PWM") + ") " + String(Pins.get(i).Type == 0 ? "" : (String)"<input type='number' value=\""+(String)GetBrightness(i)+"\" maxlength='4' min='"+MinimumBrightnes+"' max='"+MaximumBrightnes+"' id='pwm"+(String)(i+1)+(String)"' />") + (Pins.get(i).Type == PWM ? (String)"<a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+String(Pins.get(i).Type == 0 ? MaximumBrightnes : "'+pwm"+(String)(i+1)+(String)".value+'")+"\', GET, \'\', function(d){}); return false;\">Применить значение</a>" : "") + "<a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+MaximumBrightnes+"\', GET, \'\', function(d){}); return false;\">Включить</a> " + "<a href='#' onclick=\"postAjax(\'setlight?p="+i+"&q="+MinimumBrightnes+"\', GET, \'\', function(d){}); return false;\">Выключить</a> "  + "</p>";
         }
         server1.send(200, "text/html", AJAXJs + tmp + (String)"<br /><a href='/'>Главная</a>");
       });
-     
-      
-    if(TelnetEnable){
-        telnLM.Init();
-    }
+	  
+	  //(*telnLM).on("");
 }
 
 void LightModules::TelnetRun(String telnd){
     String type = (*gtw).Split(telnd, ';', 0);
+	type.toLowerCase();
         if (type == "setlight") { //setlight;0;1023 pin;val
           SetLightID(((*gtw).Split(telnd, ';', 1).toInt()), (*gtw).Split(telnd, ';', 2).toInt());
+		  (*telnLM).printSucess("SetLight OK");
         }
         else if (type == "setlightall") { //setlightall;1023 val
           SetLightAll((*gtw).Split(telnd, ';', 1).toInt());
+		  (*telnLM).printSucess("SetLightAll OK");
         }
         else if (type == "strobo") { //strobo;2;4;100 pin;col;sleep
           int col = (*gtw).Split(telnd, ';', 2).toInt();
           Strobo(Pins.get((*gtw).Split(telnd, ';', 1).toInt()).Pin, col, (*gtw).Split(telnd, ';', 3).toInt());
+		  (*telnLM).printSucess("Strobo OK");
         }
         else if (type == "strobopro") { //strobopro;10;0;100;50 col;pin;sleep;sleep2
           int col = (*gtw).Split(telnd, ';', 1).toInt();
           StroboPro(Pins.get((*gtw).Split(telnd, ';', 1).toInt()).Pin, col, (*gtw).Split(telnd, ';', 3).toInt(), (*gtw).Split(telnd, ';', 4).toInt());
-        }
+		  (*telnLM).printSucess("StroboPro OK");
+		}
         else if (type == "stroboall") { //stroboall;10;100 col;sleep
           int col = (*gtw).Split(telnd, ';', 1).toInt();
           StroboAll(col, (*gtw).Split(telnd, ';', 2).toInt());
+		  (*telnLM).printSucess("StroboAll OK");
         }
         else if (type == "stroboallpro") { //stroboallpro;10;100;50 col;sleep;sleep2
           int col = (*gtw).Split(telnd, ';', 1).toInt();
           StroboAllPro(col, (*gtw).Split(telnd, ';', 2).toInt(), (*gtw).Split(telnd, ';', 3).toInt());
+		  (*telnLM).printSucess("StroboAllPro OK");
         }
         else if (type == "fadestart") { //fadestart;10;100;50 col;sleep;sleep2
           int col = (*gtw).Split(telnd, ';', 1).toInt();
           FadeData l1 = CreateFadeData((FadeType)(*gtw).Split(telnd, ';', 2).toInt(), (*gtw).Split(telnd, ';', 3).toInt(), (*gtw).Split(telnd, ';', 4).toInt(), (*gtw).Split(telnd, ';', 5).toInt(), (*gtw).Split(telnd, ';', 6).toInt());
           StartFade(l1);
+		  (*telnLM).printSucess("FadeStart OK");
         }
         else if (type == "fadestop") { //fadedown;10;100;50 col;sleep;sleep2
           int col = (*gtw).Split(telnd, ';', 1).toInt();
           StopFade((*gtw).Split(telnd, ';', 2).toInt());
+		  (*telnLM).printSucess("FadeStop OK");
         }
         else if (type == "stopallfade") { //fadestop;
           StopAllFade();
+		  (*telnLM).printSucess("StopAllFade OK");
+        }
+		else if (type == "reversepin") { //OnlyRelay //reversepin;0
+		  int pin = (*gtw).Split(telnd, ';', 1).toInt();
+          if(Pins.get(pin).Type == Relay){
+			SetLightID(pin, !digitalRead(Pins.get(pin).Pin));  
+		  }
+		  (*telnLM).printSucess("ReversePin OK");
         }
 }
 
 void LightModules::running(){
-    if(TelnetEnable){
-        telnLM.Running();
-        
-        if(telnLM.IsDataAvalible()){
-            TelnetRun(telnLM.GetData());
+    if(TelnetEnable){              
+        if((*telnLM).IsDataAvalible()){
+            TelnetRun((*telnLM).GetData());
         }
     }
     

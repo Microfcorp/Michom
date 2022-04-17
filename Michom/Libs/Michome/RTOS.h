@@ -18,6 +18,7 @@ class RTOS
                 void Start();                
                 void ChangeTime(long Time);
                 void SetOffset(long Time);
+				void Zero();
                 long GetTime();
         private:
             long _Time = 0;

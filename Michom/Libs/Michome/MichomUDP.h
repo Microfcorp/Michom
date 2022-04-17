@@ -9,7 +9,7 @@
 #include <LightModules.h>
 #include <TimerLightModule.h>
 
-typedef enum ActionsType {LightData, SendURL, SendGateway};
+typedef enum ActionsType {LightData, SendURL, SendGateway, SendsUDP};
 
 typedef struct UDPTriggers
 {
@@ -83,11 +83,16 @@ class MichomeUDP
             
             String GetHTMLOptions(int t){
                 String tmp = "";
-                tmp += (type == StudioLight ? (String)"<option "+(t == 0 ? "selected":"")+" value='LightData'>Telnet формат модуля освещения</option>" : "");
+                tmp += (IsStr(type, StudioLight) ? (String)"<option "+(t == 0 ? "selected":"")+" value='LightData'>Telnet формат модуля освещения</option>" : "");
                 tmp += (String)"<option "+(t == 1 ? "selected":"")+" value='SendURL'>Отпрвить URL</option>";
                 tmp += (String)"<option "+(t == 2 ? "selected":"")+" value='SendGateway'>Отправить данные на шлюз</option>";
+                tmp += (String)"<option "+(t == 3 ? "selected":"")+" value='SendUDP'>Отправить по UDP сети</option>";
                 return tmp;
             }
+			
+			void SendTrigger(String Trigger, String Data = ""){
+				SendMulticast("Events-" + Trigger + "-" + Data);
+			}
             
             void SendMulticast(String data);
         private:
