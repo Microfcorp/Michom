@@ -80,7 +80,7 @@ void Telnet::Init(){
 			OnData data = Ons.get(i);
 			printlnNIA(data.name + " \t - " + data.descreption);
 		}
-		InputArea(serverClients[i]);
+		println("");
     });
 	
 	on("restart", "Reboot module", [&](){
